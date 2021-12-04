@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Task9.Models.TaskModels {
     public class Student {
+        [Key]
         public int Id { get; set; }
 
 

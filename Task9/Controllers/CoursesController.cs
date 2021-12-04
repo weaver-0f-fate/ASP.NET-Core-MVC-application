@@ -145,20 +145,24 @@ namespace Task9.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var course = await _context.Course.FindAsync(id);
-            _context.Course.Remove(course);
-            await _context.SaveChangesAsync();
+            var associatedGroups = _context.Group.Where(s => s.CourseId == course.Id);
+
+            if (associatedGroups.Any()) {
+                //TODO message cannot delete since there are associated groups;
+            }
+            else {
+                _context.Course.Remove(course);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
 
-
-
-        private bool CourseExists(int id)
-        {
-            return _context.Course.Any(e => e.Id == id);
+        public IActionResult ViewGroups(string courseName) {
+            return RedirectToAction("Index", "Groups", new { groupCourse = courseName});
         }
 
-        public IActionResult ViewGroups(int id) {
-            return RedirectToAction("Index", "Groups", new {id = 1});
+        private bool CourseExists(int id) {
+            return _context.Course.Any(e => e.Id == id);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Task9.Models.TaskModels.Group>
+﻿@model Task9.Models.TaskViewModels.GroupViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -12,7 +12,12 @@
 
 <form asp-controller="Groups" asp-action="Index" method="get">
     <p>
-        Name: <input type="text" name="SearchString" />
+        <select asp-for="GroupCourse" asp-items="Model.Courses">
+            <option value="">All</option>
+        </select>
+
+        Group Name: 
+        <input type="text" name="SearchString" />
         <input type="submit" value="Filter" />
     </p>
 </form>
@@ -21,19 +26,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.GroupName)
+                @Html.DisplayNameFor(model => model.Groups[0].GroupName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Course.CourseName)
+                @Html.DisplayNameFor(model => model.Groups[0].Course.CourseName)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Groups) {
     <tr>
         <td>
-            <a asp-action="ViewGroups" asp-route-id="@item.Id">
+            <a asp-action="ViewStudents" asp-route-groupName="@item.GroupName">
                 @Html.DisplayFor(modelItem => item.GroupName)
             </a>
         </td>

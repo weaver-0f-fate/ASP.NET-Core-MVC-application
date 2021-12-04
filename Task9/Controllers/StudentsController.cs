@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Task9.Data;
 using Task9.Models.TaskModels;
+using Task9.Models.TaskViewModels;
 
 namespace Task9.Controllers
 {
@@ -17,19 +19,27 @@ namespace Task9.Controllers
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(string searchString) {
-            var students = from s in _context.Student select s;
-            var groups = from g in _context.Group select g;
+        public async Task<IActionResult> Index(string studentGroup, string searchString) {
+            var groupQuery = from g in _context.Student
+                orderby g.GroupId
+                select g.Group.GroupName;
 
-            foreach (var student in students) {
-                student.Group = groups.FirstOrDefault(g => g.Id == student.GroupId);
-            }
+            var students = GetStudentsWithGroups();
 
             if (!string.IsNullOrEmpty(searchString)) {
                 students = students.Where(s => s.FirstName.Contains(searchString));
             }
 
-            return View(await students.ToListAsync());
+            if (!string.IsNullOrEmpty(studentGroup)) {
+                students = students.Where(x => x.Group.GroupName == studentGroup);
+            }
+
+            var studentViewModel = new StudentsViewModel() {
+                Groups = new SelectList(await groupQuery.Distinct().ToListAsync()),
+                Students = await students.ToListAsync()
+            };
+
+            return View(studentViewModel);
         }
 
         // GET: Students/Details/5
@@ -155,6 +165,15 @@ namespace Task9.Controllers
         private bool StudentExists(int id)
         {
             return _context.Student.Any(e => e.Id == id);
+        }
+
+        private IQueryable<Student> GetStudentsWithGroups() {
+            var students = from s in _context.Student select s;
+            var groups = from g in _context.Group select g;
+            foreach (var student in students) {
+                student.Group = groups.FirstOrDefault(g => g.Id == student.GroupId);
+            }
+            return students;
         }
     }
 }

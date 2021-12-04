@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Task9.Data;
 using Task9.Models.TaskModels;
+using Task9.Models.TaskViewModels;
 
 namespace Task9.Controllers
 {
@@ -17,19 +19,29 @@ namespace Task9.Controllers
         }
 
         // GET: Groups
-        public async Task<IActionResult> Index(string searchString) {
-            var groups = from g in _context.Group select g;
-            var courses = from c in _context.Course select c;
+        public async Task<IActionResult> Index(string groupCourse, string searchString) {
 
-            foreach (var @group in groups) {
-                group.Course = courses.FirstOrDefault(s => s.Id == group.CourseId);
-            }
+            var courseQuery = from m in _context.Group
+                orderby m.CourseId
+                select m.Course.CourseName;
+
+            var groups = GetGroupsWithCourse();
+
 
             if (!string.IsNullOrEmpty(searchString)) {
                 groups = groups.Where(s => s.GroupName!.Contains(searchString));
             }
 
-            return View(await groups.ToListAsync());
+            if (!string.IsNullOrEmpty(groupCourse)) {
+                groups = groups.Where(x => x.Course.CourseName == groupCourse);
+            }
+
+            var groupViewModel = new GroupViewModel {
+                Courses = new SelectList(await courseQuery.Distinct().ToListAsync()),
+                Groups = await groups.ToListAsync()
+            };
+
+            return View(groupViewModel);
         }
 
         // GET: Groups/Details/5
@@ -46,6 +58,8 @@ namespace Task9.Controllers
             {
                 return NotFound();
             }
+
+            group.Course = _context.Course.FirstOrDefault(s => s.Id == group.CourseId);
 
             return View(@group);
         }
@@ -144,21 +158,38 @@ namespace Task9.Controllers
         // POST: Groups/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
             var @group = await _context.Group.FindAsync(id);
-            _context.Group.Remove(@group);
-            await _context.SaveChangesAsync();
+
+            var associatedStudents = _context.Student.Where(s => s.GroupId == group.Id);
+
+            if (associatedStudents.Any()) {
+                //TODO message cannot delete since there are associated students
+            }
+            else {
+                _context.Group.Remove(@group);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
 
-        private bool GroupExists(int id)
-        {
+        public IActionResult ViewStudents(string groupName) {
+            return RedirectToAction("Index", "Students", new { studentGroup = groupName });
+        }
+
+
+
+        private bool GroupExists(int id) {
             return _context.Group.Any(e => e.Id == id);
         }
 
-        public IActionResult ViewGroups() {
-            return RedirectToAction("Index", "Students", new { id = 1 });
+        private IQueryable<Group> GetGroupsWithCourse() {
+            var groups = from g in _context.Group select g;
+            var courses = from c in _context.Course select c;
+            foreach (var @group in groups) {
+                group.Course = courses.FirstOrDefault(s => s.Id == group.CourseId);
+            }
+            return groups;
         }
     }
 }

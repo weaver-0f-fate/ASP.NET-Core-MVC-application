@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Task9.Models.TaskModels {
     public class Group {
 
+        [Key]
         public int Id { get; set; }
 
         [StringLength(30)]
