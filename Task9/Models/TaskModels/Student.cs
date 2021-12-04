@@ -5,9 +5,14 @@ namespace Task9.Models.TaskModels {
     public class Student {
         public int Id { get; set; }
 
+
+        [StringLength(30)]
+        [Required]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
+        [StringLength(30)]
+        [Required]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 

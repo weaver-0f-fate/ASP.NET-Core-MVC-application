@@ -24,7 +24,7 @@ namespace Task9.Controllers
                 students = students.Where(s => s.FirstName.Contains(searchString));
             }
 
-            return View(await _context.Student.ToListAsync());
+            return View(await students.ToListAsync());
         }
 
         // GET: Students/Details/5
