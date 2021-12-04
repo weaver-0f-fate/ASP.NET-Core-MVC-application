@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,8 +9,9 @@ namespace Task9.Models.TaskModels {
         public int Id { get; set; }
 
         [StringLength(30)]
+        [DisplayName("Group Name")]
         [Required]
-        public string Name { get; set; }
+        public string GroupName { get; set; }
 
         public int CourseId { get; set; }
         [ForeignKey("CourseId")]

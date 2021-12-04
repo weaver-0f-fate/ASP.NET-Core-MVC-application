@@ -28,16 +28,16 @@ namespace Task9.Models.TaskModels {
         private static IEnumerable<Course> SeedCourses() {
             return new List<Course> {
                 new() {
-                    Name = "Linear Algebra",
-                    Description = "Math Linear Algebra Course."
+                    CourseName = "Linear Algebra",
+                    CourseDescription = "Math Linear Algebra Course."
                 },
                 new() {
-                    Name = "C# Programming",
-                    Description = "C# programming course."
+                    CourseName = "C# Programming",
+                    CourseDescription = "C# programming course."
                 },
                 new() {
-                    Name = "Hardware",
-                    Description = "Studying Hardware Course."
+                    CourseName = "Hardware",
+                    CourseDescription = "Studying Hardware Course."
                 }
             };
         }
@@ -45,27 +45,27 @@ namespace Task9.Models.TaskModels {
         private static IEnumerable<Group> SeedGroups() {
             return new List<Group> {
                 new() {
-                    Name = "Linear Algebra First Group",
+                    GroupName = "Linear Algebra First Group",
                     CourseId = 1
                 },
                 new() {
-                    Name = "Linear Algebra Second Group",
+                    GroupName = "Linear Algebra Second Group",
                     CourseId = 1
                 },
                 new() {
-                    Name = "C# Programming First Group",
+                    GroupName = "C# Programming First Group",
                     CourseId = 2
                 },
                 new() {
-                    Name = "C# Programmin Second Group",
+                    GroupName = "C# Programmin Second Group",
                     CourseId = 2
                 },
                 new() {
-                    Name = "Hardware First Group",
+                    GroupName = "Hardware First Group",
                     CourseId = 3
                 },
                 new() {
-                    Name = "Hardware Second Group",
+                    GroupName = "Hardware Second Group",
                     CourseId = 3
                 }
             };

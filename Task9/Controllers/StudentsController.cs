@@ -19,6 +19,11 @@ namespace Task9.Controllers
         // GET: Students
         public async Task<IActionResult> Index(string searchString) {
             var students = from s in _context.Student select s;
+            var groups = from g in _context.Group select g;
+
+            foreach (var student in students) {
+                student.Group = groups.FirstOrDefault(g => g.Id == student.GroupId);
+            }
 
             if (!string.IsNullOrEmpty(searchString)) {
                 students = students.Where(s => s.FirstName.Contains(searchString));

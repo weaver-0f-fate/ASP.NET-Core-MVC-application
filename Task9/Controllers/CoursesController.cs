@@ -24,7 +24,7 @@ namespace Task9.Controllers
             var courses = from c in _context.Course select c;
 
             if (!string.IsNullOrEmpty(searchString)) {
-                courses = courses.Where(s => s.Name!.Contains(searchString));
+                courses = courses.Where(s => s.CourseName!.Contains(searchString));
             }
 
             return View(await courses.ToListAsync());
@@ -155,6 +155,10 @@ namespace Task9.Controllers
         private bool CourseExists(int id)
         {
             return _context.Course.Any(e => e.Id == id);
+        }
+
+        public IActionResult ViewGroups(int id) {
+            return RedirectToAction("Index", "Groups", new {id = 1});
         }
     }
 }

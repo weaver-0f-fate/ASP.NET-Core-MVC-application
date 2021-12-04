@@ -6,12 +6,12 @@ namespace Task9.Models.TaskModels {
         public int Id { get; set; }
 
 
-        [StringLength(30)]
+        [StringLength(50)]
         [Required]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
-        [StringLength(30)]
+        [StringLength(50)]
         [Required]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }

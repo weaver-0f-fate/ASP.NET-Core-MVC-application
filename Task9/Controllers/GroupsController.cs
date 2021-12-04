@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Task9.Data;
 using Task9.Models.TaskModels;
@@ -22,9 +19,14 @@ namespace Task9.Controllers
         // GET: Groups
         public async Task<IActionResult> Index(string searchString) {
             var groups = from g in _context.Group select g;
+            var courses = from c in _context.Course select c;
+
+            foreach (var @group in groups) {
+                group.Course = courses.FirstOrDefault(s => s.Id == group.CourseId);
+            }
 
             if (!string.IsNullOrEmpty(searchString)) {
-                groups = groups.Where(s => s.Name!.Contains(searchString));
+                groups = groups.Where(s => s.GroupName!.Contains(searchString));
             }
 
             return View(await groups.ToListAsync());
@@ -153,6 +155,10 @@ namespace Task9.Controllers
         private bool GroupExists(int id)
         {
             return _context.Group.Any(e => e.Id == id);
+        }
+
+        public IActionResult ViewGroups() {
+            return RedirectToAction("Index", "Students", new { id = 1 });
         }
     }
 }
