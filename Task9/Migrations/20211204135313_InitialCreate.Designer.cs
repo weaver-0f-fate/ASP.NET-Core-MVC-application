@@ -9,7 +9,7 @@ using Task9.Data;
 namespace Task9.Migrations
 {
     [DbContext(typeof(Task9Context))]
-    [Migration("20211203135705_InitialCreate")]
+    [Migration("20211204135313_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,8 @@ namespace Task9.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CourseId");
+
                     b.ToTable("Group");
                 });
 
@@ -74,7 +76,41 @@ namespace Task9.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GroupId");
+
                     b.ToTable("Student");
+                });
+
+            modelBuilder.Entity("Task9.Models.TaskModels.Group", b =>
+                {
+                    b.HasOne("Task9.Models.TaskModels.Course", "Course")
+                        .WithMany("Groups")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Task9.Models.TaskModels.Student", b =>
+                {
+                    b.HasOne("Task9.Models.TaskModels.Group", "Group")
+                        .WithMany("Students")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("Task9.Models.TaskModels.Course", b =>
+                {
+                    b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("Task9.Models.TaskModels.Group", b =>
+                {
+                    b.Navigation("Students");
                 });
 #pragma warning restore 612, 618
         }

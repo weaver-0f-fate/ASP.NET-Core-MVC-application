@@ -20,9 +20,14 @@ namespace Task9.Controllers
         }
 
         // GET: Groups
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Group.ToListAsync());
+        public async Task<IActionResult> Index(string searchString) {
+            var groups = from g in _context.Group select g;
+
+            if (!string.IsNullOrEmpty(searchString)) {
+                groups = groups.Where(s => s.Name!.Contains(searchString));
+            }
+
+            return View(await groups.ToListAsync());
         }
 
         // GET: Groups/Details/5

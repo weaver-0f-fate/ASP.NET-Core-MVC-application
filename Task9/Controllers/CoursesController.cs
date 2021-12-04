@@ -20,9 +20,14 @@ namespace Task9.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Course.ToListAsync());
+        public async Task<IActionResult> Index(string searchString) {
+            var courses = from c in _context.Course select c;
+
+            if (!string.IsNullOrEmpty(searchString)) {
+                courses = courses.Where(s => s.Name!.Contains(searchString));
+            }
+
+            return View(await courses.ToListAsync());
         }
 
         // GET: Courses/Details/5
@@ -144,6 +149,8 @@ namespace Task9.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
 
         private bool CourseExists(int id)
         {
