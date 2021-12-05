@@ -18,6 +18,7 @@ namespace Task9.Controllers
             _context = context;
         }
 
+        #region Index
         // GET: Groups
         public async Task<IActionResult> Index(string groupCourse, string searchString) {
 
@@ -43,19 +44,18 @@ namespace Task9.Controllers
 
             return View(groupViewModel);
         }
+        #endregion
 
+        #region Details
         // GET: Groups/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Details(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var @group = await _context.Group
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (@group == null)
-            {
+            if (@group == null) {
                 return NotFound();
             }
 
@@ -63,10 +63,11 @@ namespace Task9.Controllers
 
             return View(@group);
         }
+        #endregion
 
+        #region Create
         // GET: Groups/Create
-        public IActionResult Create()
-        {
+        public IActionResult Create() {
             return View();
         }
 
@@ -75,28 +76,25 @@ namespace Task9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CourseId,Name")] Group @group)
-        {
-            if (ModelState.IsValid)
-            {
+        public async Task<IActionResult> Create([Bind("Id,CourseId,Name")] Group @group) {
+            if (ModelState.IsValid) {
                 _context.Add(@group);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(@group);
         }
+        #endregion
 
+        #region Edit
         // GET: Groups/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Edit(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var @group = await _context.Group.FindAsync(id);
-            if (@group == null)
-            {
+            if (@group == null) {
                 return NotFound();
             }
             return View(@group);
@@ -107,28 +105,21 @@ namespace Task9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CourseId,Name")] Group @group)
-        {
-            if (id != @group.Id)
-            {
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CourseId,Name")] Group @group) {
+            if (id != @group.Id) {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            if (ModelState.IsValid) {
+                try {
                     _context.Update(@group);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!GroupExists(@group.Id))
-                    {
+                catch (DbUpdateConcurrencyException) {
+                    if (!GroupExists(@group.Id)) {
                         return NotFound();
                     }
-                    else
-                    {
+                    else {
                         throw;
                     }
                 }
@@ -136,19 +127,18 @@ namespace Task9.Controllers
             }
             return View(@group);
         }
+        #endregion
 
+        #region Delete
         // GET: Groups/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var @group = await _context.Group
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (@group == null)
-            {
+            if (@group == null) {
                 return NotFound();
             }
 
@@ -172,13 +162,15 @@ namespace Task9.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        #endregion
 
+        #region Redirection
         public IActionResult ViewStudents(string groupName) {
             return RedirectToAction("Index", "Students", new { studentGroup = groupName });
         }
+        #endregion
 
-
-
+        #region Implementation
         private bool GroupExists(int id) {
             return _context.Group.Any(e => e.Id == id);
         }
@@ -191,5 +183,12 @@ namespace Task9.Controllers
             }
             return groups;
         }
+        #endregion
+
+
+
+
+
+
     }
 }
