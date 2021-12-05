@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DataAccessLayer.Data;
+using DomainLayer.Models.TaskModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Task9.Data;
 
-namespace Task9.Models.TaskModels {
+namespace DataAccessLayer {
     public static class SeedData {
         public static void Initialize(IServiceProvider serviceProvider) {
             using var context = new Task9Context(
                     serviceProvider.GetRequiredService<DbContextOptions<Task9Context>>());
 
-            if (context.Course.Any()) {
+            if (Queryable.Any<Course>(context.Course)) {
                 return;   // DB has been seeded
             }
 

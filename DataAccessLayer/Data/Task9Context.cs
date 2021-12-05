@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Task9.Models.TaskModels;
+﻿using DomainLayer.Models.TaskModels;
+using Microsoft.EntityFrameworkCore;
 
-namespace Task9.Data
+namespace DataAccessLayer.Data
 {
     public class Task9Context : DbContext
     {

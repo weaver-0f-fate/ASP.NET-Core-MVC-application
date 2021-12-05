@@ -1,9 +1,9 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using DomainLayer.Models.TaskModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Task9.Models.TaskModels;
 
-namespace Task9.Models.TaskViewModels {
+namespace Task9.TaskViewModels {
     public class GroupViewModel {
         public List<Group>? Groups { get; set; }
         public SelectList? Courses { get; set; }

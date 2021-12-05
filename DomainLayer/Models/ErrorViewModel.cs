@@ -1,6 +1,4 @@
-using System;
-
-namespace Task9.Models {
+namespace DomainLayer.Models {
     public class ErrorViewModel {
         public string RequestId { get; set; }
 

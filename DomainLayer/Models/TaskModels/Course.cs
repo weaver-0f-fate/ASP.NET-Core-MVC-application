@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Task9.Models.TaskModels {
+namespace DomainLayer.Models.TaskModels {
     public class Course {
 
         [Key]

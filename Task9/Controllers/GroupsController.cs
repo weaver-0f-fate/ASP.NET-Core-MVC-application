@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using DataAccessLayer.Data;
+using DomainLayer.Models.TaskModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Task9.Data;
-using Task9.Models.TaskModels;
-using Task9.Models.TaskViewModels;
+using Task9.TaskViewModels;
 
 namespace Task9.Controllers
 {

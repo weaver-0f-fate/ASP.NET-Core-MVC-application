@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using DataAccessLayer;
+using DataAccessLayer.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Task9.Data;
-using Task9.Models.TaskModels;
 
 namespace Task9 {
     public class Startup {
@@ -19,8 +19,11 @@ namespace Task9 {
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllersWithViews();
 
-    services.AddDbContext<Task9Context>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("Task9Context")));
+            services.AddDbContext<Task9Context>(
+                options =>
+                 options.UseSqlServer(
+                     Configuration.GetConnectionString("Task9Context"),
+                     x => x.MigrationsAssembly("DataAccessLayer")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
