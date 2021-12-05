@@ -30,7 +30,8 @@ namespace Task9.Controllers
 
 
             if (!string.IsNullOrEmpty(searchString)) {
-                groups = groups.Where(s => s.GroupName!.Contains(searchString));
+                groups = groups.Where(s => s.GroupName!.Contains(searchString) 
+                                           || s.Course!.CourseName!.Contains(searchString));
             }
 
             if (!string.IsNullOrEmpty(groupCourse)) {
@@ -172,7 +173,10 @@ namespace Task9.Controllers
         }
         #endregion
 
-        #region Redirection
+        #region Actions
+        public IActionResult ClearFilter() {
+            return RedirectToAction("Index");
+        }
         public IActionResult ViewStudents(string groupName) {
             return RedirectToAction("Index", "Students", new { studentGroup = groupName });
         }

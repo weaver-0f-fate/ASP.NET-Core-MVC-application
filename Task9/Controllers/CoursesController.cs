@@ -22,7 +22,8 @@ namespace Task9.Controllers
             var courses = from c in _context.Course select c;
 
             if (!string.IsNullOrEmpty(searchString)) {
-                courses = courses.Where(s => s.CourseName!.Contains(searchString));
+                courses = courses.Where(s => s.CourseName!.Contains(searchString) 
+                                             || s.CourseDescription!.Contains(searchString));
             }
             return View(await courses.ToListAsync());
         }
@@ -144,9 +145,12 @@ namespace Task9.Controllers
         }
         #endregion
 
-        #region Redirection
+        #region Actions
         public IActionResult ViewGroups(string courseName) {
             return RedirectToAction("Index", "Groups", new { groupCourse = courseName });
+        }
+        public IActionResult ClearFilter() {
+            return RedirectToAction("Index");
         }
         #endregion
 

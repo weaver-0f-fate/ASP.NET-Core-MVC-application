@@ -28,7 +28,9 @@ namespace Task9.Controllers
             var students = GetStudentsWithGroups();
 
             if (!string.IsNullOrEmpty(searchString)) {
-                students = students.Where(s => s.FirstName.Contains(searchString));
+                students = students.Where(s => s.FirstName!.Contains(searchString) 
+                                               || s.LastName!.Contains(searchString) 
+                                               || s.Group.GroupName!.Contains(searchString));
             }
 
             if (!string.IsNullOrEmpty(studentGroup)) {
@@ -160,6 +162,12 @@ namespace Task9.Controllers
             _context.Student.Remove(student);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+        #endregion
+
+        #region Actions
+        public IActionResult ClearFilter() {
+            return RedirectToAction("Index");
         }
         #endregion
 
