@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccessLayer.Migrations
 {
-    [DbContext(typeof(Task9Context))]
+    [DbContext(typeof(Data.Task9Context))]
     [Migration("20211205182210_InitialCreate")]
     partial class InitialCreate
     {

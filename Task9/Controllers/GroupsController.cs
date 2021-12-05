@@ -11,9 +11,9 @@ namespace Task9.Controllers
 {
     public class GroupsController : Controller
     {
-        private readonly Task9Context _context;
+        private readonly DataAccessLayer.Data.Task9Context _context;
 
-        public GroupsController(Task9Context context)
+        public GroupsController(DataAccessLayer.Data.Task9Context context)
         {
             _context = context;
         }

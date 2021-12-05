@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DataAccessLayer.Data;
 using DomainLayer.Models.TaskModels;
 using Microsoft.AspNetCore.Mvc;
@@ -16,38 +15,24 @@ namespace Task9.Controllers
             _context = context;
         }
 
-        #region Index
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var courses = from c in _context.Course select c;
-
-            if (!string.IsNullOrEmpty(searchString)) {
-                courses = courses.Where(s => s.CourseName!.Contains(searchString) 
-                                             || s.CourseDescription!.Contains(searchString));
-            }
+            var courses = CourseData.GetCourses(_context, searchString);
             return View(await courses.ToListAsync());
         }
-        #endregion
 
-        #region Details
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id) {
-            if (id == null) {
+            if (id is null) {
                 return NotFound();
             }
-
-            var course = await _context.Course
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var course = await CourseData.GetCourseById(_context, id);
             if (course == null) {
                 return NotFound();
             }
-
             return View(course);
         }
-        #endregion
 
-        #region Create
         // GET: Courses/Create
         public IActionResult Create() {
             return View();
@@ -60,22 +45,18 @@ namespace Task9.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CourseName,CourseDescription")] Course course) {
             if (ModelState.IsValid) {
-                _context.Add(course);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                await CourseData.CreateCourse(_context, course);
+                return RedirectToAction(nameof(Details), new { id = course.Id });
             }
             return View(course);
         }
-        #endregion
 
-        #region Edit
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
-
-            var course = await _context.Course.FindAsync(id);
+            var course = await CourseData.GetCourseById(_context, id);
             if (course == null) {
                 return NotFound();
             }
@@ -91,43 +72,27 @@ namespace Task9.Controllers
             if (id != course.Id) {
                 return NotFound();
             }
-
-            if (ModelState.IsValid) {
-                try {
-                    _context.Update(course);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException) {
-                    if (!CourseExists(course.Id)) {
-                        return NotFound();
-                    }
-                    else {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid) {
+                return View(course);
             }
-            return View(course);
-        }
-        #endregion
 
-        #region Delete
+            if(await CourseData.UpdateCourse(_context, course)) {
+                return RedirectToAction(nameof(Details), new { course.Id });
+            }
+
+            return NotFound();
+        }
+        
         // GET: Courses/Delete/5
         public async Task<IActionResult> Delete(int? id, string message = null) {
             if (id == null) {
                 return NotFound();
             }
-
-            if (message is not null) {
-                ViewBag.ErrorMessage = message;
-            }
-
-            var course = await _context.Course
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (course == null) {
+            var course = await CourseData.GetCourseById(_context, id);
+            ViewBag.ErrorMessage = message;
+            if (course is null) {
                 return NotFound();
             }
-
             return View(course);
         }
 
@@ -135,33 +100,19 @@ namespace Task9.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            var course = await _context.Course.FindAsync(id);
-            var associatedGroups = _context.Group.Where(s => s.CourseId == course.Id);
-            if (associatedGroups.Any()) {
-                var message = "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
-                return RedirectToAction("Delete", new { id, message });
-            }
-            else {
-                _context.Course.Remove(course);
-                await _context.SaveChangesAsync();
+            if (await CourseData.DeleteCourse(_context, id)) {
                 return RedirectToAction("Index");
             }
+            const string message =
+                "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
+            return RedirectToAction("Delete", new { id, message });
         }
-        #endregion
 
-        #region Actions
         public IActionResult ViewGroups(string courseName) {
             return RedirectToAction("Index", "Groups", new { groupCourse = courseName });
         }
         public IActionResult ClearFilter() {
             return RedirectToAction("Index");
         }
-        #endregion
-
-        #region Implementation
-        private bool CourseExists(int id) {
-            return _context.Course.Any(e => e.Id == id);
-        }
-        #endregion
     }
 }
