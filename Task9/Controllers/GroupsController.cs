@@ -1,73 +1,44 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DataAccessLayer.Data;
+using DataAccessLayer.DomainObjects;
 using DomainLayer.Models.TaskModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Task9.TaskViewModels;
 
-namespace Task9.Controllers
-{
-    public class GroupsController : Controller
-    {
-        private readonly DataAccessLayer.Data.Task9Context _context;
+namespace Task9.Controllers {
+    public class GroupsController : Controller {
+        private readonly GroupData _groupData;
+        private readonly Task9Context _context;
 
-        public GroupsController(DataAccessLayer.Data.Task9Context context)
-        {
+        public GroupsController(Task9Context context) {
             _context = context;
+            _groupData = GroupData.GetGroupData(context);
         }
 
-        #region Index
         // GET: Groups
         public async Task<IActionResult> Index(string groupCourse, string searchString) {
-
-            var courseQuery = from m in _context.Group
-                orderby m.CourseId
-                select m.Course.CourseName;
-
-            var groups = GetGroupsWithCourse();
-
-
-            if (!string.IsNullOrEmpty(searchString)) {
-                groups = groups.Where(s => s.GroupName!.Contains(searchString) 
-                                           || s.Course!.CourseName!.Contains(searchString));
-            }
-
-            if (!string.IsNullOrEmpty(groupCourse)) {
-                groups = groups.Where(x => x.Course.CourseName == groupCourse);
-            }
-
+            var groups = await _groupData.GetGroups(groupCourse, searchString);
+            var courses = await _groupData.GetCoursesList();
             var groupViewModel = new GroupViewModel {
-                Courses = new SelectList(await courseQuery.Distinct().ToListAsync()),
-                Groups = await groups.ToListAsync()
+                Courses = new SelectList(courses),
+                Groups = groups
             };
-
             return View(groupViewModel);
         }
-        #endregion
-
-        #region Details
+        
         // GET: Groups/Details/5
         public async Task<IActionResult> Details(int? id) {
-            if (id == null) {
+            if (id  is null) {
                 return NotFound();
             }
-
-            var @group = await _context.Group
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@group == null) {
+            var group = await _groupData.GetGroupById(id);
+            if (group is null) {
                 return NotFound();
             }
-
-            group.Course = _context.Course.FirstOrDefault(s => s.Id == group.CourseId);
-
-            return View(@group);
+            return View(group);
         }
-        #endregion
 
-        #region Create
         // GET: Groups/Create
         public IActionResult Create() {
             PopulateCoursesDropDownList();
@@ -79,30 +50,27 @@ namespace Task9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CourseId,GroupName")] Group @group) {
+        public async Task<IActionResult> Create([Bind("Id,CourseId,GroupName")] Group group) {
             if (ModelState.IsValid) {
-                _context.Add(@group);
-                await _context.SaveChangesAsync();
+                await _groupData.CreateGroup(group);
                 return RedirectToAction(nameof(Index));
             }
             PopulateCoursesDropDownList();
-            return View(@group);
+            return View(group);
         }
-        #endregion
 
-        #region Edit
         // GET: Groups/Edit/5
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
 
-            var @group = await _context.Group.FindAsync(id);
-            if (@group == null) {
+            var group = await _groupData.GetGroupById(id);
+            if (group is null) {
                 return NotFound();
             }
             PopulateCoursesDropDownList(group.CourseId);
-            return View(@group);
+            return View(group);
         }
 
         // POST: Groups/Edit/5
@@ -111,101 +79,57 @@ namespace Task9.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CourseId,GroupName")] Group @group) {
-            if (id != @group.Id) {
+            if (id != group.Id) {
                 return NotFound();
             }
-
-            if (ModelState.IsValid) {
-                try {
-                    _context.Update(@group);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException) {
-                    if (!GroupExists(@group.Id)) {
-                        return NotFound();
-                    }
-                    else {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid) {
+                return View(group);
             }
-            PopulateCoursesDropDownList(group.CourseId);
-            return View(@group);
-        }
-        #endregion
 
-        #region Delete
+            if (await _groupData.UpdateGroup(group)) {
+                return RedirectToAction(nameof(Details), new { group.Id });
+            }
+
+            PopulateCoursesDropDownList(group.CourseId);
+            return NotFound();
+        }
+
         // GET: Groups/Delete/5
         public async Task<IActionResult> Delete(int? id, string message = null) {
             if (id == null) {
                 return NotFound();
             }
+            var group = await _groupData.GetGroupById(id);
+            ViewBag.ErrorMessage = message;
 
-            if (message is not null) {
-                ViewBag.ErrorMessage = message;
-            }
-
-            var @group = await _context.Group
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@group == null) {
+            if (group is null) {
                 return NotFound();
             }
-            var courses = from c in _context.Course select c;
-            group.Course = courses.FirstOrDefault(x => x.Id == group.CourseId);
-
-            return View(@group);
+            return View(group);
         }
 
         // POST: Groups/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            var @group = await _context.Group.FindAsync(id);
-            var associatedStudents = _context.Student.Where(s => s.GroupId == group.Id);
-
-            if (associatedStudents.Any()) {
-                var message = "Cascade Delete is restricted. Group cannot be deleted since there are associated students.";
-                return RedirectToAction("Delete", new { id, message });
-            }
-            else {
-                _context.Group.Remove(@group);
-                await _context.SaveChangesAsync();
+            if (await _groupData.DeleteGroup(id)) {
                 return RedirectToAction("Index");
             }
+            var message =
+                "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
+            return RedirectToAction("Delete", new { id, message });
         }
-        #endregion
 
-        #region Actions
         public IActionResult ClearFilter() {
             return RedirectToAction("Index");
         }
         public IActionResult ViewStudents(string groupName) {
             return RedirectToAction("Index", "Students", new { studentGroup = groupName });
         }
-        #endregion
-
-        #region Implementation
-        private bool GroupExists(int id) {
-            return _context.Group.Any(e => e.Id == id);
-        }
-
-        private IQueryable<Group> GetGroupsWithCourse() {
-            var groups = from g in _context.Group select g;
-            var courses = from c in _context.Course select c;
-            foreach (var @group in groups) {
-                group.Course = courses.FirstOrDefault(s => s.Id == group.CourseId);
-            }
-            return groups;
-        }
 
         private void PopulateCoursesDropDownList(object selecetedCourse = null) {
-            var coursesQuery = from x in _context.Course
-                orderby x.CourseName
-                select x;
-            ViewBag.CourseId = new SelectList(coursesQuery.AsNoTracking(), "Id", "CourseName", selecetedCourse);
+            var courses = _groupData.GetQueryableCourses();
+            ViewBag.CourseId = new SelectList(courses, "Id", "CourseName", selecetedCourse);
         }
-        #endregion
     }
 }

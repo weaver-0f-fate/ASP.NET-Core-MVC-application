@@ -1,24 +1,20 @@
 ﻿using System.Threading.Tasks;
 using DataAccessLayer.Data;
+using DataAccessLayer.DomainObjects;
 using DomainLayer.Models.TaskModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace Task9.Controllers
-{
-    public class CoursesController : Controller
-    {
-        private readonly Task9Context _context;
+namespace Task9.Controllers {
+    public class CoursesController : Controller {
+        private readonly CourseData _courseData;
 
-        public CoursesController(Task9Context context)
-        {
-            _context = context;
+        public CoursesController(Task9Context context) {
+            _courseData = CourseData.GetCourseData(context);
         }
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var courses = CourseData.GetCourses(_context, searchString);
-            return View(await courses.ToListAsync());
+            return View(await _courseData.GetCourses(searchString));
         }
 
         // GET: Courses/Details/5
@@ -26,7 +22,7 @@ namespace Task9.Controllers
             if (id is null) {
                 return NotFound();
             }
-            var course = await CourseData.GetCourseById(_context, id);
+            var course = await _courseData.GetCourseById(id);
             if (course == null) {
                 return NotFound();
             }
@@ -39,13 +35,13 @@ namespace Task9.Controllers
         }
 
         // POST: Courses/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // To protect from over-posting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CourseName,CourseDescription")] Course course) {
             if (ModelState.IsValid) {
-                await CourseData.CreateCourse(_context, course);
+                await _courseData.CreateCourse(course);
                 return RedirectToAction(nameof(Details), new { id = course.Id });
             }
             return View(course);
@@ -56,7 +52,7 @@ namespace Task9.Controllers
             if (id == null) {
                 return NotFound();
             }
-            var course = await CourseData.GetCourseById(_context, id);
+            var course = await _courseData.GetCourseById(id);
             if (course == null) {
                 return NotFound();
             }
@@ -64,7 +60,7 @@ namespace Task9.Controllers
         }
 
         // POST: Courses/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // To protect from over-posting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -76,7 +72,7 @@ namespace Task9.Controllers
                 return View(course);
             }
 
-            if(await CourseData.UpdateCourse(_context, course)) {
+            if(await _courseData.UpdateCourse(course)) {
                 return RedirectToAction(nameof(Details), new { course.Id });
             }
 
@@ -88,7 +84,7 @@ namespace Task9.Controllers
             if (id == null) {
                 return NotFound();
             }
-            var course = await CourseData.GetCourseById(_context, id);
+            var course = await _courseData.GetCourseById(id);
             ViewBag.ErrorMessage = message;
             if (course is null) {
                 return NotFound();
@@ -100,10 +96,10 @@ namespace Task9.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            if (await CourseData.DeleteCourse(_context, id)) {
+            if (await _courseData.DeleteCourse(id)) {
                 return RedirectToAction("Index");
             }
-            const string message =
+            var message =
                 "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
             return RedirectToAction("Delete", new { id, message });
         }
