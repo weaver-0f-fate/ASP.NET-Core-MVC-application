@@ -14,7 +14,6 @@ namespace Task9.Models.TaskModels {
             if (context.Course.Any()) {
                 return;   // DB has been seeded
             }
-            //context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Customers ON;");
 
             context.Course.AddRange(SeedCourses());
 
