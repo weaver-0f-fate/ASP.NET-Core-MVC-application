@@ -54,6 +54,7 @@ namespace Task9.Controllers
             }
 
             var @group = await _context.Group
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@group == null) {
                 return NotFound();
@@ -68,6 +69,7 @@ namespace Task9.Controllers
         #region Create
         // GET: Groups/Create
         public IActionResult Create() {
+            PopulateCoursesDropDownList();
             return View();
         }
 
@@ -76,12 +78,13 @@ namespace Task9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CourseId,Name")] Group @group) {
+        public async Task<IActionResult> Create([Bind("Id,CourseId,GroupName")] Group @group) {
             if (ModelState.IsValid) {
                 _context.Add(@group);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            PopulateCoursesDropDownList();
             return View(@group);
         }
         #endregion
@@ -97,6 +100,7 @@ namespace Task9.Controllers
             if (@group == null) {
                 return NotFound();
             }
+            PopulateCoursesDropDownList(group.CourseId);
             return View(@group);
         }
 
@@ -105,7 +109,7 @@ namespace Task9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CourseId,Name")] Group @group) {
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CourseId,GroupName")] Group @group) {
             if (id != @group.Id) {
                 return NotFound();
             }
@@ -125,6 +129,7 @@ namespace Task9.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            PopulateCoursesDropDownList(group.CourseId);
             return View(@group);
         }
         #endregion
@@ -137,10 +142,13 @@ namespace Task9.Controllers
             }
 
             var @group = await _context.Group
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@group == null) {
                 return NotFound();
             }
+            var courses = from c in _context.Course select c;
+            group.Course = courses.FirstOrDefault(x => x.Id == group.CourseId);
 
             return View(@group);
         }
@@ -183,12 +191,13 @@ namespace Task9.Controllers
             }
             return groups;
         }
+
+        private void PopulateCoursesDropDownList(object selecetedCourse = null) {
+            var coursesQuery = from x in _context.Course
+                orderby x.CourseName
+                select x;
+            ViewBag.CourseId = new SelectList(coursesQuery.AsNoTracking(), "Id", "CourseName", selecetedCourse);
+        }
         #endregion
-
-
-
-
-
-
     }
 }

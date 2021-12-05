@@ -17,8 +17,10 @@
             <div class="form-group">
 
                 <label asp-for="Course" class="control-label"></label>
-                <input asp-for="CourseId" class="form-control" />
-                <span asp-validation-for="Course" class="text-danger"></span>
+                <select asp-for="CourseId" class="form-control" asp-items="ViewBag.CourseId">
+                    <option value="">-- Select Department --</option>
+                </select>
+                <span asp-validation-for="CourseId" class="text-danger" />
             </div>
 
             <div class="form-group">
