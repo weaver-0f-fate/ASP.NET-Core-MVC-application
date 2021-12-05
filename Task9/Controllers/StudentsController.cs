@@ -52,10 +52,15 @@ namespace Task9.Controllers
             }
 
             var student = await _context.Student
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (student == null) {
                 return NotFound();
             }
+
+            var group = _context.Group.FirstOrDefault(x => x.Id == student.GroupId);
+            group.Course = _context.Course.FirstOrDefault(x => x.Id == group.CourseId);
+            student.Group = group;
 
             return View(student);
         }
@@ -64,6 +69,7 @@ namespace Task9.Controllers
         #region Create
         // GET: Students/Create
         public IActionResult Create() {
+            PopulateGroupsDropDownList();
             return View();
         }
 
@@ -78,6 +84,8 @@ namespace Task9.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            PopulateGroupsDropDownList();
             return View(student);
         }
         #endregion
@@ -93,6 +101,7 @@ namespace Task9.Controllers
             if (student == null) {
                 return NotFound();
             }
+            PopulateGroupsDropDownList();
             return View(student);
         }
 
@@ -121,6 +130,7 @@ namespace Task9.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            PopulateGroupsDropDownList();
             return View(student);
         }
         #endregion
@@ -133,6 +143,7 @@ namespace Task9.Controllers
             }
 
             var student = await _context.Student
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (student == null) {
                 return NotFound();
@@ -164,6 +175,13 @@ namespace Task9.Controllers
                 student.Group = groups.FirstOrDefault(g => g.Id == student.GroupId);
             }
             return students;
+        }
+
+        private void PopulateGroupsDropDownList(object selectedGroup = null) {
+            var groupsQuery = from x in _context.Group
+                orderby x.GroupName
+                select x;
+            ViewBag.GroupId = new SelectList(groupsQuery.AsNoTracking(), "Id", "GroupName", selectedGroup);
         }
         #endregion
     }
