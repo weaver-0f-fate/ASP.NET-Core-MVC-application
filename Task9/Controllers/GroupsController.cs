@@ -137,9 +137,13 @@ namespace Task9.Controllers
 
         #region Delete
         // GET: Groups/Delete/5
-        public async Task<IActionResult> Delete(int? id) {
+        public async Task<IActionResult> Delete(int? id, string message = null) {
             if (id == null) {
                 return NotFound();
+            }
+
+            if (message is not null) {
+                ViewBag.ErrorMessage = message;
             }
 
             var @group = await _context.Group
@@ -159,17 +163,17 @@ namespace Task9.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
             var @group = await _context.Group.FindAsync(id);
-
             var associatedStudents = _context.Student.Where(s => s.GroupId == group.Id);
 
             if (associatedStudents.Any()) {
-                //TODO message cannot delete since there are associated students
+                var message = "Cascade Delete is restricted. Group cannot be deleted since there are associated students.";
+                return RedirectToAction("Delete", new { id, message });
             }
             else {
                 _context.Group.Remove(@group);
                 await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
             }
-            return RedirectToAction(nameof(Index));
         }
         #endregion
 

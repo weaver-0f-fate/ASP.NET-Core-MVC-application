@@ -24,7 +24,6 @@ namespace Task9.Models.TaskModels {
             context.SaveChanges();
         }
 
-        //TODO Add More Data to Seed
         private static IEnumerable<Course> SeedCourses() {
             return new List<Course> {
                 new() {

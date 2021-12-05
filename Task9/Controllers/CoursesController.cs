@@ -113,9 +113,13 @@ namespace Task9.Controllers
 
         #region Delete
         // GET: Courses/Delete/5
-        public async Task<IActionResult> Delete(int? id) {
+        public async Task<IActionResult> Delete(int? id, string message = null) {
             if (id == null) {
                 return NotFound();
+            }
+
+            if (message is not null) {
+                ViewBag.ErrorMessage = message;
             }
 
             var course = await _context.Course
@@ -133,15 +137,15 @@ namespace Task9.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id) {
             var course = await _context.Course.FindAsync(id);
             var associatedGroups = _context.Group.Where(s => s.CourseId == course.Id);
-
             if (associatedGroups.Any()) {
-                //TODO message cannot delete since there are associated groups;
+                var message = "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
+                return RedirectToAction("Delete", new { id, message });
             }
             else {
                 _context.Course.Remove(course);
                 await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
             }
-            return RedirectToAction(nameof(Index));
         }
         #endregion
 
