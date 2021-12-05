@@ -18,6 +18,7 @@ namespace Task9.Controllers
             _context = context;
         }
 
+        #region Index
         // GET: Students
         public async Task<IActionResult> Index(string studentGroup, string searchString) {
             var groupQuery = from g in _context.Student
@@ -41,28 +42,28 @@ namespace Task9.Controllers
 
             return View(studentViewModel);
         }
+        #endregion
 
+        #region Details
         // GET: Students/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Details(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var student = await _context.Student
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (student == null)
-            {
+            if (student == null) {
                 return NotFound();
             }
 
             return View(student);
         }
+        #endregion
 
+        #region Create
         // GET: Students/Create
-        public IActionResult Create()
-        {
+        public IActionResult Create() {
             return View();
         }
 
@@ -71,28 +72,25 @@ namespace Task9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,GroupId,FirstName,LastName")] Student student)
-        {
-            if (ModelState.IsValid)
-            {
+        public async Task<IActionResult> Create([Bind("Id,GroupId,FirstName,LastName")] Student student) {
+            if (ModelState.IsValid) {
                 _context.Add(student);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(student);
         }
+        #endregion
 
+        #region Edit
         // GET: Students/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Edit(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var student = await _context.Student.FindAsync(id);
-            if (student == null)
-            {
+            if (student == null) {
                 return NotFound();
             }
             return View(student);
@@ -103,28 +101,21 @@ namespace Task9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,GroupId,FirstName,LastName")] Student student)
-        {
-            if (id != student.Id)
-            {
+        public async Task<IActionResult> Edit(int id, [Bind("Id,GroupId,FirstName,LastName")] Student student) {
+            if (id != student.Id) {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            if (ModelState.IsValid) {
+                try {
                     _context.Update(student);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!StudentExists(student.Id))
-                    {
+                catch (DbUpdateConcurrencyException) {
+                    if (!StudentExists(student.Id)) {
                         return NotFound();
                     }
-                    else
-                    {
+                    else {
                         throw;
                     }
                 }
@@ -132,19 +123,18 @@ namespace Task9.Controllers
             }
             return View(student);
         }
+        #endregion
 
+        #region Delete
         // GET: Students/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var student = await _context.Student
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (student == null)
-            {
+            if (student == null) {
                 return NotFound();
             }
 
@@ -154,16 +144,16 @@ namespace Task9.Controllers
         // POST: Students/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
             var student = await _context.Student.FindAsync(id);
             _context.Student.Remove(student);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        #endregion
 
-        private bool StudentExists(int id)
-        {
+        #region Implementation
+        private bool StudentExists(int id) {
             return _context.Student.Any(e => e.Id == id);
         }
 
@@ -175,5 +165,6 @@ namespace Task9.Controllers
             }
             return students;
         }
+        #endregion
     }
 }
