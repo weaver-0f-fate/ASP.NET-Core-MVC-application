@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core;
+using Core.Models;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data {
-    public sealed class StudentRepository : IStudentRepository {
+    public sealed class StudentRepository : IRepository<Student> {
         private readonly Task9Context _context;
         private bool _disposed;
 
@@ -18,13 +18,13 @@ namespace Data {
             return context is null ? null : new StudentRepository(context);
         }
 
-        public IEnumerable<Student> GetStudentList() {
+        public IEnumerable<Student> GetEntityList() {
             var students = GetStudentsWithGroups();
             return students.ToListAsync().Result;
         }
 
-        public IEnumerable<Student> GetStudentList(string studentGroup, string searchString) {
-            var students = GetStudentList();
+        public IEnumerable<Student> GetEntityList(string studentGroup, string searchString) {
+            var students = GetEntityList();
             if (!string.IsNullOrEmpty(searchString)) {
                 students = students.Where(
                     x => x.FirstName!.Contains(searchString)
@@ -48,7 +48,7 @@ namespace Data {
             return groups.AsNoTracking().Distinct().ToListAsync().Result;
         }
 
-        public Student GetStudent(int id) {
+        public Student GetEntity(int id) {
             if (id < 0) {
                 return null;
             }
@@ -82,7 +82,7 @@ namespace Data {
         }
 
         public void Delete(int id) {
-            var student = GetStudent(id);
+            var student = GetEntity(id);
             _context.Student.Remove(student);
             Save();
         }

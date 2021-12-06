@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core {
-    public class Course {
-
+namespace Task9.TaskViewModels.ModelsDTO {
+    public class CourseDTO {
         [Key]
         public int Id { get; set; }
 
@@ -17,7 +15,5 @@ namespace Core {
         [DisplayName("Course Description")]
         [Required]
         public string CourseDescription { get; set; }
-
-        public List<Group> Groups { get; set; }
     }
 }

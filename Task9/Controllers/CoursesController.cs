@@ -1,22 +1,28 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Core;
+using System.Linq;
+using AutoMapper;
+using Core.Models;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Task9.TaskViewModels.ModelsDTO;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
         private readonly CourseRepository _courseRepository;
+        private readonly IMapper _mapper;
 
-        public CoursesController(Task9Context context) {
+        public CoursesController(Task9Context context, IMapper mapper) {
             _courseRepository = CourseRepository.GetCourseRepository(context);
+            _mapper = mapper;
         }
 
         // GET: Courses
         public IActionResult Index(string searchString) {
-            var courses = _courseRepository.GetCourseList(searchString);
-            return View(courses);
+            var courses = _courseRepository.GetEntityList(searchString);
+            var coursesDTOs = courses.Select(x => _mapper.Map<CourseDTO>(x));
+            
+            return View(coursesDTOs);
         }
 
         // GET: Courses/Details/5
@@ -24,11 +30,13 @@ namespace Task9.Controllers {
             if (id is null) {
                 return NotFound();
             }
-            var course = _courseRepository.GetCourse((int)id);
+            var course = _courseRepository.GetEntity((int)id);
             if (course == null) {
                 return NotFound();
             }
-            return View(course);
+
+            var courseDTO = _mapper.Map<CourseDTO>(course);
+            return View(courseDTO);
         }
 
         // GET: Courses/Create
@@ -43,10 +51,12 @@ namespace Task9.Controllers {
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Id,CourseName,CourseDescription")] Course course) {
             if (ModelState.IsValid) {
+                
                 _courseRepository.Create(course);
                 return RedirectToAction(nameof(Details), new { id = course.Id });
             }
-            return View(course);
+            var courseDTO = _mapper.Map<CourseDTO>(course);
+            return View(courseDTO);
         }
 
         // GET: Courses/Edit/5
@@ -54,11 +64,12 @@ namespace Task9.Controllers {
             if (id == null) {
                 return NotFound();
             }
-            var course = _courseRepository.GetCourse((int)id);
+            var course = _courseRepository.GetEntity((int)id);
             if (course == null) {
                 return NotFound();
             }
-            return View(course);
+            var courseDTO = _mapper.Map<CourseDTO>(course);
+            return View(courseDTO);
         }
 
         // POST: Courses/Edit/5
@@ -71,7 +82,8 @@ namespace Task9.Controllers {
                 return NotFound();
             }
             if (!ModelState.IsValid) {
-                return View(course);
+                var courseDTO = _mapper.Map<CourseDTO>(course);
+                return View(courseDTO);
             }
 
             try {
@@ -91,12 +103,13 @@ namespace Task9.Controllers {
             if (id == null) {
                 return NotFound();
             }
-            var course = _courseRepository.GetCourse((int)id);
+            var course = _courseRepository.GetEntity((int)id);
             ViewBag.ErrorMessage = message;
             if (course is null) {
                 return NotFound();
             }
-            return View(course);
+            var courseDTO = _mapper.Map<CourseDTO>(course);
+            return View(courseDTO);
         }
 
         // POST: Courses/Delete/5

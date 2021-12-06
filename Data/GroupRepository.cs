@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core;
+using Core.Models;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data {
-    public sealed class GroupRepository : IGroupRepository{
+    public sealed class GroupRepository : IRepository<Group> {
         private readonly Task9Context _context;
         private bool _disposed;
 
@@ -18,13 +18,13 @@ namespace Data {
             return context is null ? null : new GroupRepository(context);
         }
 
-        public IEnumerable<Group> GetGroupList() {
+        public IEnumerable<Group> GetEntityList() {
             var groups = GetGroupsWithCourse();
             return groups.ToListAsync().Result;
         }
 
-        public IEnumerable<Group> GetGroupList(string groupCourse, string searchString) {
-            var groups = GetGroupList();
+        public IEnumerable<Group> GetEntityList(string groupCourse, string searchString) {
+            var groups = GetEntityList();
             if (!string.IsNullOrEmpty(searchString)) {
                 groups = groups.Where(
                     x => x.GroupName!.Contains(searchString)
@@ -48,7 +48,7 @@ namespace Data {
             return courses.AsNoTracking().Distinct().ToListAsync().Result;
         }
 
-        public Group GetGroup(int id) {
+        public Group GetEntity(int id) {
             if (id < 0) {
                 return null;
             }
@@ -78,7 +78,7 @@ namespace Data {
         }
 
         public void Delete(int id) {
-            var group = GetGroup(id);
+            var group = GetEntity(id);
             if (_context.Student.Any(x => x.GroupId == group.Id)) {
                 throw new Exception();
             }

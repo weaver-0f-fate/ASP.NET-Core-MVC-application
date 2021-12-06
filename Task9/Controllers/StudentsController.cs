@@ -1,27 +1,37 @@
 ﻿using System;
 using System.Linq;
-using Core;
+using AutoMapper;
+using Core.Models;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Task9.TaskViewModels;
+using Task9.TaskViewModels.ModelsDTO;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
         private readonly StudentRepository _studentRepository;
+        private readonly IMapper _mapper;
 
-        public StudentsController(Task9Context context) {
+        public StudentsController(Task9Context context, IMapper mapper) {
             _studentRepository = StudentRepository.GetStudentData(context);
+            _mapper = mapper;
         }
 
         // GET: Students
         public IActionResult Index(string studentGroup, string searchString) {
-            var students = _studentRepository.GetStudentList(studentGroup, searchString);
+            var students = _studentRepository.GetEntityList(studentGroup, searchString);
             var groups = _studentRepository.GetGroupsList();
+
+            var studentDTOs = students.Select(x => _mapper.Map<StudentDTO>(x));
+            foreach (var studentDTO in studentDTOs) {
+                var student = students.FirstOrDefault(x => x.Id == studentDTO.Id);
+                studentDTO.GroupName = student.Group.GroupName;
+            }
 
             var studentViewModel = new StudentsViewModel {
                 Groups = new SelectList(groups),
-                Students = students.ToList()
+                Students = studentDTOs.ToList()
             };
             return View(studentViewModel);
         }
@@ -31,11 +41,14 @@ namespace Task9.Controllers {
             if (id is null) {
                 return NotFound();
             }
-            var student = _studentRepository.GetStudent((int)id);
+            var student = _studentRepository.GetEntity((int)id);
             if (student is null) {
                 return NotFound();
             }
-            return View(student);
+            var studentDTO = _mapper.Map<StudentDTO>(student);
+            studentDTO.GroupName = student.Group.GroupName;
+            studentDTO.CourseName = student.Group.Course.CourseName;
+            return View(studentDTO);
         }
 
         // GET: Students/Create
@@ -55,7 +68,10 @@ namespace Task9.Controllers {
                 return RedirectToAction(nameof(Index));
             }
             PopulateGroupsDropDownList();
-            return View(student);
+            var studentDTO = _mapper.Map<StudentDTO>(student);
+            studentDTO.GroupName = student.Group.GroupName;
+            studentDTO.CourseName = student.Group.Course.CourseName;
+            return View(studentDTO);
         }
 
         // GET: Students/Edit/5
@@ -64,12 +80,15 @@ namespace Task9.Controllers {
                 return NotFound();
             }
 
-            var student = _studentRepository.GetStudent((int)id);
+            var student = _studentRepository.GetEntity((int)id);
             if (student is null) {
                 return NotFound();
             }
             PopulateGroupsDropDownList(student.GroupId);
-            return View(student);
+            var studentDTO = _mapper.Map<StudentDTO>(student);
+            studentDTO.GroupName = student.Group.GroupName;
+            studentDTO.CourseName = student.Group.Course.CourseName;
+            return View(studentDTO);
         }
 
         // POST: Students/Edit/5
@@ -82,7 +101,10 @@ namespace Task9.Controllers {
                 return NotFound();
             }
             if (!ModelState.IsValid) {
-                return View(student);
+                var studentDTO = _mapper.Map<StudentDTO>(student);
+                studentDTO.GroupName = student.Group.GroupName;
+                studentDTO.CourseName = student.Group.Course.CourseName;
+                return View(studentDTO);
             }
 
             try {
@@ -103,12 +125,15 @@ namespace Task9.Controllers {
             if (id == null) {
                 return NotFound();
             }
-            var student = _studentRepository.GetStudent((int)id);
+            var student = _studentRepository.GetEntity((int)id);
 
             if (student is null) {
                 return NotFound();
             }
-            return View(student);
+            var studentDTO = _mapper.Map<StudentDTO>(student);
+            studentDTO.GroupName = student.Group.GroupName;
+            studentDTO.CourseName = student.Group.Course.CourseName;
+            return View(studentDTO);
         }
 
         // POST: Students/Delete/5

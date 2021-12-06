@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core;
+using Core.Models;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data {
-    public sealed class CourseRepository : ICourseRepository {
+    public sealed class CourseRepository : IRepository<Course> {
         private readonly Task9Context _context;
         private bool _disposed;
 
@@ -19,7 +19,7 @@ namespace Data {
         }
 
 
-        public IEnumerable<Course> GetCourseList(string searchString) {
+        public IEnumerable<Course> GetEntityList(string searchString) {
             var courses = from c in _context.Course select c;
             if (!string.IsNullOrEmpty(searchString)) {
                 courses = courses.Where(
@@ -30,12 +30,12 @@ namespace Data {
             return courses.ToListAsync().Result;
         }
 
-        public IEnumerable<Course> GetCourseList() {
+        public IEnumerable<Course> GetEntityList() {
             var courses = from c in _context.Course select c;
             return courses.ToListAsync().Result;
         }
 
-        public Course GetCourse(int id) {
+        public Course GetEntity(int id) {
             if (id < 0) {
                 return null;
             }
@@ -59,7 +59,7 @@ namespace Data {
         }
 
         public void Delete(int id) {
-            var course = GetCourse(id);
+            var course = GetEntity(id);
             if (_context.Group.Any(x => x.CourseId == course.Id)) {
                 throw new Exception();
             }

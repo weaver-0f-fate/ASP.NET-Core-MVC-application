@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Core.Models;
 
-namespace Core {
-    public class Student {
-        [Key]
+namespace Task9.TaskViewModels.ModelsDTO {
+    public class StudentDTO {
+
         public int Id { get; set; }
-
 
         [StringLength(50)]
         [Required]
@@ -18,7 +17,8 @@ namespace Core {
         public string LastName { get; set; }
 
         public int GroupId { get; set; }
-        [ForeignKey("GroupId")]
-        public Group Group { get; set; }
+        public string GroupName { get; set; }
+
+        public string CourseName { get; set; }
     }
 }
