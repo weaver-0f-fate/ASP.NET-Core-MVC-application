@@ -1,68 +1,68 @@
 USE [Task9DataBase]
 
-INSERT INTO [dbo].[COURSES] 
-			([COURSE_ID],[NAME],[DESCRIPTION])
-	  VALUES(1, 'Linear Algebra', 'Studying Linear Algebra.'),
-			(2, 'C# Programming', 'Studying C#'),
-			(3, 'Hardware', 'Studying Hardware')
+INSERT INTO [dbo].[COURSE] 
+			([CourseName],[CourseDescription])
+	  VALUES('Linear Algebra', 'Studying Linear Algebra.'),
+			('C# Programming', 'Studying C#'),
+			('Hardware', 'Studying Hardware')
 
-INSERT INTO [dbo].[GROUPS]
-			([GROUP_ID],[COURSE_ID],[NAME])
-	  VALUES(1, 1, 'Linear Algebra First Group'),
-			(2, 1, 'Linear Algebra Second Group'),
-			(3, 2, 'C# Programming First Group'),
-			(4, 2, 'C# Programmin Second Group'),
-			(5, 3, 'Hardware First Group'),
-			(6, 3, 'SR-01')
+INSERT INTO [dbo].[GROUP]
+			([CourseId],[GroupName])
+	  VALUES(1, 'Linear Algebra First Group'),
+			(1, 'Linear Algebra Second Group'),
+			(2, 'C# Programming First Group'),
+			(2, 'C# Programmin Second Group'),
+			(3, 'Hardware First Group'),
+			(3, 'SR-01')
 
-INSERT INTO [dbo].[STUDENTS]
-			([STUDENT_ID],[GROUP_ID],[FIRST_NAME],[LAST_NAME])
-	  VALUES(1, 1, 'Isabell', 'Farrington'),
-			(2, 1, 'Habib', 'Easton'),
-			(3, 1, 'Damian', 'Fraser'),
-			(4, 1, 'Sasha', 'Phillips'),
-			(5, 1, 'Gene', 'Dyer'),
-			(6, 1, 'Abu', 'Colon'),
-			(7, 1, 'Nikhil', 'Barlow'),
-			(8, 1, 'Jodi', 'Anthony'),
-			(9, 1, 'Grant', 'Warner'),
-			(10, 1, 'Maggie', 'Santos'),
-			(11, 1, 'Darius', 'Mccartney'),
+INSERT INTO [dbo].[STUDENT]
+			([GroupId],[FirstName],[LastName])
+	  VALUES(1, 'Isabell', 'Farrington'),
+			(1, 'Habib', 'Easton'),
+			(1, 'Damian', 'Fraser'),
+			(1, 'Sasha', 'Phillips'),
+			(1, 'Gene', 'Dyer'),
+			(1, 'Abu', 'Colon'),
+			(1, 'Nikhil', 'Barlow'),
+			(1, 'Jodi', 'Anthony'),
+			(1, 'Grant', 'Warner'),
+			(1, 'Maggie', 'Santos'),
+			(1, 'Darius', 'Mccartney'),
 
-			(12, 2, 'Bethany', 'Conrad'),
-			(13, 2, 'Aaliyah', 'Tillman'),
-			(14, 2, 'Arjan', 'Byrne'),
-			(15, 2, 'Olli', 'Haney'),
-			(16, 2, 'Woody', 'Young'),
-			(17, 2, 'Konnor', 'Valencia'),
-			(18, 2, 'Marwa', 'Macdonald'),
-			(19, 2, 'Amelia', 'Weiss'),
-			(20, 2, 'Kaiden', 'Greenwood'),
-			(21, 2, 'Aniqa', 'Rooney'),
-			(22, 2, 'Awais', 'Deleon'),
+			(2, 'Bethany', 'Conrad'),
+			(2, 'Aaliyah', 'Tillman'),
+			(2, 'Arjan', 'Byrne'),
+			(2, 'Olli', 'Haney'),
+			(2, 'Woody', 'Young'),
+			(2, 'Konnor', 'Valencia'),
+			(2, 'Marwa', 'Macdonald'),
+			(2, 'Amelia', 'Weiss'),
+			(2, 'Kaiden', 'Greenwood'),
+			(2, 'Aniqa', 'Rooney'),
+			(2, 'Awais', 'Deleon'),
 
-			(23, 3, 'Jude', 'Ryder'),
-			(24, 3, 'Anushka', 'Gomez'),
-			(25, 3, 'Jayde', 'Acevedo'),
+			(3, 'Jude', 'Ryder'),
+			(3, 'Anushka', 'Gomez'),
+			(3, 'Jayde', 'Acevedo'),
 
-			(26, 4, 'Jacqueline', 'Driscoll'),
-			(27, 4, 'Lochlan', 'Acevedo'),
+			(4, 'Jacqueline', 'Driscoll'),
+			(4, 'Lochlan', 'Acevedo'),
 			
-			(28, 5, 'Jacqueline', 'Ellwood'),
-			(29, 5, 'Lochlan', 'Ryder'),
-			(30, 5, 'Greta', 'Wang'),
-			(31, 5, 'Jude', 'Emerson'),
-			(32, 5, 'Husna', 'Clayton'),
-			(33, 5, 'Anushka', 'Silva'),
-			(34, 5, 'Collette', 'Rosas'),
-			(35, 5, 'Sion', 'Driscoll'),
-			(36, 5, 'Jude', 'Goodwin'),
-			(37, 5, 'Allen', 'Carver'),
-			(38, 5, 'Lilian', 'Ryder'),
-			(39, 5, 'Lily-Rose', 'Wickens'),
+			(5, 'Jacqueline', 'Ellwood'),
+			(5, 'Lochlan', 'Ryder'),
+			(5, 'Greta', 'Wang'),
+			(5, 'Jude', 'Emerson'),
+			(5, 'Husna', 'Clayton'),
+			(5, 'Anushka', 'Silva'),
+			(5, 'Collette', 'Rosas'),
+			(5, 'Sion', 'Driscoll'),
+			(5, 'Jude', 'Goodwin'),
+			(5, 'Allen', 'Carver'),
+			(5, 'Lilian', 'Ryder'),
+			(5, 'Lily-Rose', 'Wickens'),
 
-			(40, 6, 'Florrie', 'Wills'),
-			(41, 6, 'Marek', 'Brady')
+			(6, 'Florrie', 'Wills'),
+			(6, 'Marek', 'Brady')
 			
 GO
 

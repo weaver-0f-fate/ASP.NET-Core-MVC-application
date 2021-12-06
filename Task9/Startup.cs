@@ -33,7 +33,6 @@ namespace Task9 {
 
                 var context = services.GetRequiredService<Task9Context>();
                 context.Database.Migrate();
-                SeedData.Initialize(services);
             }
 
             if (env.IsDevelopment()) {
@@ -46,7 +45,6 @@ namespace Task9 {
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
             app.UseEndpoints(endpoints => {

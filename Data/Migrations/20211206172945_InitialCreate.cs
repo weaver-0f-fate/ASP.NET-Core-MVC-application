@@ -2,10 +2,8 @@
 
 namespace Data.Migrations
 {
-    public partial class InitialCreate : Migration
-    {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+    public partial class InitialCreate : Migration {
+        protected override void Up(MigrationBuilder migrationBuilder) {
             migrationBuilder.CreateTable(
                 name: "Course",
                 columns: table => new
