@@ -18,7 +18,7 @@ namespace DataAccessLayer.DomainObjects {
             return context is null ? null : new GroupData(context);
         }
 
-        public async Task<List<Group>> GetGroups(string groupCourse, string searchString = null) {
+        public async Task<List<Group>> GetGroups(string groupCourse, string searchString) {
             var groups = GetGroupsWithCourse();
             if (!string.IsNullOrEmpty(searchString)) {
                 groups = groups.Where(
@@ -100,9 +100,8 @@ namespace DataAccessLayer.DomainObjects {
 
         private IQueryable<Group> GetGroupsWithCourse() {
             var groups = from g in _context.Group select g;
-            var courses = from c in _context.Course select c;
             foreach (var @group in groups) {
-                group.Course = courses.FirstOrDefault(s => s.Id == group.CourseId);
+                group.Course = _context.Course.FirstOrDefault(s => s.Id == group.CourseId);
             }
             return groups;
         }

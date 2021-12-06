@@ -9,10 +9,8 @@ using Task9.TaskViewModels;
 namespace Task9.Controllers {
     public class GroupsController : Controller {
         private readonly GroupData _groupData;
-        private readonly Task9Context _context;
 
         public GroupsController(Task9Context context) {
-            _context = context;
             _groupData = GroupData.GetGroupData(context);
         }
 

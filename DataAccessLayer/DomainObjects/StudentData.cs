@@ -18,75 +18,74 @@ namespace DataAccessLayer.DomainObjects {
             return context is null ? null : new StudentData(context);
         }
 
-        public async Task<List<Group>> GetGroups(string groupCourse, string searchString = null) {
-            var groups = GetGroupsWithCourse();
+        public async Task<List<Student>> GetStudents(string studentGroup, string searchString) {
+            var students = GetStudentsWithGroups();
             if (!string.IsNullOrEmpty(searchString)) {
-                groups = groups.Where(
-                    x => x.GroupName!.Contains(searchString)
-                 || x.Course.CourseName!.Contains(searchString));
+                students = students.Where(
+                    x => x.FirstName!.Contains(searchString)
+                 || x.LastName!.Contains(searchString)
+                 || x.Group.GroupName!.Contains(searchString));
             }
 
-            if (!string.IsNullOrEmpty(groupCourse)) {
-                groups = groups.Where(x => x.Course.CourseName == groupCourse);
+            if (!string.IsNullOrEmpty(studentGroup)) {
+                students = students.Where(x => x.Group.GroupName == studentGroup);
             }
 
-            return await groups.ToListAsync();
+            return await students.ToListAsync();
         }
 
-        public IEnumerable<Course> GetQueryableCourses() {
-            var courses = from x in _context.Course orderby x.CourseName select x;
-            return courses.AsNoTracking();
+        public IEnumerable<Group> GetQueryableGroups() {
+            var groups = from x in _context.Group orderby x.GroupName select x;
+            return groups.AsNoTracking();
         }
 
-        public async Task<List<string>> GetCoursesList() {
-            var courses = from m in _context.Group orderby m.CourseId select m.Course.CourseName;
-            return await courses.AsNoTracking().Distinct().ToListAsync();
+        public async Task<List<string>> GetGroupsList() {
+            var groups = from m in _context.Student orderby m.GroupId select m.Group.GroupName;
+            return await groups.AsNoTracking().Distinct().ToListAsync();
         }
 
-        public async Task<Group> GetGroupById(int? id) {
+        public async Task<Student> GetStudentById(int? id) {
             if (id is null) {
                 return null;
             }
-            var group = await _context.Group
+            var student = await _context.Student
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (group is null) {
+            if (student is null) {
                 return null;
             }
 
-            group.Course = _context.Course.FirstOrDefault(x => x.Id == group.CourseId);
-            return group;
+            student.Group = _context.Group.FirstOrDefault(x => x.Id == student.GroupId);
+            student.Group.Course = _context.Course.FirstOrDefault(x => x.Id == student.Group.CourseId);
+            return student;
         }
 
-        public async Task CreateGroup(Group group) {
-            _context.Add(group);
+        public async Task CreateStudent(Student student) {
+            _context.Add(student);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateGroup(Group group) {
-            if (group is null) {
+        public async Task<bool> UpdateStudent(Student student) {
+            if (student is null) {
                 return false;
             }
             try {
-                _context.Update(group);
+                _context.Update(student);
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (DbUpdateConcurrencyException) {
-                if (!GroupExists(group.Id)) {
+                if (!StudentExists(student.Id)) {
                     return false;
                 }
                 throw;
             }
         }
 
-        public async Task<bool> DeleteGroup(int id) {
-            var group = await GetGroupById(id);
-            if (_context.Student.Any(x => x.GroupId == group.Id)) {
-                return false;
-            }
+        public async Task<bool> DeleteStudent(int id) {
+            var student = await GetStudentById(id);
             try {
-                _context.Group.Remove(group);
+                _context.Student.Remove(student);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -94,17 +93,16 @@ namespace DataAccessLayer.DomainObjects {
                 return false;
             }
         }
-        private bool GroupExists(int id) {
-            return _context.Group.Any(e => e.Id == id);
+        private bool StudentExists(int id) {
+            return _context.Student.Any(e => e.Id == id);
         }
 
-        private IQueryable<Group> GetGroupsWithCourse() {
-            var groups = from g in _context.Group select g;
-            var courses = from c in _context.Course select c;
-            foreach (var @group in groups) {
-                group.Course = courses.FirstOrDefault(s => s.Id == group.CourseId);
+        private IQueryable<Student> GetStudentsWithGroups() {
+            var students = from s in _context.Student select s;
+            foreach (var student in students) {
+                student.Group = _context.Group.FirstOrDefault(x => x.Id == student.GroupId);
             }
-            return groups;
+            return students;
         }
     }
 }

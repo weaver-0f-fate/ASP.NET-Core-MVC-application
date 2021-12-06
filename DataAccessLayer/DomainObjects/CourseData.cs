@@ -19,7 +19,7 @@ namespace DataAccessLayer.DomainObjects {
         }
 
 
-        public async Task<List<Course>> GetCourses(string searchString = null) {
+        public async Task<List<Course>> GetCourses(string searchString) {
             var courses = from c in _context.Course select c;
             if (!string.IsNullOrEmpty(searchString)) {
                 courses = courses.Where(
