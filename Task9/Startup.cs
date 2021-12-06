@@ -31,6 +31,8 @@ namespace Task9 {
             using (var scope = app.ApplicationServices.CreateScope()) {
                 var services = scope.ServiceProvider;
 
+                var context = services.GetRequiredService<Task9Context>();
+                context.Database.Migrate();
                 SeedData.Initialize(services);
             }
 
@@ -46,8 +48,6 @@ namespace Task9 {
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(

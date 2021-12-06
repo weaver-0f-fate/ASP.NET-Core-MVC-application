@@ -11,6 +11,8 @@ namespace Data {
             using var context = new Task9Context(
                     serviceProvider.GetRequiredService<DbContextOptions<Task9Context>>());
 
+
+
             if (context.Course.Any()) {
                 return;   // DB has been seeded
             }
