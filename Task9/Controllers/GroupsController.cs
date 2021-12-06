@@ -4,7 +4,6 @@ using Core;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
