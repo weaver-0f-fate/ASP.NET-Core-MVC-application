@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataAccessLayer.Data;
-using DomainLayer.Models.TaskModels;
+using DomainLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.DomainObjects {
-    public class CourseData {
+    public class CourseRepository {
         private readonly Task9Context _context;
 
-        private CourseData(Task9Context context) {
+        private CourseRepository(Task9Context context) {
             _context = context;
         }
 
-        public static CourseData GetCourseData(Task9Context context) {
-            return context is null ? null : new CourseData(context);
+        public static CourseRepository GetCourseData(Task9Context context) {
+            return context is null ? null : new CourseRepository(context);
         }
 
 

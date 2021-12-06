@@ -1,4 +1,4 @@
-﻿using DomainLayer.Models.TaskModels;
+﻿using DomainLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Data

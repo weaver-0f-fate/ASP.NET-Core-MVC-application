@@ -1,18 +1,17 @@
 ﻿using System.Threading.Tasks;
 using DataAccessLayer.Data;
 using DataAccessLayer.DomainObjects;
-using DomainLayer.Models.TaskModels;
+using DomainLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly StudentData _studentData;
+        private readonly StudentRepository _studentData;
 
         public StudentsController(Task9Context context) {
-            _studentData = StudentData.GetStudentData(context);
+            _studentData = StudentRepository.GetStudentData(context);
         }
 
         // GET: Students

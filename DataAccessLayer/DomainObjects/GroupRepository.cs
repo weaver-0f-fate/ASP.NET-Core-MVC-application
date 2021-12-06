@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataAccessLayer.Data;
-using DomainLayer.Models.TaskModels;
+using DomainLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.DomainObjects {
-    public class GroupData {
+    public class GroupRepository {
         private readonly Task9Context _context;
 
-        private GroupData(Task9Context context) {
+        private GroupRepository(Task9Context context) {
             _context = context;
         }
 
-        public static GroupData GetGroupData(Task9Context context) {
-            return context is null ? null : new GroupData(context);
+        public static GroupRepository GetGroupData(Task9Context context) {
+            return context is null ? null : new GroupRepository(context);
         }
 
         public async Task<List<Group>> GetGroups(string groupCourse, string searchString) {

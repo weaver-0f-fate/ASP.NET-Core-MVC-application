@@ -1,17 +1,17 @@
 ﻿using System.Threading.Tasks;
 using DataAccessLayer.Data;
 using DataAccessLayer.DomainObjects;
-using DomainLayer.Models.TaskModels;
+using DomainLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class GroupsController : Controller {
-        private readonly GroupData _groupData;
+        private readonly GroupRepository _groupData;
 
         public GroupsController(Task9Context context) {
-            _groupData = GroupData.GetGroupData(context);
+            _groupData = GroupRepository.GetGroupData(context);
         }
 
         // GET: Groups

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DomainLayer.Models.TaskModels {
+namespace DomainLayer.Models {
     public class Student {
         [Key]
         public int Id { get; set; }

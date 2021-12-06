@@ -1,6 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
-using DomainLayer.Models.TaskModels;
+using DomainLayer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Task9.TaskViewModels {
