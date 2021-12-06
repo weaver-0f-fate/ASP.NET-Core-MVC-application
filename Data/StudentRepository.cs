@@ -109,10 +109,16 @@ namespace Data {
         }
 
         private IQueryable<Student> GetStudentsWithGroups() {
-            var students = from s in _context.Student select s;
-            foreach (var student in students) {
-                student.Group = _context.Group.FirstOrDefault(x => x.Id == student.GroupId);
-            }
+            var students = from s in _context.Student
+                from g in _context.Group
+                where s.GroupId == g.Id
+                select new Student {
+                    Id = s.Id,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    GroupId = s.GroupId,
+                    Group = g
+                };
             return students;
         }
     }

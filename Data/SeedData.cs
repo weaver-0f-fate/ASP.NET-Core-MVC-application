@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,13 @@ namespace Data {
             if (context.Course.Any()) {
                 return;   // DB has been seeded
             }
+
+
+            //string script = File.ReadAllText(@"C:\Users\Admin\source\repos\Task9\Data\Queries\DatabaseCreationQuery.sql");
+
+            //string query = "";
+            //context.Course.FromSqlRaw(query);
+            //context.Course.FromSqlRaw("");
 
             context.Course.AddRange(SeedCourses());
 

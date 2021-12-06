@@ -1,14 +1,14 @@
-USE [Task_6]
+USE [Task9DataBase]
 
 INSERT INTO [dbo].[COURSES] 
 			([COURSE_ID],[NAME],[DESCRIPTION])
-      VALUES(1, 'Linear Algebra', 'Studying Linear Algebra.'),
+	  VALUES(1, 'Linear Algebra', 'Studying Linear Algebra.'),
 			(2, 'C# Programming', 'Studying C#'),
 			(3, 'Hardware', 'Studying Hardware')
 
 INSERT INTO [dbo].[GROUPS]
 			([GROUP_ID],[COURSE_ID],[NAME])
-      VALUES(1, 1, 'Linear Algebra First Group'),
+	  VALUES(1, 1, 'Linear Algebra First Group'),
 			(2, 1, 'Linear Algebra Second Group'),
 			(3, 2, 'C# Programming First Group'),
 			(4, 2, 'C# Programmin Second Group'),
@@ -17,7 +17,7 @@ INSERT INTO [dbo].[GROUPS]
 
 INSERT INTO [dbo].[STUDENTS]
 			([STUDENT_ID],[GROUP_ID],[FIRST_NAME],[LAST_NAME])
-      VALUES(1, 1, 'Isabell', 'Farrington'),
+	  VALUES(1, 1, 'Isabell', 'Farrington'),
 			(2, 1, 'Habib', 'Easton'),
 			(3, 1, 'Damian', 'Fraser'),
 			(4, 1, 'Sasha', 'Phillips'),

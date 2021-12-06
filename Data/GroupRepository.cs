@@ -107,10 +107,16 @@ namespace Data {
         }
 
         private IQueryable<Group> GetGroupsWithCourse() {
-            var groups = from g in _context.Group select g;
-            foreach (var @group in groups) {
-                group.Course = _context.Course.FirstOrDefault(s => s.Id == group.CourseId);
-            }
+
+            var groups = from g in _context.Group
+                         from c in _context.Course
+                         where g.CourseId == c.Id
+                         select new Group {
+                             Id = g.Id,
+                             GroupName = g.GroupName,
+                             CourseId = g.CourseId,
+                             Course = c
+                         };
             return groups;
         }
     }

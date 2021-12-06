@@ -1,9 +1,9 @@
-if not exists(select * from sys.databases where name = 'Task_6')
-	CREATE DATABASE Task_6
+if not exists(select * from sys.databases where name = 'Task9DataBase')
+	CREATE DATABASE Task9DataBase
 
 GO
 
-USE Task_6
+USE Task9DataBase
 
 if not exists (	select * 
 				from dbo.STUDENTS as S 

@@ -15,7 +15,8 @@ namespace Task9.Controllers {
 
         // GET: Courses
         public IActionResult Index(string searchString) {
-            return View(_courseRepository.GetCourseList(searchString));
+            var courses = _courseRepository.GetCourseList(searchString);
+            return View(courses);
         }
 
         // GET: Courses/Details/5
