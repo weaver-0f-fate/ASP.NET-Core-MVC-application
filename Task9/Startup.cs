@@ -1,5 +1,4 @@
-﻿using DataAccessLayer;
-using DataAccessLayer.Data;
+﻿using Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +22,7 @@ namespace Task9 {
                 options =>
                  options.UseSqlServer(
                      Configuration.GetConnectionString("Task9Context"),
-                     x => x.MigrationsAssembly("DataAccessLayer")));
+                     x => x.MigrationsAssembly("Data")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

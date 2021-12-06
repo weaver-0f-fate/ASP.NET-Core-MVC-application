@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DomainLayer.Models;
+using Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DataAccessLayer.Data {
+namespace Data {
     public static class SeedData {
         public static void Initialize(IServiceProvider serviceProvider) {
-            using var context = new Data.Task9Context(
+            using var context = new Task9Context(
                     serviceProvider.GetRequiredService<DbContextOptions<Task9Context>>());
 
             if (context.Course.Any()) {

@@ -1,37 +1,37 @@
-﻿using System.Threading.Tasks;
-using DataAccessLayer.Data;
-using DataAccessLayer.DomainObjects;
-using DomainLayer.Models;
+﻿using System;
+using System.Linq;
+using Core;
+using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly StudentRepository _studentData;
+        private readonly StudentRepository _studentRepository;
 
         public StudentsController(Task9Context context) {
-            _studentData = StudentRepository.GetStudentData(context);
+            _studentRepository = StudentRepository.GetStudentData(context);
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(string studentGroup, string searchString) {
-            var students = await _studentData.GetStudents(studentGroup, searchString);
-            var groups = await _studentData.GetGroupsList();
+        public IActionResult Index(string studentGroup, string searchString) {
+            var students = _studentRepository.GetStudentList(studentGroup, searchString);
+            var groups = _studentRepository.GetGroupsList();
 
             var studentViewModel = new StudentsViewModel {
                 Groups = new SelectList(groups),
-                Students = students
+                Students = students.ToList()
             };
             return View(studentViewModel);
         }
 
         // GET: Students/Details/5
-        public async Task<IActionResult> Details(int? id) {
+        public IActionResult Details(int? id) {
             if (id is null) {
                 return NotFound();
             }
-            var student = await _studentData.GetStudentById(id);
+            var student = _studentRepository.GetStudent((int)id);
             if (student is null) {
                 return NotFound();
             }
@@ -49,10 +49,9 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,GroupId,FirstName,LastName")] Student student) {
+        public IActionResult Create([Bind("Id,GroupId,FirstName,LastName")] Student student) {
             if (ModelState.IsValid) {
-                await 
-                    _studentData.CreateStudent(student);
+                _studentRepository.Create(student);
                 return RedirectToAction(nameof(Index));
             }
             PopulateGroupsDropDownList();
@@ -60,12 +59,12 @@ namespace Task9.Controllers {
         }
 
         // GET: Students/Edit/5
-        public async Task<IActionResult> Edit(int? id) {
+        public IActionResult Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
 
-            var student = await _studentData.GetStudentById(id);
+            var student = _studentRepository.GetStudent((int)id);
             if (student is null) {
                 return NotFound();
             }
@@ -78,7 +77,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,GroupId,FirstName,LastName")] Student student) {
+        public IActionResult Edit(int id, [Bind("Id,GroupId,FirstName,LastName")] Student student) {
             if (id != student.Id) {
                 return NotFound();
             }
@@ -86,20 +85,25 @@ namespace Task9.Controllers {
                 return View(student);
             }
 
-            if (await _studentData.UpdateStudent(student)) {
+            try {
+                _studentRepository.Update(student);
                 return RedirectToAction(nameof(Details), new { student.Id });
             }
-
-            PopulateGroupsDropDownList(student.GroupId);
-            return NotFound();
+            catch (Exception ) {
+                if (!_studentRepository.StudentExists(student.Id)) {
+                    PopulateGroupsDropDownList(student.GroupId);
+                    return NotFound();
+                }
+                throw;
+            }
         }
 
         // GET: Students/Delete/5
-        public async Task<IActionResult> Delete(int? id) {
+        public IActionResult Delete(int? id) {
             if (id == null) {
                 return NotFound();
             }
-            var student = await _studentData.GetStudentById(id);
+            var student = _studentRepository.GetStudent((int)id);
 
             if (student is null) {
                 return NotFound();
@@ -110,11 +114,15 @@ namespace Task9.Controllers {
         // POST: Students/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id) {
-            if (await _studentData.DeleteStudent(id)) {
+        public IActionResult DeleteConfirmed(int id) {
+
+            try {
+                _studentRepository.Delete(id);
                 return RedirectToAction("Index");
             }
-            return RedirectToAction("Delete", new { id });
+            catch (Exception) {
+                return RedirectToAction("Delete", new { id });
+            }
         }
 
         public IActionResult ClearFilter() {
@@ -122,7 +130,7 @@ namespace Task9.Controllers {
         }
 
         private void PopulateGroupsDropDownList(object selectedGroup = null) {
-            var groups = _studentData.GetQueryableGroups();
+            var groups = _studentRepository.GetQueryableGroups();
             ViewBag.GroupId = new SelectList(groups, "Id", "GroupName", selectedGroup);
         }
     }

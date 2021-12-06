@@ -1,13 +1,11 @@
-﻿using DomainLayer.Models;
+﻿using Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccessLayer.Data
+namespace Data
 {
     public class Task9Context : DbContext
     {
-        public Task9Context (DbContextOptions<Task9Context> options)
-            : base(options)
-        { }
+        public Task9Context (DbContextOptions<Task9Context> options) : base(options) { }
 
         public DbSet<Course> Course { get; set; }
 

@@ -1,28 +1,29 @@
-﻿using System.Threading.Tasks;
-using DataAccessLayer.Data;
-using DataAccessLayer.DomainObjects;
-using DomainLayer.Models;
+﻿using System;
+using System.Threading.Tasks;
+using Core;
+using Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly CourseRepository _courseData;
+        private readonly CourseRepository _courseRepository;
 
         public CoursesController(Task9Context context) {
-            _courseData = CourseRepository.GetCourseData(context);
+            _courseRepository = CourseRepository.GetCourseRepository(context);
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index(string searchString) {
-            return View(await _courseData.GetCourses(searchString));
+        public IActionResult Index(string searchString) {
+            return View(_courseRepository.GetCourseList(searchString));
         }
 
         // GET: Courses/Details/5
-        public async Task<IActionResult> Details(int? id) {
+        public IActionResult Details(int? id) {
             if (id is null) {
                 return NotFound();
             }
-            var course = await _courseData.GetCourseById(id);
+            var course = _courseRepository.GetCourse((int)id);
             if (course == null) {
                 return NotFound();
             }
@@ -39,20 +40,20 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CourseName,CourseDescription")] Course course) {
+        public IActionResult Create([Bind("Id,CourseName,CourseDescription")] Course course) {
             if (ModelState.IsValid) {
-                await _courseData.CreateCourse(course);
+                _courseRepository.Create(course);
                 return RedirectToAction(nameof(Details), new { id = course.Id });
             }
             return View(course);
         }
 
         // GET: Courses/Edit/5
-        public async Task<IActionResult> Edit(int? id) {
+        public IActionResult Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
-            var course = await _courseData.GetCourseById(id);
+            var course = _courseRepository.GetCourse((int)id);
             if (course == null) {
                 return NotFound();
             }
@@ -64,7 +65,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CourseName,CourseDescription")] Course course) {
+        public IActionResult Edit(int id, [Bind("Id,CourseName,CourseDescription")] Course course) {
             if (id != course.Id) {
                 return NotFound();
             }
@@ -72,19 +73,24 @@ namespace Task9.Controllers {
                 return View(course);
             }
 
-            if(await _courseData.UpdateCourse(course)) {
+            try {
+                _courseRepository.Update(course);
                 return RedirectToAction(nameof(Details), new { course.Id });
             }
-
-            return NotFound();
+            catch (DbUpdateConcurrencyException) {
+                if (!_courseRepository.CourseExists(course.Id)) {
+                    return NotFound();
+                }
+                throw;
+            }
         }
         
         // GET: Courses/Delete/5
-        public async Task<IActionResult> Delete(int? id, string message = null) {
+        public IActionResult Delete(int? id, string message = null) {
             if (id == null) {
                 return NotFound();
             }
-            var course = await _courseData.GetCourseById(id);
+            var course = _courseRepository.GetCourse((int)id);
             ViewBag.ErrorMessage = message;
             if (course is null) {
                 return NotFound();
@@ -95,13 +101,16 @@ namespace Task9.Controllers {
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id) {
-            if (await _courseData.DeleteCourse(id)) {
+        public IActionResult DeleteConfirmed(int id) {
+            try {
+                _courseRepository.Delete(id);
                 return RedirectToAction("Index");
             }
-            var message =
-                "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
-            return RedirectToAction("Delete", new { id, message });
+            catch (Exception) {
+                var message =
+                    "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
+                return RedirectToAction("Delete", new { id, message });
+            }
         }
 
         public IActionResult ViewGroups(string courseName) {

@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DataAccessLayer.Data;
-using DomainLayer.Models;
+using Core;
+using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccessLayer.DomainObjects {
-    public class GroupRepository {
+namespace Data {
+    public sealed class GroupRepository : IGroupRepository{
         private readonly Task9Context _context;
+        private bool _disposed;
 
         private GroupRepository(Task9Context context) {
             _context = context;
         }
 
-        public static GroupRepository GetGroupData(Task9Context context) {
+        public static GroupRepository GetGroupRepository(Task9Context context) {
             return context is null ? null : new GroupRepository(context);
         }
 
-        public async Task<List<Group>> GetGroups(string groupCourse, string searchString) {
+        public IEnumerable<Group> GetGroupList() {
             var groups = GetGroupsWithCourse();
+            return groups.ToListAsync().Result;
+        }
+
+        public IEnumerable<Group> GetGroupList(string groupCourse, string searchString) {
+            var groups = GetGroupList();
             if (!string.IsNullOrEmpty(searchString)) {
                 groups = groups.Where(
                     x => x.GroupName!.Contains(searchString)
@@ -30,7 +35,7 @@ namespace DataAccessLayer.DomainObjects {
                 groups = groups.Where(x => x.Course.CourseName == groupCourse);
             }
 
-            return await groups.ToListAsync();
+            return groups;
         }
 
         public IEnumerable<Course> GetQueryableCourses() {
@@ -38,18 +43,19 @@ namespace DataAccessLayer.DomainObjects {
             return courses.AsNoTracking();
         }
 
-        public async Task<List<string>> GetCoursesList() {
+        public IEnumerable<string> GetCoursesList() {
             var courses = from m in _context.Group orderby m.CourseId select m.Course.CourseName;
-            return await courses.AsNoTracking().Distinct().ToListAsync();
+            return courses.AsNoTracking().Distinct().ToListAsync().Result;
         }
 
-        public async Task<Group> GetGroupById(int? id) {
-            if (id is null) {
+        public Group GetGroup(int id) {
+            if (id < 0) {
                 return null;
             }
-            var group = await _context.Group
+            var group = _context.Group
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id)
+                .Result;
             if (group is null) {
                 return null;
             }
@@ -58,43 +64,45 @@ namespace DataAccessLayer.DomainObjects {
             return group;
         }
 
-        public async Task CreateGroup(Group group) {
+        public void Create(Group group) {
             _context.Add(group);
-            await _context.SaveChangesAsync();
+            Save();
         }
 
-        public async Task<bool> UpdateGroup(Group group) {
+        public void Update(Group group) {
             if (group is null) {
-                return false;
+                return;
             }
-            try {
-                _context.Update(group);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException) {
-                if (!GroupExists(group.Id)) {
-                    return false;
-                }
-                throw;
-            }
+            _context.Update(group);
+            Save();
         }
 
-        public async Task<bool> DeleteGroup(int id) {
-            var group = await GetGroupById(id);
+        public void Delete(int id) {
+            var group = GetGroup(id);
             if (_context.Student.Any(x => x.GroupId == group.Id)) {
-                return false;
+                throw new Exception();
             }
-            try {
-                _context.Group.Remove(group);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception) {
-                return false;
-            }
+            _context.Group.Remove(group);
+            Save();
         }
-        private bool GroupExists(int id) {
+        public void Save() {
+            _context.SaveChanges();
+        }
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing) {
+            if (!_disposed) {
+                if (disposing) {
+                    _context.Dispose();
+                }
+            }
+            _disposed = true;
+        }
+
+        public bool GroupExists(int id) {
             return _context.Group.Any(e => e.Id == id);
         }
 
@@ -105,6 +113,5 @@ namespace DataAccessLayer.DomainObjects {
             }
             return groups;
         }
-
     }
 }
