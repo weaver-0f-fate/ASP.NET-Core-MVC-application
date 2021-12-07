@@ -8,7 +8,7 @@ using Data;
 using Services.ModelsDTO;
 using ServicesInterfaces;
 
-namespace Business {
+namespace Services.Presentations {
     public class GroupPresentation : IPresentationItem<GroupDTO> {
         private readonly GroupRepository _groupRepository;
         private readonly CourseRepository _courseRepository;
