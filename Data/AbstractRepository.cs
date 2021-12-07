@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Data {
     public abstract class AbstractRepository<T> :IRepository<T> {
