@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.ModelsDTO {
+namespace Services.ModelsDTO {
     public class CourseDTO {
         [Key]
         public int Id { get; set; }

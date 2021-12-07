@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business;
 using Core.Models;
-using Core.ModelsDTO;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Services.ModelsDTO;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
@@ -20,7 +20,7 @@ namespace Task9.Controllers {
 
         // GET: Students
         public async Task<IActionResult> Index(string studentGroup, string searchString) {
-            var studentDTOs = await _studentPresentation.GetAllItems(searchString, studentGroup);
+            var studentDTOs = await _studentPresentation.GetAllItemsAsync(searchString, studentGroup);
             var groups = await _studentPresentation.GetGroups();
 
 
@@ -33,7 +33,7 @@ namespace Task9.Controllers {
 
         // GET: Students/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var studentDTO = await _studentPresentation.GetItem(id);
+            var studentDTO = await _studentPresentation.GetItemAsync(id);
             return View(studentDTO);
         }
 
@@ -53,13 +53,13 @@ namespace Task9.Controllers {
                 await PopulateGroupsDropDownList();
                 return View(studentDTO);
             }
-            await _studentPresentation.CreateItem(studentDTO);
+            await _studentPresentation.CreateItemAsync(studentDTO);
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var studentDTO = await _studentPresentation.GetItem(id);
+            var studentDTO = await _studentPresentation.GetItemAsync(id);
             await PopulateGroupsDropDownList(studentDTO.GroupId);
             return View(studentDTO);
         }
@@ -78,7 +78,7 @@ namespace Task9.Controllers {
             }
 
             try {
-                await _studentPresentation.UpdateItem(studentDTO);
+                await _studentPresentation.UpdateItemAsync(studentDTO);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ) {
@@ -92,7 +92,7 @@ namespace Task9.Controllers {
 
         // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id) {
-            var studentDTO = await _studentPresentation.GetItem(id);
+            var studentDTO = await _studentPresentation.GetItemAsync(id);
             return View(studentDTO);
         }
 
@@ -102,7 +102,7 @@ namespace Task9.Controllers {
         public async Task<IActionResult> DeleteConfirmed(int id) {
 
             try {
-                await _studentPresentation.DeleteItem(id);
+                await _studentPresentation.DeleteItemAsync(id);
                 return RedirectToAction("Index");
             }
             catch (Exception) {

@@ -12,12 +12,12 @@ namespace Data {
             return context is null ? null : new GroupRepository(context);
         }
 
-        public override async Task<IEnumerable<Group>> GetEntityList() {
+        public override async Task<IEnumerable<Group>> GetEntityListAsync() {
             var groups = GetGroupsWithCourse();
             return await groups.AsNoTracking().ToListAsync();
         }
 
-        public override async Task<Group> GetEntity(int id) {
+        public override async Task<Group> GetEntityAsync(int id) {
             if (id < 0) {
                 return null;
             }
@@ -32,13 +32,13 @@ namespace Data {
             return group;
         }
 
-        public override async Task Delete(int id) {
-            var group = GetEntity(id).Result;
+        public override async Task DeleteAsync(int id) {
+            var group = GetEntityAsync(id).Result;
             if (_context.Student.Any(x => x.GroupId == group.Id)) {
                 throw new Exception();
             }
             _context.Group.Remove(group);
-            await Save();
+            await SaveAsync();
         }
 
         public bool GroupExists(int id) {

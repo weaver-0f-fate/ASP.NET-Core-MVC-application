@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
-using Core.ModelsDTO;
 using Data;
+using Services.ModelsDTO;
 using ServicesInterfaces;
 
 namespace Services {
@@ -20,8 +20,8 @@ namespace Services {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CourseDTO>> GetAllItems(string searchString) {
-            var courses = await _courseRepository.GetEntityList();
+        public async Task<IEnumerable<CourseDTO>> GetAllItemsAsync(string searchString) {
+            var courses = await _courseRepository.GetEntityListAsync();
 
             if (!string.IsNullOrEmpty(searchString)) {
                 courses = courses.Where(
@@ -33,11 +33,11 @@ namespace Services {
             return coursesDTOs;
         }
 
-        public async Task<CourseDTO> GetItem(int? id) {
+        public async Task<CourseDTO> GetItemAsync(int? id) {
             if (id is null) {
                 throw new Exception();
             }
-            var course = await _courseRepository.GetEntity((int)id);
+            var course = await _courseRepository.GetEntityAsync((int)id);
             if (course == null) {
                 throw new Exception();
             }
@@ -45,29 +45,29 @@ namespace Services {
             return _mapper.Map<CourseDTO>(course);
         }
 
-        public async Task CreateItem(CourseDTO item) {
+        public async Task CreateItemAsync(CourseDTO item) {
             var course = new Course {
                 Id = item.Id,
                     CourseDescription = item.CourseDescription,
                 CourseName = item.CourseName,
             };
-            await _courseRepository.Create(course);
+            await _courseRepository.CreateAsync(course);
         }
 
-        public async Task UpdateItem(CourseDTO item) {
+        public async Task UpdateItemAsync(CourseDTO item) {
             var course = new Course {
                 Id = item.Id,
                 CourseDescription = item.CourseDescription,
                 CourseName = item.CourseName,
             };
-            await _courseRepository.Update(course);
+            await _courseRepository.UpdateAsync(course);
         }
-        public async Task DeleteItem(int id) {
-            var groups = await _groupRepository.GetEntityList();
+        public async Task DeleteItemAsync(int id) {
+            var groups = await _groupRepository.GetEntityListAsync();
             if (groups.Any(x => x.CourseId == id)) {
                 throw new Exception();
             }
-            await _courseRepository.Delete(id);
+            await _courseRepository.DeleteAsync(id);
         }
 
         public bool ItemExists(int id) {

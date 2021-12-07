@@ -12,27 +12,27 @@ namespace Data {
             _context = context;
         }
 
-        public abstract Task<IEnumerable<T>> GetEntityList();
-        public abstract Task<T> GetEntity(int id);
+        public abstract Task<IEnumerable<T>> GetEntityListAsync();
+        public abstract Task<T> GetEntityAsync(int id);
 
-        public async Task Create(T item) {
+        public async Task CreateAsync(T item) {
             if (item is null) {
                 return;
             }
             await _context.AddAsync(item);
-            await Save();
+            await SaveAsync();
         }
 
-        public async Task Update(T item) {
+        public async Task UpdateAsync(T item) {
             if (item is null) {
                 return;
             }
             _context.Update(item);
-            await Save();
+            await SaveAsync();
         }
-        public abstract Task Delete(int id);
+        public abstract Task DeleteAsync(int id);
 
-        public async Task Save() {
+        public async Task SaveAsync() {
             await _context.SaveChangesAsync();
         }
 

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
-using Core.ModelsDTO;
 using Data;
+using Services.ModelsDTO;
 using ServicesInterfaces;
 
 namespace Business {
@@ -22,8 +22,8 @@ namespace Business {
             _mapper = mapper;
         }
 
-        public async Task<List<GroupDTO>> GetAllItems(string searchString = null, string groupCourse = null) {
-            var groups = await _groupRepository.GetEntityList();
+        public async Task<List<GroupDTO>> GetAllItemsAsync(string searchString = null, string groupCourse = null) {
+            var groups = await _groupRepository.GetEntityListAsync();
 
             if (!string.IsNullOrEmpty(groupCourse)) {
                 groups = groups.Where(x => x.Course.CourseName.Contains(groupCourse));
@@ -38,11 +38,11 @@ namespace Business {
             return groups.Select(x => _mapper.Map<GroupDTO>(x)).ToList();
         }
 
-        public async Task<GroupDTO> GetItem(int? id) {
+        public async Task<GroupDTO> GetItemAsync(int? id) {
             if (id is null) {
                 throw new Exception();
             }
-            var group = await _groupRepository.GetEntity((int)id);
+            var group = await _groupRepository.GetEntityAsync((int)id);
             if (group is null) {
                 throw new Exception();
             }
@@ -50,19 +50,19 @@ namespace Business {
             return _mapper.Map<GroupDTO>(group);
         }
 
-        public async Task CreateItem(GroupDTO item) {
-            var course = await _courseRepository.GetEntity(item.CourseId);
+        public async Task CreateItemAsync(GroupDTO item) {
+            var course = await _courseRepository.GetEntityAsync(item.CourseId);
             var group = new Group {
                 Id = item.Id,
                 GroupName = item.GroupName,
                 CourseId = course.Id
 
             };
-            await _groupRepository.Create(group);
+            await _groupRepository.CreateAsync(group);
         }
 
-        public async Task UpdateItem(GroupDTO item) {
-            var course = await _courseRepository.GetEntity(item.CourseId);
+        public async Task UpdateItemAsync(GroupDTO item) {
+            var course = await _courseRepository.GetEntityAsync(item.CourseId);
             var group = new Group {
                 Id = item.Id,
                 GroupName = item.GroupName,
@@ -70,15 +70,15 @@ namespace Business {
                 CourseId = course.Id
 
             };
-            await _groupRepository.Update(group);
+            await _groupRepository.UpdateAsync(group);
         }
 
-        public async Task DeleteItem(int id) {
-            var students = await _studentRepository.GetEntityList();
+        public async Task DeleteItemAsync(int id) {
+            var students = await _studentRepository.GetEntityListAsync();
             if (students.Any(x => x.GroupId == id)) {
                 throw new Exception();
             }
-            await _groupRepository.Delete(id);
+            await _groupRepository.DeleteAsync(id);
         }
 
         public bool ItemExists(int id) {
@@ -86,7 +86,7 @@ namespace Business {
         }
 
         public async Task<IEnumerable<Course>> GetCourses() {
-            return await _courseRepository.GetEntityList();
+            return await _courseRepository.GetEntityListAsync();
         }
     }
 }

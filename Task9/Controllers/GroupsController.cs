@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business;
-using Core.ModelsDTO;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Services.ModelsDTO;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
@@ -22,14 +22,14 @@ namespace Task9.Controllers {
             var courses = await _groupPresentation.GetCourses();
             var groupViewModel = new GroupViewModel {
                 Courses = new SelectList(courses.Select(x => x.CourseName)),
-                Groups = await _groupPresentation.GetAllItems(searchString, groupCourse)
+                Groups = await _groupPresentation.GetAllItemsAsync(searchString, groupCourse)
             };
             return View(groupViewModel);
         }
         
         // GET: Groups/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var groupDTO = await _groupPresentation.GetItem(id);
+            var groupDTO = await _groupPresentation.GetItemAsync(id);
             return View(groupDTO);
         }
 
@@ -50,7 +50,7 @@ namespace Task9.Controllers {
                 return View(groupDTO);
             }
 
-            await _groupPresentation.CreateItem(groupDTO);
+            await _groupPresentation.CreateItemAsync(groupDTO);
             return RedirectToAction(nameof(Index));
         }
 
@@ -59,7 +59,7 @@ namespace Task9.Controllers {
             if (id == null) {
                 return NotFound();
             }
-            var groupDTO = await _groupPresentation.GetItem(id);
+            var groupDTO = await _groupPresentation.GetItemAsync(id);
             await PopulateCoursesDropDownList(groupDTO.CourseId);
             return View(groupDTO);
         }
@@ -77,7 +77,7 @@ namespace Task9.Controllers {
                 return View(groupDTO);
             }
             try {
-                await _groupPresentation.UpdateItem(groupDTO);
+                await _groupPresentation.UpdateItemAsync(groupDTO);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception) {
@@ -94,7 +94,7 @@ namespace Task9.Controllers {
             if (id == null) {
                 return NotFound();
             }
-            var groupDTO = await _groupPresentation.GetItem(id);
+            var groupDTO = await _groupPresentation.GetItemAsync(id);
             ViewBag.ErrorMessage = message;
 
             if (groupDTO is null) {
@@ -108,7 +108,7 @@ namespace Task9.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
             try {
-                await _groupPresentation.DeleteItem(id);
+                await _groupPresentation.DeleteItemAsync(id);
                 return RedirectToAction("Index");
             }
             catch (Exception) {

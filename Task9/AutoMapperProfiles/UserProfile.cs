@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Core.Models;
-using Core.ModelsDTO;
+using Services.ModelsDTO;
 
 namespace Task9.AutoMapperProfiles {
     public class UserProfile : Profile {

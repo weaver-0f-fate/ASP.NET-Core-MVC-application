@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.ModelsDTO {
+namespace Services.ModelsDTO {
     public class GroupDTO {
         public int Id { get; set; }
         [StringLength(30)]

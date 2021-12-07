@@ -12,12 +12,12 @@ namespace Data {
             return context is null ? null : new StudentRepository(context);
         }
 
-        public override async Task<IEnumerable<Student>> GetEntityList() {
+        public override async Task<IEnumerable<Student>> GetEntityListAsync() {
             var students = GetStudentsWithGroups();
             return await students.AsNoTracking().ToListAsync();
         }
 
-        public override async Task<Student> GetEntity(int id) {
+        public override async Task<Student> GetEntityAsync(int id) {
             if (id < 0) {
                 return null;
             }
@@ -36,10 +36,10 @@ namespace Data {
             return student;
         }
 
-        public override async Task Delete(int id) {
-            var student = GetEntity(id).Result;
+        public override async Task DeleteAsync(int id) {
+            var student = GetEntityAsync(id).Result;
             _context.Student.Remove(student);
-            await Save();
+            await SaveAsync();
         }
 
         public bool StudentExists(int id) {

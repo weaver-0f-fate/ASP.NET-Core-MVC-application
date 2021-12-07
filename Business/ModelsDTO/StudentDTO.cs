@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Core.ModelsDTO {
+namespace Services.ModelsDTO {
     public class StudentDTO {
 
         public int Id { get; set; }

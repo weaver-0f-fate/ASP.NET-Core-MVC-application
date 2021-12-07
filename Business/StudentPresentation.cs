@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
-using Core.ModelsDTO;
 using Data;
+using Services.ModelsDTO;
 using ServicesInterfaces;
 
 namespace Business {
@@ -20,8 +20,8 @@ namespace Business {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<StudentDTO>> GetAllItems(string searchString = null, string studentGroup = null) {
-            var students = await _studentRepository.GetEntityList();
+        public async Task<IEnumerable<StudentDTO>> GetAllItemsAsync(string searchString = null, string studentGroup = null) {
+            var students = await _studentRepository.GetEntityListAsync();
 
             if (!string.IsNullOrEmpty(studentGroup)) {
                 students = students.Where(
@@ -43,11 +43,11 @@ namespace Business {
             return studentDTOs;
         }
 
-        public async Task<StudentDTO> GetItem(int? id) {
+        public async Task<StudentDTO> GetItemAsync(int? id) {
             if (id is null) {
                 throw new Exception();
             }
-            var student = await _studentRepository.GetEntity((int)id);
+            var student = await _studentRepository.GetEntityAsync((int)id);
             if (student is null) {
                 throw new Exception();
             }
@@ -55,28 +55,28 @@ namespace Business {
             return studentDTO;
         }
 
-        public async Task CreateItem(StudentDTO item) {
+        public async Task CreateItemAsync(StudentDTO item) {
             var student = new Student {
                 Id = item.Id,
                 FirstName = item.FirstName,
                 LastName = item.LastName,
                 GroupId = item.GroupId
             };
-            await _studentRepository.Create(student);
+            await _studentRepository.CreateAsync(student);
         }
 
-        public async Task UpdateItem(StudentDTO item) {
+        public async Task UpdateItemAsync(StudentDTO item) {
             var student = new Student {
                 Id = item.Id,
                 FirstName = item.FirstName,
                 LastName = item.LastName,
                 GroupId = item.GroupId
             };
-            await _studentRepository.Update(student);
+            await _studentRepository.UpdateAsync(student);
         }
 
-        public async Task DeleteItem(int id) {
-            await _studentRepository.Delete(id);
+        public async Task DeleteItemAsync(int id) {
+            await _studentRepository.DeleteAsync(id);
         }
 
         public bool ItemExists(int id) {
@@ -84,7 +84,7 @@ namespace Business {
         }
 
         public async Task<IEnumerable<Group>> GetGroups() {
-            return await _groupRepository.GetEntityList();
+            return await _groupRepository.GetEntityListAsync();
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.ModelsDTO;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Services.ModelsDTO;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
@@ -17,13 +17,13 @@ namespace Task9.Controllers {
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var courseDTOs = await _coursePresentation.GetAllItems(searchString);
+            var courseDTOs = await _coursePresentation.GetAllItemsAsync(searchString);
             return View(courseDTOs);
         }
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var courseDTO = await _coursePresentation.GetItem(id);
+            var courseDTO = await _coursePresentation.GetItemAsync(id);
             return View(courseDTO);
         }
 
@@ -41,7 +41,7 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(courseDTO);
             }
-            await _coursePresentation.CreateItem(courseDTO);
+            await _coursePresentation.CreateItemAsync(courseDTO);
             return RedirectToAction(nameof(Index));
         }
 
@@ -50,7 +50,7 @@ namespace Task9.Controllers {
             if (id == null) {
                 return NotFound();
             }
-            var courseDTO = await _coursePresentation.GetItem(id);
+            var courseDTO = await _coursePresentation.GetItemAsync(id);
             if (courseDTO == null) {
                 return NotFound();
             }
@@ -71,7 +71,7 @@ namespace Task9.Controllers {
             }
 
             try {
-                await _coursePresentation.UpdateItem(courseDTO);
+                await _coursePresentation.UpdateItemAsync(courseDTO);
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException) {
@@ -87,7 +87,7 @@ namespace Task9.Controllers {
             if (id == null) {
                 return NotFound();
             }
-            var courseDTO = await _coursePresentation.GetItem(id);
+            var courseDTO = await _coursePresentation.GetItemAsync(id);
             ViewBag.ErrorMessage = message;
             if (courseDTO is null) {
                 return NotFound();
@@ -100,7 +100,7 @@ namespace Task9.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
             try {
-                await _coursePresentation.DeleteItem(id);
+                await _coursePresentation.DeleteItemAsync(id);
                 return RedirectToAction("Index");
             }
             catch (Exception) {

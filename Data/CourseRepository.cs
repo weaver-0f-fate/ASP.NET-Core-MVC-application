@@ -12,12 +12,12 @@ namespace Data {
             return context is null ? null : new CourseRepository(context);
         }
 
-        public override async Task<IEnumerable<Course>> GetEntityList() {
+        public override async Task<IEnumerable<Course>> GetEntityListAsync() {
             var courses = from c in _context.Course select c;
             return await courses.AsNoTracking().ToListAsync();
         }
 
-        public override async Task<Course> GetEntity(int id) {
+        public override async Task<Course> GetEntityAsync(int id) {
             if (id < 0) {
                 return null;
             }
@@ -27,13 +27,13 @@ namespace Data {
             return course;
         }
 
-        public override async Task Delete(int id) {
-            var course = GetEntity(id);
+        public override async Task DeleteAsync(int id) {
+            var course = GetEntityAsync(id);
             if (_context.Group.Any(x => x.CourseId == course.Id)) {
                 throw new Exception();
             }
             _context.Course.Remove(course.Result);
-            await Save();
+            await SaveAsync();
         }
 
         public bool CourseExists(int id) {
