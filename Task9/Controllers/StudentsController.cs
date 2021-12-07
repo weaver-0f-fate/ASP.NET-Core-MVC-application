@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
+using Business;
 using Core.Models;
 using Core.ModelsDTO;
 using Data;
@@ -10,50 +12,34 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly StudentRepository _studentRepository;
-        private readonly IMapper _mapper;
+        private readonly StudentPresentation _studentPresentation;
 
         public StudentsController(Task9Context context, IMapper mapper) {
-            _studentRepository = StudentRepository.GetStudentData(context);
-            _mapper = mapper;
+            _studentPresentation = new StudentPresentation(context, mapper);
         }
 
         // GET: Students
-        public IActionResult Index(string studentGroup, string searchString) {
-            var students = _studentRepository.GetEntityList(studentGroup, searchString);
-            var groups = _studentRepository.GetGroupsList();
+        public async Task<IActionResult> Index(string studentGroup, string searchString) {
+            var studentDTOs = await _studentPresentation.GetAllItems(searchString, studentGroup);
+            var groups = await _studentPresentation.GetGroups();
 
-            var studentDTOs = students.Select(x => _mapper.Map<StudentDTO>(x));
-            foreach (var studentDTO in studentDTOs) {
-                var student = students.FirstOrDefault(x => x.Id == studentDTO.Id);
-                studentDTO.GroupName = student.Group.GroupName;
-            }
 
             var studentViewModel = new StudentsViewModel {
-                Groups = new SelectList(groups),
+                Groups = new SelectList(groups.Select(x => x.GroupName)),
                 Students = studentDTOs.ToList()
             };
             return View(studentViewModel);
         }
 
         // GET: Students/Details/5
-        public IActionResult Details(int? id) {
-            if (id is null) {
-                return NotFound();
-            }
-            var student = _studentRepository.GetEntity((int)id);
-            if (student is null) {
-                return NotFound();
-            }
-            var studentDTO = _mapper.Map<StudentDTO>(student);
-            studentDTO.GroupName = student.Group.GroupName;
-            studentDTO.CourseName = student.Group.Course.CourseName;
+        public async Task<IActionResult> Details(int? id) {
+            var studentDTO = await _studentPresentation.GetItem(id);
             return View(studentDTO);
         }
 
         // GET: Students/Create
-        public IActionResult Create() {
-            PopulateGroupsDropDownList();
+        public async Task<IActionResult> Create() {
+            await PopulateGroupsDropDownList();
             return View();
         }
 
@@ -62,32 +48,19 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,GroupId,FirstName,LastName")] Student student) {
-            if (ModelState.IsValid) {
-                _studentRepository.Create(student);
-                return RedirectToAction(nameof(Index));
+        public async Task<IActionResult> Create(StudentDTO studentDTO) {
+            if (!ModelState.IsValid) {
+                await PopulateGroupsDropDownList();
+                return View(studentDTO);
             }
-            PopulateGroupsDropDownList();
-            var studentDTO = _mapper.Map<StudentDTO>(student);
-            studentDTO.GroupName = student.Group.GroupName;
-            studentDTO.CourseName = student.Group.Course.CourseName;
-            return View(studentDTO);
+            await _studentPresentation.CreateItem(studentDTO);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Students/Edit/5
-        public IActionResult Edit(int? id) {
-            if (id == null) {
-                return NotFound();
-            }
-
-            var student = _studentRepository.GetEntity((int)id);
-            if (student is null) {
-                return NotFound();
-            }
-            PopulateGroupsDropDownList(student.GroupId);
-            var studentDTO = _mapper.Map<StudentDTO>(student);
-            studentDTO.GroupName = student.Group.GroupName;
-            studentDTO.CourseName = student.Group.Course.CourseName;
+        public async Task<IActionResult> Edit(int? id) {
+            var studentDTO = await _studentPresentation.GetItem(id);
+            await PopulateGroupsDropDownList(studentDTO.GroupId);
             return View(studentDTO);
         }
 
@@ -96,24 +69,21 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,GroupId,FirstName,LastName")] Student student) {
-            if (id != student.Id) {
+        public async Task<IActionResult> Edit(int id, StudentDTO studentDTO) {
+            if (id != studentDTO.Id) {
                 return NotFound();
             }
             if (!ModelState.IsValid) {
-                var studentDTO = _mapper.Map<StudentDTO>(student);
-                studentDTO.GroupName = student.Group.GroupName;
-                studentDTO.CourseName = student.Group.Course.CourseName;
                 return View(studentDTO);
             }
 
             try {
-                _studentRepository.Update(student);
-                return RedirectToAction(nameof(Index), new { student.Id });
+                await _studentPresentation.UpdateItem(studentDTO);
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ) {
-                if (!_studentRepository.StudentExists(student.Id)) {
-                    PopulateGroupsDropDownList(student.GroupId);
+                if (!_studentPresentation.ItemExists(id)) {
+                    await PopulateGroupsDropDownList(studentDTO.GroupId);
                     return NotFound();
                 }
                 throw;
@@ -121,28 +91,18 @@ namespace Task9.Controllers {
         }
 
         // GET: Students/Delete/5
-        public IActionResult Delete(int? id) {
-            if (id == null) {
-                return NotFound();
-            }
-            var student = _studentRepository.GetEntity((int)id);
-
-            if (student is null) {
-                return NotFound();
-            }
-            var studentDTO = _mapper.Map<StudentDTO>(student);
-            studentDTO.GroupName = student.Group.GroupName;
-            studentDTO.CourseName = student.Group.Course.CourseName;
+        public async Task<IActionResult> Delete(int? id) {
+            var studentDTO = await _studentPresentation.GetItem(id);
             return View(studentDTO);
         }
 
         // POST: Students/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id) {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
 
             try {
-                _studentRepository.Delete(id);
+                await _studentPresentation.DeleteItem(id);
                 return RedirectToAction("Index");
             }
             catch (Exception) {
@@ -154,8 +114,8 @@ namespace Task9.Controllers {
             return RedirectToAction("Index");
         }
 
-        private void PopulateGroupsDropDownList(object selectedGroup = null) {
-            var groups = _studentRepository.GetQueryableGroups();
+        private async Task PopulateGroupsDropDownList(object selectedGroup = null) {
+            var groups = await _studentPresentation.GetGroups();
             ViewBag.GroupId = new SelectList(groups, "Id", "GroupName", selectedGroup);
         }
     }

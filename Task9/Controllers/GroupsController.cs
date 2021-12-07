@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
-using Core.Models;
+using Business;
 using Core.ModelsDTO;
 using Data;
 using Microsoft.AspNetCore.Mvc;
@@ -10,40 +11,31 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class GroupsController : Controller {
-        private readonly GroupRepository _groupRepository;
-        private readonly IMapper _mapper;
+        private readonly GroupPresentation _groupPresentation;
 
         public GroupsController(Task9Context context, IMapper mapper) {
-            _groupRepository = GroupRepository.GetGroupRepository(context);
-            _mapper = mapper;
+            _groupPresentation = new GroupPresentation(context, mapper);
         }
 
         // GET: Groups
-        public IActionResult Index(string groupCourse, string searchString) {
-            var groups = _groupRepository.GetEntityList(groupCourse, searchString);
-            var courses = _groupRepository.GetCoursesList();
+        public async Task<IActionResult> Index(string groupCourse, string searchString) {
+            var courses = await _groupPresentation.GetCourses();
             var groupViewModel = new GroupViewModel {
-                Courses = new SelectList(courses),
-                Groups = groups.Select(x => _mapper.Map<GroupDTO>(x)).ToList()
+                Courses = new SelectList(courses.Select(x => x.CourseName)),
+                Groups = await _groupPresentation.GetAllItems(searchString, groupCourse)
             };
             return View(groupViewModel);
         }
         
         // GET: Groups/Details/5
-        public IActionResult Details(int? id) {
-            if (id  is null) {
-                return NotFound();
-            }
-            var group = _groupRepository.GetEntity((int)id);
-            if (group is null) {
-                return NotFound();
-            }
-            return View(_mapper.Map<GroupDTO>(group));
+        public async Task<IActionResult> Details(int? id) {
+            var groupDTO = await _groupPresentation.GetItem(id);
+            return View(groupDTO);
         }
 
         // GET: Groups/Create
-        public IActionResult Create() {
-            PopulateCoursesDropDownList();
+        public async Task<IActionResult> Create() {
+            await PopulateCoursesDropDownList();
             return View();
         }
 
@@ -52,27 +44,24 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,CourseId,GroupName")] Group group) {
-            if (ModelState.IsValid) {
-                _groupRepository.Create(group);
-                return RedirectToAction(nameof(Index));
+        public async Task<IActionResult> Create(GroupDTO groupDTO) {
+            if (!ModelState.IsValid) {
+                await PopulateCoursesDropDownList();
+                return View(groupDTO);
             }
-            PopulateCoursesDropDownList();
-            return View(_mapper.Map<GroupDTO>(group));
+
+            await _groupPresentation.CreateItem(groupDTO);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Groups/Edit/5
-        public IActionResult Edit(int? id) {
+        public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
-
-            var group = _groupRepository.GetEntity((int)id);
-            if (group is null) {
-                return NotFound();
-            }
-            PopulateCoursesDropDownList(group.CourseId);
-            return View(_mapper.Map<GroupDTO>(group));
+            var groupDTO = await _groupPresentation.GetItem(id);
+            await PopulateCoursesDropDownList(groupDTO.CourseId);
+            return View(groupDTO);
         }
 
         // POST: Groups/Edit/5
@@ -80,20 +69,20 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,CourseId,GroupName")] Group group) {
-            if (id != group.Id) {
+        public async Task<IActionResult> Edit(int id, GroupDTO groupDTO) {
+            if (id != groupDTO.Id) {
                 return NotFound();
             }
             if (!ModelState.IsValid) {
-                return View(_mapper.Map<GroupDTO>(group));
+                return View(groupDTO);
             }
             try {
-                _groupRepository.Update(group);
-                return RedirectToAction(nameof(Index), new { group.Id });
+                await _groupPresentation.UpdateItem(groupDTO);
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception) {
-                if (!_groupRepository.GroupExists(group.Id)) {
-                    PopulateCoursesDropDownList(group.CourseId);
+                if (!_groupPresentation.ItemExists(id)) {
+                    await PopulateCoursesDropDownList(groupDTO.CourseId);
                     return NotFound();
                 }
                 throw;
@@ -101,25 +90,25 @@ namespace Task9.Controllers {
         }
 
         // GET: Groups/Delete/5
-        public IActionResult Delete(int? id, string message = null) {
+        public async Task<IActionResult> Delete(int? id, string message = null) {
             if (id == null) {
                 return NotFound();
             }
-            var group = _groupRepository.GetEntity((int)id);
+            var groupDTO = await _groupPresentation.GetItem(id);
             ViewBag.ErrorMessage = message;
 
-            if (group is null) {
+            if (groupDTO is null) {
                 return NotFound();
             }
-            return View(_mapper.Map<GroupDTO>(group));
+            return View(groupDTO);
         }
 
         // POST: Groups/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id) {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
             try {
-                _groupRepository.Delete(id);
+                await _groupPresentation.DeleteItem(id);
                 return RedirectToAction("Index");
             }
             catch (Exception) {
@@ -136,8 +125,8 @@ namespace Task9.Controllers {
             return RedirectToAction("Index", "Students", new { studentGroup = groupName });
         }
 
-        private void PopulateCoursesDropDownList(object selecetedCourse = null) {
-            var courses = _groupRepository.GetQueryableCourses();
+        private async Task PopulateCoursesDropDownList(object selecetedCourse = null) {
+            var courses = await _groupPresentation.GetCourses();
             ViewBag.CourseId = new SelectList(courses, "Id", "CourseName", selecetedCourse);
         }
     }

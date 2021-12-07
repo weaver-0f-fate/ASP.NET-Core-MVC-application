@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Interfaces {
     public interface IRepository<T> : IDisposable {
-        IEnumerable<T> GetEntityList();
-        T GetEntity(int id);
-        void Create(T item);
-        void Update(T item);
-        void Delete(int id);
-        void Save();
+        Task<IEnumerable<T>> GetEntityList();
+        Task<T> GetEntity(int id);
+        Task Create(T item);
+        Task Update(T item);
+        Task Delete(int id);
+        Task Save();
 
     }
 }

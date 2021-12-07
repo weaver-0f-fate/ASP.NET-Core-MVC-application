@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +12,13 @@ namespace Data {
             return context is null ? null : new GroupRepository(context);
         }
 
-        public override IEnumerable<Group> GetEntityList() {
+        public override async Task<IEnumerable<Group>> GetEntityList() {
             var groups = GetGroupsWithCourse();
-            return groups.ToListAsync().Result;
+            return await groups.AsNoTracking().ToListAsync();
         }
-        public override IEnumerable<Group> GetEntityList(string searchString) {
-            var groups = GetEntityList();
+
+        public override async Task<IEnumerable<Group>> GetEntityList(string searchString) {
+            var groups = await GetEntityList();
             if (!string.IsNullOrEmpty(searchString)) {
                 groups = groups.Where(
                     x => x.GroupName!.Contains(searchString)
@@ -24,32 +26,21 @@ namespace Data {
             }
             return groups;
         }
-        public IEnumerable<Group> GetEntityList(string groupCourse, string searchString) {
-            var groups = GetEntityList(searchString);
+        public async Task<IEnumerable<Group>> GetEntityList(string groupCourse, string searchString) {
+            var groups = await GetEntityList(searchString);
             if (!string.IsNullOrEmpty(groupCourse)) {
                 groups = groups.Where(x => x.Course.CourseName == groupCourse);
             }
             return groups;
         }
 
-        public IEnumerable<Course> GetQueryableCourses() {
-            var courses = from x in _context.Course orderby x.CourseName select x;
-            return courses.AsNoTracking();
-        }
-
-        public IEnumerable<string> GetCoursesList() {
-            var courses = from m in _context.Group orderby m.CourseId select m.Course.CourseName;
-            return courses.AsNoTracking().Distinct().ToListAsync().Result;
-        }
-
-        public override Group GetEntity(int id) {
+        public override async Task<Group> GetEntity(int id) {
             if (id < 0) {
                 return null;
             }
-            var group = _context.Group
+            var group = await _context.Group
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id)
-                .Result;
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (group is null) {
                 return null;
             }
@@ -58,13 +49,13 @@ namespace Data {
             return group;
         }
 
-        public override void Delete(int id) {
-            var group = GetEntity(id);
+        public override async Task Delete(int id) {
+            var group = GetEntity(id).Result;
             if (_context.Student.Any(x => x.GroupId == group.Id)) {
                 throw new Exception();
             }
             _context.Group.Remove(group);
-            Save();
+            await Save();
         }
 
         public bool GroupExists(int id) {
@@ -72,7 +63,6 @@ namespace Data {
         }
 
         private IQueryable<Group> GetGroupsWithCourse() {
-
             var groups = from g in _context.Group
                          from c in _context.Course
                          where g.CourseId == c.Id

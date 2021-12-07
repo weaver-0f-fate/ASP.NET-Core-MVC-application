@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
+using Business;
 using Core.Models;
 using Core.ModelsDTO;
 using Data;
@@ -9,33 +11,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly CourseRepository _courseRepository;
-        private readonly IMapper _mapper;
+        private readonly CoursePresentation _coursePresentation;
 
         public CoursesController(Task9Context context, IMapper mapper) {
-            _courseRepository = CourseRepository.GetCourseRepository(context);
-            _mapper = mapper;
+            _coursePresentation = new CoursePresentation(context, mapper);
         }
 
         // GET: Courses
-        public IActionResult Index(string searchString) {
-            var courses = _courseRepository.GetEntityList(searchString);
-            var coursesDTOs = courses.Select(x => _mapper.Map<CourseDTO>(x));
-            
-            return View(coursesDTOs);
+        public async Task<IActionResult> Index(string searchString) {
+            var courseDTOs = await _coursePresentation.GetAllItems(searchString);
+            return View(courseDTOs);
         }
 
         // GET: Courses/Details/5
-        public IActionResult Details(int? id) {
-            if (id is null) {
-                return NotFound();
-            }
-            var course = _courseRepository.GetEntity((int)id);
-            if (course == null) {
-                return NotFound();
-            }
-
-            var courseDTO = _mapper.Map<CourseDTO>(course);
+        public async Task<IActionResult> Details(int? id) {
+            var courseDTO = await _coursePresentation.GetItem(id);
             return View(courseDTO);
         }
 
@@ -49,26 +39,23 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,CourseName,CourseDescription")] Course course) {
-            if (ModelState.IsValid) {
-                
-                _courseRepository.Create(course);
-                return RedirectToAction(nameof(Index), new { id = course.Id });
+        public async Task<IActionResult> Create(CourseDTO courseDTO) {
+            if (!ModelState.IsValid) {
+                return View(courseDTO);
             }
-            var courseDTO = _mapper.Map<CourseDTO>(course);
-            return View(courseDTO);
+            await _coursePresentation.CreateItem(courseDTO);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Courses/Edit/5
-        public IActionResult Edit(int? id) {
+        public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
-            var course = _courseRepository.GetEntity((int)id);
-            if (course == null) {
+            var courseDTO = await _coursePresentation.GetItem(id);
+            if (courseDTO == null) {
                 return NotFound();
             }
-            var courseDTO = _mapper.Map<CourseDTO>(course);
             return View(courseDTO);
         }
 
@@ -77,21 +64,20 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,CourseName,CourseDescription")] Course course) {
-            if (id != course.Id) {
+        public async Task<IActionResult> Edit(int id, CourseDTO courseDTO) {
+            if (id != courseDTO.Id) {
                 return NotFound();
             }
             if (!ModelState.IsValid) {
-                var courseDTO = _mapper.Map<CourseDTO>(course);
                 return View(courseDTO);
             }
 
             try {
-                _courseRepository.Update(course);
-                return RedirectToAction(nameof(Index), new { course.Id });
+                await _coursePresentation.UpdateItem(courseDTO);
+                return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException) {
-                if (!_courseRepository.CourseExists(course.Id)) {
+                if (!_coursePresentation.ItemExists(id)) {
                     return NotFound();
                 }
                 throw;
@@ -99,25 +85,24 @@ namespace Task9.Controllers {
         }
         
         // GET: Courses/Delete/5
-        public IActionResult Delete(int? id, string message = null) {
+        public async Task<IActionResult> Delete(int? id, string message = null) {
             if (id == null) {
                 return NotFound();
             }
-            var course = _courseRepository.GetEntity((int)id);
+            var courseDTO = await _coursePresentation.GetItem(id);
             ViewBag.ErrorMessage = message;
-            if (course is null) {
+            if (courseDTO is null) {
                 return NotFound();
             }
-            var courseDTO = _mapper.Map<CourseDTO>(course);
             return View(courseDTO);
         }
 
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id) {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
             try {
-                _courseRepository.Delete(id);
+                await _coursePresentation.DeleteItem(id);
                 return RedirectToAction("Index");
             }
             catch (Exception) {

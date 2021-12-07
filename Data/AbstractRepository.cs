@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Interfaces;
 
 namespace Data {
@@ -11,40 +12,40 @@ namespace Data {
             _context = context;
         }
 
-        public abstract IEnumerable<T> GetEntityList();
-        public abstract IEnumerable<T> GetEntityList(string searchString);
-        public abstract T GetEntity(int id);
+        public abstract Task<IEnumerable<T>> GetEntityList();
+        public abstract Task<IEnumerable<T>> GetEntityList(string searchString);
+        public abstract Task<T> GetEntity(int id);
 
-        public void Create(T item) {
+        public async Task Create(T item) {
             if (item is null) {
                 return;
             }
-            _context.Add(item);
-            Save();
+            await _context.AddAsync(item);
+            await Save();
         }
 
-        public void Update(T item) {
+        public async Task Update(T item) {
             if (item is null) {
                 return;
             }
             _context.Update(item);
-            Save();
+            await Save();
         }
-        public abstract void Delete(int id);
+        public abstract Task Delete(int id);
 
-        public void Save() {
-            _context.SaveChanges();
+        public async Task Save() {
+            await _context.SaveChangesAsync();
         }
 
-        public void Dispose() {
-            Dispose(true);
+        public async void Dispose() {
+            await Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        private void Dispose(bool disposing) {
+        private async Task Dispose(bool disposing) {
             if (!_disposed) {
                 if (disposing) {
-                    _context.Dispose();
+                    await _context.DisposeAsync();
                 }
             }
             _disposed = true;

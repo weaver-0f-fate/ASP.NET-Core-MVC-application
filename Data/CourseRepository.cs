@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +12,15 @@ namespace Data {
             return context is null ? null : new CourseRepository(context);
         }
 
-        public override IEnumerable<Course> GetEntityList(string searchString) {
-            var courses = GetEntityList();
+        public override async Task<IEnumerable<Course>> GetEntityList() {
+            var courses = from c in _context.Course select c;
+            return await courses.AsNoTracking().ToListAsync();
+        }
+
+        public override async Task<IEnumerable<Course>> GetEntityList(string searchString) {
+            var courses = await GetEntityList();
             if (!string.IsNullOrEmpty(searchString)) {
+
                 courses = courses.Where(
                     s => s.CourseName!.Contains(searchString) 
                  || s.CourseDescription!.Contains(searchString));
@@ -21,28 +28,23 @@ namespace Data {
             return courses;
         }
 
-        public override IEnumerable<Course> GetEntityList() {
-            var courses = from c in _context.Course select c;
-            return courses.ToListAsync().Result;
-        }
-
-        public override Course GetEntity(int id) {
+        public override async Task<Course> GetEntity(int id) {
             if (id < 0) {
                 return null;
             }
-            var course = _context.Course
+            var course = await _context.Course
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
-            return course.Result;
+            return course;
         }
 
-        public override void Delete(int id) {
+        public override async Task Delete(int id) {
             var course = GetEntity(id);
             if (_context.Group.Any(x => x.CourseId == course.Id)) {
                 throw new Exception();
             }
-            _context.Course.Remove(course);
-            Save();
+            _context.Course.Remove(course.Result);
+            await Save();
         }
 
         public bool CourseExists(int id) {
