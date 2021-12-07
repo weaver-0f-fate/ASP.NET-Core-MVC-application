@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Core.Models;
 
-namespace Task9.TaskViewModels.ModelsDTO {
+namespace Core.ModelsDTO {
     public class StudentDTO {
 
         public int Id { get; set; }

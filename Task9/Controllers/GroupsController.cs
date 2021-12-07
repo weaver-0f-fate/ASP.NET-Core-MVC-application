@@ -2,11 +2,11 @@
 using System.Linq;
 using AutoMapper;
 using Core.Models;
+using Core.ModelsDTO;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Task9.TaskViewModels;
-using Task9.TaskViewModels.ModelsDTO;
 
 namespace Task9.Controllers {
     public class GroupsController : Controller {
@@ -89,7 +89,7 @@ namespace Task9.Controllers {
             }
             try {
                 _groupRepository.Update(group);
-                return RedirectToAction(nameof(Details), new { group.Id });
+                return RedirectToAction(nameof(Index), new { group.Id });
             }
             catch (Exception) {
                 if (!_groupRepository.GroupExists(group.Id)) {

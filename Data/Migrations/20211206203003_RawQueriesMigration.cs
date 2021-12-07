@@ -6,7 +6,7 @@ namespace Data.Migrations
     public partial class RawQueriesMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder) {
-            string script = File.ReadAllText(@"Queries\InsertDataQuery.sql");
+            string script = File.ReadAllText(@"..\Data\Queries\InsertDataQuery.sql");
 
             migrationBuilder.Sql(script);
         }

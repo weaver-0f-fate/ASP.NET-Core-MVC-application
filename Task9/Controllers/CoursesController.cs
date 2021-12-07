@@ -2,10 +2,10 @@
 using System.Linq;
 using AutoMapper;
 using Core.Models;
+using Core.ModelsDTO;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Task9.TaskViewModels.ModelsDTO;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
@@ -53,7 +53,7 @@ namespace Task9.Controllers {
             if (ModelState.IsValid) {
                 
                 _courseRepository.Create(course);
-                return RedirectToAction(nameof(Details), new { id = course.Id });
+                return RedirectToAction(nameof(Index), new { id = course.Id });
             }
             var courseDTO = _mapper.Map<CourseDTO>(course);
             return View(courseDTO);
@@ -88,7 +88,7 @@ namespace Task9.Controllers {
 
             try {
                 _courseRepository.Update(course);
-                return RedirectToAction(nameof(Details), new { course.Id });
+                return RedirectToAction(nameof(Index), new { course.Id });
             }
             catch (DbUpdateConcurrencyException) {
                 if (!_courseRepository.CourseExists(course.Id)) {

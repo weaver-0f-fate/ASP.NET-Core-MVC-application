@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using Core.ModelsDTO;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Task9.TaskViewModels.ModelsDTO;
 
 namespace Task9.TaskViewModels {
     public class StudentsViewModel {

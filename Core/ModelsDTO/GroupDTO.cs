@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Core.Models;
 
-namespace Task9.TaskViewModels.ModelsDTO {
+namespace Core.ModelsDTO {
     public class GroupDTO {
         public int Id { get; set; }
         [StringLength(30)]

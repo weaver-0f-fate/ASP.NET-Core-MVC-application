@@ -2,11 +2,11 @@
 using System.Linq;
 using AutoMapper;
 using Core.Models;
+using Core.ModelsDTO;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Task9.TaskViewModels;
-using Task9.TaskViewModels.ModelsDTO;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
@@ -109,7 +109,7 @@ namespace Task9.Controllers {
 
             try {
                 _studentRepository.Update(student);
-                return RedirectToAction(nameof(Details), new { student.Id });
+                return RedirectToAction(nameof(Index), new { student.Id });
             }
             catch (Exception ) {
                 if (!_studentRepository.StudentExists(student.Id)) {
