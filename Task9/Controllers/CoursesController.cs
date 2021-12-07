@@ -107,7 +107,7 @@ namespace Task9.Controllers {
             }
             catch (Exception) {
                 var message =
-                    "Cascade Delete is restricted. Course cannot be deleted since there are associated groups.";
+                    "Course cannot be deleted since it contains groups.";
                 return RedirectToAction("Delete", new { id, message });
             }
         }

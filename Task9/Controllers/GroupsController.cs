@@ -113,7 +113,7 @@ namespace Task9.Controllers {
             }
             catch (Exception) {
                 var message =
-                    "Cascade Delete is restricted. Group cannot be deleted since there are associated students.";
+                    "Group cannot be deleted since it contains students.";
                 return RedirectToAction("Delete", new { id, message });
             }
         }
