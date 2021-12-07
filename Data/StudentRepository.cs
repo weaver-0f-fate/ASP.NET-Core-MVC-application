@@ -2,36 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Models;
-using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data {
-    public sealed class StudentRepository : IRepository<Student> {
-        private readonly Task9Context _context;
-        private bool _disposed;
-
-        private StudentRepository(Task9Context context) {
-            _context = context;
-        }
-
+    public sealed class StudentRepository : AbstractRepository<Student> {
+        private StudentRepository(Task9Context context) : base(context) { }
         public static StudentRepository GetStudentData(Task9Context context) {
             return context is null ? null : new StudentRepository(context);
         }
 
-        public IEnumerable<Student> GetEntityList() {
+        public override IEnumerable<Student> GetEntityList() {
             var students = GetStudentsWithGroups();
             return students.ToListAsync().Result;
         }
 
-        public IEnumerable<Student> GetEntityList(string studentGroup, string searchString) {
+        public override IEnumerable<Student> GetEntityList(string searchString) {
             var students = GetEntityList();
             if (!string.IsNullOrEmpty(searchString)) {
                 students = students.Where(
                     x => x.FirstName!.Contains(searchString)
-                 || x.LastName!.Contains(searchString)
-                 || x.Group.GroupName!.Contains(searchString));
+                         || x.LastName!.Contains(searchString)
+                         || x.Group.GroupName!.Contains(searchString));
             }
+            return students;
+        }
 
+        public IEnumerable<Student> GetEntityList(string studentGroup, string searchString) {
+            var students = GetEntityList(searchString);
             if (!string.IsNullOrEmpty(studentGroup)) {
                 students = students.Where(x => x.Group.GroupName == studentGroup);
             }
@@ -48,7 +45,7 @@ namespace Data {
             return groups.AsNoTracking().Distinct().ToListAsync().Result;
         }
 
-        public Student GetEntity(int id) {
+        public override Student GetEntity(int id) {
             if (id < 0) {
                 return null;
             }
@@ -68,40 +65,10 @@ namespace Data {
             return student;
         }
 
-        public void Create(Student student) {
-            _context.Add(student);
-            Save();
-        }
-
-        public void Update(Student student) {
-            if (student is null) {
-                return;
-            }
-            _context.Update(student);
-            Save();
-        }
-
-        public void Delete(int id) {
+        public override void Delete(int id) {
             var student = GetEntity(id);
             _context.Student.Remove(student);
             Save();
-        }
-
-        public void Save() {
-            _context.SaveChanges();
-        }
-        public void Dispose() {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing) {
-            if (!_disposed) {
-                if (disposing) {
-                    _context.Dispose();
-                }
-            }
-            _disposed = true;
         }
 
         public bool StudentExists(int id) {
