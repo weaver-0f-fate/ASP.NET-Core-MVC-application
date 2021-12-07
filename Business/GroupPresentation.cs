@@ -9,7 +9,7 @@ using Data;
 using ServicesInterfaces;
 
 namespace Business {
-    public class GroupPresentation : IPresentationItem<Group, GroupDTO> {
+    public class GroupPresentation : IPresentationItem<GroupDTO> {
         private readonly GroupRepository _groupRepository;
         private readonly CourseRepository _courseRepository;
         private readonly StudentRepository _studentRepository;
@@ -22,13 +22,19 @@ namespace Business {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GroupDTO>> GetAllItems(string searchString) {
-            var groups = await _groupRepository.GetEntityList(searchString);
-            return groups.Select(x => _mapper.Map<GroupDTO>(x)).ToList();
-        }
+        public async Task<List<GroupDTO>> GetAllItems(string searchString = null, string groupCourse = null) {
+            var groups = await _groupRepository.GetEntityList();
 
-        public async Task<List<GroupDTO>> GetAllItems(string searchString, string groupCourse) {
-            var groups = await _groupRepository.GetEntityList(groupCourse, searchString);
+            if (!string.IsNullOrEmpty(groupCourse)) {
+                groups = groups.Where(x => x.Course.CourseName.Contains(groupCourse));
+            }
+
+            if (!string.IsNullOrEmpty(searchString)) {
+                groups = groups.Where(
+                    x => x.GroupName.Contains(searchString) 
+                         || x.Course.CourseName.Contains(searchString));
+            }
+
             return groups.Select(x => _mapper.Map<GroupDTO>(x)).ToList();
         }
 

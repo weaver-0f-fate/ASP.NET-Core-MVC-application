@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
@@ -10,7 +9,7 @@ using Data;
 using ServicesInterfaces;
 
 namespace Business {
-    public class StudentPresentation : IPresentationItem<Student, StudentDTO> {
+    public class StudentPresentation : IPresentationItem<StudentDTO> {
         private readonly StudentRepository _studentRepository;
         private readonly GroupRepository _groupRepository;
         private readonly IMapper _mapper;
@@ -21,13 +20,22 @@ namespace Business {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<StudentDTO>> GetAllItems(string searchString) {
-            var students = await _studentRepository.GetEntityList(searchString);
+        public async Task<IEnumerable<StudentDTO>> GetAllItems(string searchString = null, string studentGroup = null) {
+            var students = await _studentRepository.GetEntityList();
 
-            return students.Select(x => _mapper.Map<StudentDTO>(x)).ToList();
-        }
-        public async Task<IEnumerable<StudentDTO>> GetAllItems(string searchString, string studentGroup) {
-            var students = await _studentRepository.GetEntityList(studentGroup, searchString);
+            if (!string.IsNullOrEmpty(studentGroup)) {
+                students = students.Where(
+                    x => x.Group.GroupName == studentGroup);
+            }
+
+            if (!string.IsNullOrEmpty(searchString)) {
+                students = students.Where(
+                    x => x.FirstName.Contains(searchString)
+                         || x.LastName.Contains(searchString)
+                         || x.Group.GroupName.Contains(searchString));
+            }
+
+
             var studentDTOs = students.Select(x => _mapper.Map<StudentDTO>(x)).ToList();
             foreach (var studentDTO in studentDTOs) {
                 studentDTO.GroupName = students.FirstOrDefault(x => x.Id == studentDTO.Id).Group.GroupName;

@@ -8,8 +8,8 @@ using Core.ModelsDTO;
 using Data;
 using ServicesInterfaces;
 
-namespace Business {
-    public class CoursePresentation : IPresentationItem<Course, CourseDTO> {
+namespace Services {
+    public class CoursePresentation : IPresentationItem<CourseDTO> {
         private readonly CourseRepository _courseRepository;
         private readonly GroupRepository _groupRepository;
         private readonly IMapper _mapper;
@@ -21,7 +21,14 @@ namespace Business {
         }
 
         public async Task<IEnumerable<CourseDTO>> GetAllItems(string searchString) {
-            var courses = await _courseRepository.GetEntityList(searchString);
+            var courses = await _courseRepository.GetEntityList();
+
+            if (!string.IsNullOrEmpty(searchString)) {
+                courses = courses.Where(
+                    x => x.CourseName.Contains(searchString) 
+                         || x.CourseDescription.Contains(searchString));
+            }
+
             var coursesDTOs = courses.Select(x => _mapper.Map<CourseDTO>(x));
             return coursesDTOs;
         }

@@ -17,35 +17,6 @@ namespace Data {
             return await students.AsNoTracking().ToListAsync();
         }
 
-        public override async Task<IEnumerable<Student>> GetEntityList(string searchString) {
-            var students = await GetEntityList();
-            if (!string.IsNullOrEmpty(searchString)) {
-                students = students.Where(
-                    x => x.FirstName!.Contains(searchString)
-                         || x.LastName!.Contains(searchString)
-                         || x.Group.GroupName!.Contains(searchString));
-            }
-            return students;
-        }
-
-        public async Task<IEnumerable<Student>> GetEntityList(string studentGroup, string searchString) {
-            var students = await GetEntityList(searchString);
-            if (!string.IsNullOrEmpty(studentGroup)) {
-                students = students.Where(x => x.Group.GroupName == studentGroup);
-            }
-            return students;
-        }
-
-        public async Task<IEnumerable<Group>> GetQueryableGroups() {
-            var groups = from x in _context.Group orderby x.GroupName select x;
-            return await groups.AsNoTracking().ToListAsync();
-        }
-
-        public async Task<IEnumerable<string>> GetGroupsList() {
-            var groups = from m in _context.Student orderby m.GroupId select m.Group.GroupName;
-            return await groups.AsNoTracking().Distinct().ToListAsync();
-        }
-
         public override async Task<Student> GetEntity(int id) {
             if (id < 0) {
                 return null;

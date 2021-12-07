@@ -17,17 +17,6 @@ namespace Data {
             return await courses.AsNoTracking().ToListAsync();
         }
 
-        public override async Task<IEnumerable<Course>> GetEntityList(string searchString) {
-            var courses = await GetEntityList();
-            if (!string.IsNullOrEmpty(searchString)) {
-
-                courses = courses.Where(
-                    s => s.CourseName!.Contains(searchString) 
-                 || s.CourseDescription!.Contains(searchString));
-            }
-            return courses;
-        }
-
         public override async Task<Course> GetEntity(int id) {
             if (id < 0) {
                 return null;

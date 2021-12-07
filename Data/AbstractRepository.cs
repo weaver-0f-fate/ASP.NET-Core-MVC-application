@@ -13,7 +13,6 @@ namespace Data {
         }
 
         public abstract Task<IEnumerable<T>> GetEntityList();
-        public abstract Task<IEnumerable<T>> GetEntityList(string searchString);
         public abstract Task<T> GetEntity(int id);
 
         public async Task Create(T item) {
