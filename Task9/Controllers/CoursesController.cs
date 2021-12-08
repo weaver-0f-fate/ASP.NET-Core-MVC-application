@@ -1,13 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Services.ModelsDTO;
 using Services.Presentations;
-using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
@@ -67,9 +63,11 @@ namespace Task9.Controllers {
         }
         
         // GET: Courses/Delete/5
-        public async Task<IActionResult> Delete(int? id, string message = null) {
+        public async Task<IActionResult> Delete(int? id, bool showMessage = false) {
             var courseDTO = await _coursePresentation.GetItemAsync(id);
-            ViewBag.ErrorMessage = message;
+            if (showMessage) {
+                ViewBag.ErrorMessage = "Course cannot be deleted since it contains groups.";
+            }
             return View(courseDTO);
         }
 

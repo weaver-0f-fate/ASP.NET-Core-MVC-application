@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Data;
 using Microsoft.AspNetCore.Mvc;
@@ -78,9 +75,11 @@ namespace Task9.Controllers {
         }
 
         // GET: Groups/Delete/5
-        public async Task<IActionResult> Delete(int? id, string message = null) {
+        public async Task<IActionResult> Delete(int? id, bool showMessage = false) {
             var groupDTO = await _groupPresentation.GetItemAsync(id);
-            ViewBag.ErrorMessage = message;
+            if (showMessage) {
+                ViewBag.ErrorMessage = "Group cannot be deleted since it contains students.";
+            }
             return View(groupDTO);
         }
 

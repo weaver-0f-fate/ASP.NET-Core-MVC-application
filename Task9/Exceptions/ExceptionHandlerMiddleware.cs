@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.Exceptions;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace Task9.Exceptions {
     public class ExceptionHandlerMiddleware {
@@ -17,8 +16,8 @@ namespace Task9.Exceptions {
             try {
                 await _next.Invoke(context);
             }
-            catch (ForeignEntitiesException ex) {
-                context.Response.Redirect(context.Request.Path);
+            catch (ForeignEntitiesException) {
+                context.Response.Redirect($"{context.Request.Path}?showMessage=True");
             }
             catch (Exception ex) {
                 await HandleExceptionMessageAsync(context, ex);
