@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Interfaces;
 
-namespace Data {
+namespace Data.Repositories {
     public abstract class AbstractRepository<T> :IRepository<T> {
         protected readonly Task9Context _context;
         private bool _disposed;

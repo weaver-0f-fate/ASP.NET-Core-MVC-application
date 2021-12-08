@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data {
+namespace Data.Repositories {
     public sealed class StudentRepository : AbstractRepository<Student> {
         private StudentRepository(Task9Context context) : base(context) { }
         public static StudentRepository GetStudentData(Task9Context context) {

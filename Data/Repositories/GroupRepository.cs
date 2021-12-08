@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data {
+namespace Data.Repositories {
     public sealed class GroupRepository : AbstractRepository<Group> {
         private GroupRepository(Task9Context context) : base(context) { }
         public static GroupRepository GetGroupRepository(Task9Context context) {

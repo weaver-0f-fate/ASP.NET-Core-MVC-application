@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Models;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Services;
 using Services.ModelsDTO;
 using Services.Presentations;
 using Task9.TaskViewModels;
@@ -113,6 +112,11 @@ namespace Task9.Controllers {
 
         public IActionResult ClearFilter() {
             return RedirectToAction("Index");
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error() {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         private async Task PopulateGroupsDropDownList(object selectedGroup = null) {

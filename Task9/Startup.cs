@@ -1,6 +1,10 @@
-﻿using Data;
+﻿using System.IO;
+using System.Net.Mime;
+using Data;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -40,14 +44,17 @@ namespace Task9 {
                 context.Database.Migrate();
             }
 
+            env.EnvironmentName = "Production";
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
             else {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Courses/Error");
                 app.UseHsts();
             }
+
+            app.UseStatusCodePages();
 
             app.UseHttpsRedirection();
 

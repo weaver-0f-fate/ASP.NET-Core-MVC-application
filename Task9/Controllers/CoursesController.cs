@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Services;
 using Services.ModelsDTO;
 using Services.Presentations;
+using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
@@ -117,5 +118,11 @@ namespace Task9.Controllers {
         public IActionResult ClearFilter() {
             return RedirectToAction("Index");
         }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error() {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
     }
 }
