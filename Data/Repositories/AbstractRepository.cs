@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core.Models;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
-    public abstract class AbstractRepository<T> :IRepository<T> {
-        protected readonly Task9Context _context;
+    public abstract class AbstractRepository<T> :IRepository<T> where T : AbstractModel {
+        protected readonly Task9Context Context;
+        private readonly DbSet<T> _repository;
         private bool _disposed;
 
-        public AbstractRepository(Task9Context context) {
-            _context = context;
+        protected AbstractRepository(Task9Context context, DbSet<T> repo) {
+            Context = context;
+            _repository = repo;
         }
 
         public abstract Task<IEnumerable<T>> GetEntityListAsync();
@@ -20,7 +23,7 @@ namespace Data.Repositories {
             if (item is null) {
                 return;
             }
-            await _context.AddAsync(item);
+            await Context.AddAsync(item);
             await SaveAsync();
         }
 
@@ -28,16 +31,18 @@ namespace Data.Repositories {
             if (item is null) {
                 return;
             }
-            _context.Update(item);
+            Context.Update(item);
             await SaveAsync();
         }
         public abstract Task DeleteAsync(int id);
 
         public async Task SaveAsync() {
-            await _context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
-        public abstract Task<bool> Exists(int id);
+        public async Task<bool> Exists(int id) {
+            return await _repository.AnyAsync(e => e.Id == id);
+        }
 
         public async void Dispose() {
             await Dispose(true);
@@ -47,7 +52,7 @@ namespace Data.Repositories {
         private async Task Dispose(bool disposing) {
             if (!_disposed) {
                 if (disposing) {
-                    await _context.DisposeAsync();
+                    await Context.DisposeAsync();
                 }
             }
             _disposed = true;

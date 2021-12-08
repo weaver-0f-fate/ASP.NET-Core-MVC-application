@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
     public sealed class GroupRepository : AbstractRepository<Group> {
-        public GroupRepository(Task9Context context) : base(context) { }
+        public GroupRepository(Task9Context context, DbSet<Group> repo) : base(context, repo) { }
 
         public override async Task<IEnumerable<Group>> GetEntityListAsync() {
-            return await _context.Groups.Include(x => x.Course)
+            return await Context.Groups.Include(x => x.Course)
                 .Include(x => x.Students).AsNoTracking().ToListAsync();
         }
 
@@ -19,7 +19,7 @@ namespace Data.Repositories {
                 return null;
             }
 
-            var group = await _context.Groups
+            var group = await Context.Groups
                 .Include(x => x.Course)
                 .Include(x => x.Students)
                 .AsNoTracking()
@@ -35,14 +35,8 @@ namespace Data.Repositories {
             if (group.Students.Any(x => x.GroupId == group.Id)) {
                 throw new NoEntityException();
             }
-            _context.Groups.Remove(group);
+            Context.Groups.Remove(group);
             await SaveAsync();
         }
-
-        public override async Task<bool> Exists(int id) {
-            return await _context.Groups.AnyAsync(e => e.Id == id);
-        }
-
-        
     }
 }

@@ -6,20 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
     public sealed class CourseRepository : AbstractRepository<Course> {
-        public CourseRepository(Task9Context context) : base(context) { }
-        public static CourseRepository GetCourseRepository(Task9Context context) {
-            return context is null ? null : new CourseRepository(context);
-        }
+        public CourseRepository(Task9Context context, DbSet<Course> repo) : base(context, repo) { }
 
         public override async Task<IEnumerable<Course>> GetEntityListAsync() {
-            return await _context.Courses.Include(x => x.Groups).AsNoTracking().ToListAsync();
+            return await Context.Courses.Include(x => x.Groups).AsNoTracking().ToListAsync();
         }
 
         public override async Task<Course> GetEntityAsync(int id) {
             if (id < 0) {
                 return null;
             }
-            var course = await _context.Courses
+            var course = await Context.Courses
                 .Include(x => x.Groups)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -31,12 +28,8 @@ namespace Data.Repositories {
 
         public override async Task DeleteAsync(int id) {
             var course = await GetEntityAsync(id);
-            _context.Courses.Remove(course);
+            Context.Courses.Remove(course);
             await SaveAsync();
-        }
-
-        public override async Task<bool> Exists(int id) {
-            return await _context.Courses.AnyAsync(e => e.Id == id);
         }
     }
 }

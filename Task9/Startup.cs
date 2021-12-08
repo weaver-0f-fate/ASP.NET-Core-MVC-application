@@ -38,17 +38,20 @@ namespace Task9 {
 
             services.AddScoped<IService<CourseDTO>, CourseService>(
                 x => new CourseService(
-                    new CourseRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>()),
+                    new CourseRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Courses),
                     x.GetRequiredService<IMapper>()));
 
             services.AddScoped<IService<GroupDTO>, GroupService>(
                 x => new GroupService(
-                    new GroupRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>()),
+                    new GroupRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Groups),
                     x.GetRequiredService<IMapper>()));
 
             services.AddScoped<IService<StudentDTO>, StudentService>(
                 x => new StudentService(
-                    new StudentRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>()),
+                    new StudentRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Students),
                     x.GetRequiredService<IMapper>()));
         }
 
