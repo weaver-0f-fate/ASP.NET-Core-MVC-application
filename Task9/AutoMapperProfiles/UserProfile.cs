@@ -14,7 +14,11 @@ namespace Task9.AutoMapperProfiles {
                 .ForMember(x => x.GroupName,
                     y => y.MapFrom(src => src.Group.GroupName))
                 .ForMember(x => x.CourseName,
-                y => y.MapFrom(src => src.Group.Course.CourseName)); ;
+                y => y.MapFrom(src => src.Group.Course.CourseName));
+
+            CreateMap<CourseDTO, Course>();
+            CreateMap<GroupDTO, Group>();
+            CreateMap<StudentDTO, Student>();
         }
     }
 }
