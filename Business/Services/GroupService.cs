@@ -58,9 +58,11 @@ namespace Services.Presentations {
         }
 
         public async Task UpdateAsync(GroupDTO item) {
-            var group = await _groupRepository.GetEntityAsync(item.Id);
-            group.CourseId = item.CourseId;
-            group.GroupName = item.GroupName;
+            var group = new Group {
+                Id = item.Id,
+                CourseId = item.CourseId,
+                GroupName = item.GroupName
+            };
             await _groupRepository.UpdateAsync(group);
         }
 
