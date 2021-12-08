@@ -35,17 +35,17 @@ namespace Task9 {
                      Configuration.GetConnectionString("Task9Context"),
                      x => x.MigrationsAssembly("Data")));
 
-            services.AddSingleton<IService<CourseDTO>, CourseService>(
+            services.AddScoped<IService<CourseDTO>, CourseService>(
                 x => new CourseService(
                     x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(), 
                     x.GetRequiredService<IMapper>()));
 
-            services.AddSingleton<IService<GroupDTO>, GroupService>(
+            services.AddScoped<IService<GroupDTO>, GroupService>(
                 x => new GroupService(
                     x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(), 
                     x.GetRequiredService<IMapper>()));
 
-            services.AddSingleton<IService<StudentDTO>, StudentService>(
+            services.AddScoped<IService<StudentDTO>, StudentService>(
                 x => new StudentService(
                     x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(), 
                     x.GetRequiredService<IMapper>()));
