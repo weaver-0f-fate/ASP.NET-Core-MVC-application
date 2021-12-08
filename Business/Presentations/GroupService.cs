@@ -11,16 +11,12 @@ using Services.ModelsDTO;
 using ServicesInterfaces;
 
 namespace Services.Presentations {
-    public class GroupPresentation : IPresentationItem<GroupDTO> {
+    public class GroupService : IService<GroupDTO> {
         private readonly GroupRepository _groupRepository;
-        private readonly CourseRepository _courseRepository;
-        private readonly StudentRepository _studentRepository;
         private readonly IMapper _mapper;
 
-        public GroupPresentation(Task9Context context, IMapper mapper) {
+        public GroupService(Task9Context context, IMapper mapper) {
             _groupRepository = GroupRepository.GetGroupRepository(context);
-            _courseRepository = CourseRepository.GetCourseRepository(context);
-            _studentRepository = StudentRepository.GetStudentData(context);
             _mapper = mapper;
         }
 
@@ -40,7 +36,7 @@ namespace Services.Presentations {
             return groups.Select(x => _mapper.Map<GroupDTO>(x)).ToList();
         }
 
-        public async Task<GroupDTO> GetItemAsync(int? id) {
+        public async Task<GroupDTO> GetAsync(int? id) {
             if (id is null) {
                 throw new NoEntityException();
             }
@@ -52,32 +48,25 @@ namespace Services.Presentations {
             return _mapper.Map<GroupDTO>(group);
         }
 
-        public async Task CreateItemAsync(GroupDTO item) {
-            var course = await _courseRepository.GetEntityAsync(item.CourseId);
+        public async Task CreateAsync(GroupDTO item) {
             var group = new Group {
                 Id = item.Id,
                 GroupName = item.GroupName,
-                CourseId = course.Id
-
+                CourseId = item.CourseId
             };
             await _groupRepository.CreateAsync(group);
         }
 
-        public async Task UpdateItemAsync(GroupDTO item) {
-            var course = await _courseRepository.GetEntityAsync(item.CourseId);
-            var group = new Group {
-                Id = item.Id,
-                GroupName = item.GroupName,
-                Course = course,
-                CourseId = course.Id
-
-            };
+        public async Task UpdateAsync(GroupDTO item) {
+            var group = await _groupRepository.GetEntityAsync(item.Id);
+            group.CourseId = item.CourseId;
+            group.GroupName = item.GroupName;
             await _groupRepository.UpdateAsync(group);
         }
 
-        public async Task DeleteItemAsync(int id) {
-            var students = await _studentRepository.GetEntityListAsync();
-            if (students.Any(x => x.GroupId == id)) {
+        public async Task DeleteAsync(int id) {
+            var group = await _groupRepository.GetEntityAsync(id);
+            if (group.Students.Any(x => x.GroupId == id)) {
                 throw new ForeignEntitiesException();
             }
             await _groupRepository.DeleteAsync(id);
@@ -87,13 +76,13 @@ namespace Services.Presentations {
             return _groupRepository.GroupExists(id);
         }
 
-        public async Task<IEnumerable<string>> GetCoursesNames() {
-            var courses = await GetCourses();
-            return courses.Select(x => x.CourseName);
+        public async Task<IEnumerable<string>> GetGroupsNames() {
+            var groups = await GetGroups();
+            return groups.Select(x => x.GroupName);
         }
 
-        public async Task<IEnumerable<Course>> GetCourses() {
-            return await _courseRepository.GetEntityListAsync();
+        public async Task<IEnumerable<Group>> GetGroups() {
+            return await _groupRepository.GetEntityListAsync();
         }
     }
 }

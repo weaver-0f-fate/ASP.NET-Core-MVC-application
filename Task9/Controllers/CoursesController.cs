@@ -7,10 +7,10 @@ using Services.Presentations;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly CoursePresentation _coursePresentation;
+        private readonly CourseService _coursePresentation;
 
         public CoursesController(Task9Context context, IMapper mapper) {
-            _coursePresentation = new CoursePresentation(context, mapper);
+            _coursePresentation = new CourseService(context, mapper);
         }
 
         // GET: Courses
@@ -21,7 +21,7 @@ namespace Task9.Controllers {
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var courseDTO = await _coursePresentation.GetItemAsync(id);
+            var courseDTO = await _coursePresentation.GetAsync(id);
             return View(courseDTO);
         }
 
@@ -39,13 +39,13 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(courseDTO);
             }
-            await _coursePresentation.CreateItemAsync(courseDTO);
-            return RedirectToAction(nameof(Index));
+            await _coursePresentation.CreateAsync(courseDTO);
+            return RedirectToAction("Index");
         }
 
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var courseDTO = await _coursePresentation.GetItemAsync(id);
+            var courseDTO = await _coursePresentation.GetAsync(id);
             return View(courseDTO);
         }
 
@@ -58,16 +58,13 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(courseDTO);
             }
-            await _coursePresentation.UpdateItemAsync(courseDTO);
-            return RedirectToAction(nameof(Index));
+            await _coursePresentation.UpdateAsync(courseDTO);
+            return RedirectToAction("Index");
         }
-        
+
         // GET: Courses/Delete/5
-        public async Task<IActionResult> Delete(int? id, bool showMessage = false) {
-            var courseDTO = await _coursePresentation.GetItemAsync(id);
-            if (showMessage) {
-                ViewBag.ErrorMessage = "Course cannot be deleted since it contains groups.";
-            }
+        public async Task<IActionResult> Delete(int? id) {
+            var courseDTO = await _coursePresentation.GetAsync(id);
             return View(courseDTO);
         }
 
@@ -75,7 +72,7 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            await _coursePresentation.DeleteItemAsync(id);
+            await _coursePresentation.DeleteAsync(id);
             return RedirectToAction("Index");
         }
 

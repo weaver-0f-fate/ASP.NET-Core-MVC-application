@@ -10,5 +10,6 @@ namespace Services.ModelsDTO {
         public string GroupName { get; set; }
         public int CourseId { get; set; }
         public string CourseName { get; set; }
+        public CourseDTO CourseDTO { get; set; }
     }
 }

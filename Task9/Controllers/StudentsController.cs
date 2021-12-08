@@ -10,28 +10,30 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly StudentPresentation _studentPresentation;
+        private readonly StudentService _studentPresentation;
+        private readonly GroupService _groupService;
 
         public StudentsController(Task9Context context, IMapper mapper) {
-            _studentPresentation = new StudentPresentation(context, mapper);
+            _studentPresentation = new StudentService(context, mapper);
+            _groupService = new GroupService(context, mapper);
         }
 
         // GET: Students
         public async Task<IActionResult> Index(string studentGroup, string searchString) {
             var studentDTOs = await _studentPresentation.GetAllItemsAsync(searchString, studentGroup);
-            var groupsNames = await _studentPresentation.GetGroupsNames();
+            var groupsNames = await _groupService.GetGroupsNames();
 
 
             var studentViewModel = new StudentsViewModel {
-                Groups = new SelectList(groupsNames),
-                Students = studentDTOs.ToList()
+                GroupsInSelectList = new SelectList(groupsNames),
+                FilteredStudents = studentDTOs.ToList()
             };
             return View(studentViewModel);
         }
 
         // GET: Students/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var studentDTO = await _studentPresentation.GetItemAsync(id);
+            var studentDTO = await _studentPresentation.GetAsync(id);
             return View(studentDTO);
         }
 
@@ -51,13 +53,13 @@ namespace Task9.Controllers {
                 await PopulateGroupsDropDownList();
                 return View(studentDTO);
             }
-            await _studentPresentation.CreateItemAsync(studentDTO);
-            return RedirectToAction(nameof(Index));
+            await _studentPresentation.CreateAsync(studentDTO);
+            return RedirectToAction("Index");
         }
 
         // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var studentDTO = await _studentPresentation.GetItemAsync(id);
+            var studentDTO = await _studentPresentation.GetAsync(id);
             await PopulateGroupsDropDownList(studentDTO.GroupId);
             return View(studentDTO);
         }
@@ -71,13 +73,13 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(studentDTO);
             }
-            await _studentPresentation.UpdateItemAsync(studentDTO);
-            return RedirectToAction(nameof(Index));
+            await _studentPresentation.UpdateAsync(studentDTO);
+            return RedirectToAction("Index");
         }
 
         // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id) {
-            var studentDTO = await _studentPresentation.GetItemAsync(id);
+            var studentDTO = await _studentPresentation.GetAsync(id);
             return View(studentDTO);
         }
 
@@ -85,7 +87,7 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            await _studentPresentation.DeleteItemAsync(id);
+            await _studentPresentation.DeleteAsync(id);
             return RedirectToAction("Index");
         }
 
@@ -94,7 +96,7 @@ namespace Task9.Controllers {
         }
 
         private async Task PopulateGroupsDropDownList(object selectedGroup = null) {
-            var groups = await _studentPresentation.GetGroups();
+            var groups = await _groupService.GetGroups();
             ViewBag.GroupId = new SelectList(groups, "Id", "GroupName", selectedGroup);
         }
     }

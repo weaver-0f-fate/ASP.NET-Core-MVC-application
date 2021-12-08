@@ -9,27 +9,29 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class GroupsController : Controller {
-        private readonly GroupPresentation _groupPresentation;
+        private readonly GroupService _groupService;
+        private readonly CourseService _courseService;
 
         public GroupsController(Task9Context context, IMapper mapper) {
-            _groupPresentation = new GroupPresentation(context, mapper);
+            _groupService = new GroupService(context, mapper);
+            _courseService = new CourseService(context, mapper);
         }
 
         // GET: Groups
         public async Task<IActionResult> Index(string groupCourse, string searchString) {
-            var groups = await _groupPresentation.GetAllItemsAsync(searchString, groupCourse);
-            var coursesNames = await _groupPresentation.GetCoursesNames();
+            var groups = await _groupService.GetAllItemsAsync(searchString, groupCourse);
+            var coursesNames = await _courseService.GetCoursesNames();
 
             var groupViewModel = new GroupViewModel {
-                Courses = new SelectList(coursesNames),
-                Groups = groups
+                CoursesInSelectList = new SelectList(coursesNames),
+                FilteredGroups = groups
             };
             return View(groupViewModel);
         }
         
         // GET: Groups/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var groupDTO = await _groupPresentation.GetItemAsync(id);
+            var groupDTO = await _groupService.GetAsync(id);
             return View(groupDTO);
         }
 
@@ -50,14 +52,14 @@ namespace Task9.Controllers {
                 return View(groupDTO);
             }
 
-            await _groupPresentation.CreateItemAsync(groupDTO);
-            return RedirectToAction(nameof(Index));
+            await _groupService.CreateAsync(groupDTO);
+            return RedirectToAction("Index", new{ groupCourse = groupDTO.CourseName});
         }
 
         // GET: Groups/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var groupDTO = await _groupPresentation.GetItemAsync(id);
-            await PopulateCoursesDropDownList(groupDTO.CourseId);
+            var groupDTO = await _groupService.GetAsync(id);
+            await PopulateCoursesDropDownList(groupDTO.CourseDTO);
             return View(groupDTO);
         }
 
@@ -70,13 +72,13 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(groupDTO);
             }
-            await _groupPresentation.UpdateItemAsync(groupDTO);
-            return RedirectToAction(nameof(Index));
+            await _groupService.UpdateAsync(groupDTO);
+            return RedirectToAction("Index");
         }
 
         // GET: Groups/Delete/5
         public async Task<IActionResult> Delete(int? id, bool showMessage = false) {
-            var groupDTO = await _groupPresentation.GetItemAsync(id);
+            var groupDTO = await _groupService.GetAsync(id);
             if (showMessage) {
                 ViewBag.ErrorMessage = "Group cannot be deleted since it contains students.";
             }
@@ -87,7 +89,7 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            await _groupPresentation.DeleteItemAsync(id);
+            await _groupService.DeleteAsync(id);
             return RedirectToAction("Index");
         }
 
@@ -99,8 +101,8 @@ namespace Task9.Controllers {
         }
 
         private async Task PopulateCoursesDropDownList(object selecetedCourse = null) {
-            var courses = await _groupPresentation.GetCourses();
-            ViewBag.CourseId = new SelectList(courses, "Id", "CourseName", selecetedCourse);
+            var coursesDTO = await _courseService.GetCourses();
+            ViewBag.CourseId = new SelectList(coursesDTO, "Id", "CourseName", selecetedCourse);
         }
     }
 }

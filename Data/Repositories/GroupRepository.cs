@@ -15,14 +15,18 @@ namespace Data.Repositories {
 
         public override async Task<IEnumerable<Group>> GetEntityListAsync() {
             var groups = GetGroupsWithCourse();
-            return await groups.AsNoTracking().ToListAsync();
+            return await _context.Group.Include(x => x.Course)
+                .Include(x => x.Students).AsNoTracking().ToListAsync();
         }
 
         public override async Task<Group> GetEntityAsync(int id) {
             if (id < 0) {
                 return null;
             }
+
             var group = await _context.Group
+                .Include(x => x.Course)
+                .Include(x => x.Students)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (group is null) {

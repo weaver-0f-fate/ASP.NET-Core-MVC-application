@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -11,14 +10,13 @@ using Services.ModelsDTO;
 using ServicesInterfaces;
 
 namespace Services.Presentations {
-    public class CoursePresentation : IPresentationItem<CourseDTO> {
+    public class CourseService : IService<CourseDTO> {
         private readonly CourseRepository _courseRepository;
-        private readonly GroupRepository _groupRepository;
         private readonly IMapper _mapper;
 
-        public CoursePresentation(Task9Context context, IMapper mapper) {
+
+        public CourseService(Task9Context context, IMapper mapper) {
             _courseRepository = CourseRepository.GetCourseRepository(context);
-            _groupRepository = GroupRepository.GetGroupRepository(context);
             _mapper = mapper;
         }
 
@@ -35,7 +33,7 @@ namespace Services.Presentations {
             return coursesDTOs;
         }
 
-        public async Task<CourseDTO> GetItemAsync(int? id) {
+        public async Task<CourseDTO> GetAsync(int? id) {
             if (id is null) {
                 throw new NoEntityException();
             }
@@ -47,7 +45,7 @@ namespace Services.Presentations {
             return _mapper.Map<CourseDTO>(course);
         }
 
-        public async Task CreateItemAsync(CourseDTO item) {
+        public async Task CreateAsync(CourseDTO item) {
             var course = new Course {
                 Id = item.Id,
                     CourseDescription = item.CourseDescription,
@@ -56,7 +54,7 @@ namespace Services.Presentations {
             await _courseRepository.CreateAsync(course);
         }
 
-        public async Task UpdateItemAsync(CourseDTO item) {
+        public async Task UpdateAsync(CourseDTO item) {
             var course = new Course {
                 Id = item.Id,
                 CourseDescription = item.CourseDescription,
@@ -64,16 +62,22 @@ namespace Services.Presentations {
             };
             await _courseRepository.UpdateAsync(course);
         }
-        public async Task DeleteItemAsync(int id) {
-            var groups = await _groupRepository.GetEntityListAsync();
-            if (groups.Any(x => x.CourseId == id)) {
-                throw new ForeignEntitiesException();
-            }
+        public async Task DeleteAsync(int id) {
             await _courseRepository.DeleteAsync(id);
         }
 
         public bool ItemExists(int id) {
             return _courseRepository.CourseExists(id);
+        }
+
+        public async Task<IEnumerable<string>> GetCoursesNames() {
+            var courses = await GetCourses();
+            return courses.Select(x => x.CourseName);
+        }
+
+        public async Task<IEnumerable<CourseDTO>> GetCourses() {
+            var courses = await _courseRepository.GetEntityListAsync();
+            return courses.Select(x => _mapper.Map<CourseDTO>(x));
         }
     }
 }

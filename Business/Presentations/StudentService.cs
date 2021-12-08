@@ -11,14 +11,12 @@ using Services.ModelsDTO;
 using ServicesInterfaces;
 
 namespace Services.Presentations {
-    public class StudentPresentation : IPresentationItem<StudentDTO> {
+    public class StudentService : IService<StudentDTO> {
         private readonly StudentRepository _studentRepository;
-        private readonly GroupRepository _groupRepository;
         private readonly IMapper _mapper;
 
-        public StudentPresentation(Task9Context context, IMapper mapper) {
+        public StudentService(Task9Context context, IMapper mapper) {
             _studentRepository = StudentRepository.GetStudentData(context);
-            _groupRepository = GroupRepository.GetGroupRepository(context);
             _mapper = mapper;
         }
 
@@ -45,7 +43,7 @@ namespace Services.Presentations {
             return studentDTOs;
         }
 
-        public async Task<StudentDTO> GetItemAsync(int? id) {
+        public async Task<StudentDTO> GetAsync(int? id) {
             if (id is null) {
                 throw new NoEntityException();
             }
@@ -57,7 +55,7 @@ namespace Services.Presentations {
             return studentDTO;
         }
 
-        public async Task CreateItemAsync(StudentDTO item) {
+        public async Task CreateAsync(StudentDTO item) {
             var student = new Student {
                 Id = item.Id,
                 FirstName = item.FirstName,
@@ -67,7 +65,7 @@ namespace Services.Presentations {
             await _studentRepository.CreateAsync(student);
         }
 
-        public async Task UpdateItemAsync(StudentDTO item) {
+        public async Task UpdateAsync(StudentDTO item) {
             var student = new Student {
                 Id = item.Id,
                 FirstName = item.FirstName,
@@ -77,21 +75,12 @@ namespace Services.Presentations {
             await _studentRepository.UpdateAsync(student);
         }
 
-        public async Task DeleteItemAsync(int id) {
+        public async Task DeleteAsync(int id) {
             await _studentRepository.DeleteAsync(id);
         }
 
         public bool ItemExists(int id) {
             return _studentRepository.StudentExists(id);
-        }
-
-        public async Task<IEnumerable<string>> GetGroupsNames() {
-            var groups = await GetGroups();
-            return groups.Select(x => x.GroupName);
-        }
-
-        public async Task<IEnumerable<Group>> GetGroups() {
-            return await _groupRepository.GetEntityListAsync();
         }
     }
 }

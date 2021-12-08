@@ -5,8 +5,8 @@ using Services.ModelsDTO;
 
 namespace Task9.TaskViewModels {
     public class GroupViewModel {
-        public List<GroupDTO>? Groups { get; set; }
-        public SelectList? Courses { get; set; }
-        public string? GroupCourse { get; set; }
+        public List<GroupDTO>? FilteredGroups { get; set; }
+        public SelectList? CoursesInSelectList { get; set; }
+        public string? SelectedCourse { get; set; }
     }
 }

@@ -12,7 +12,7 @@
 
 <form asp-controller="Students" asp-action="Index" method="get">
     <p>
-        <select asp-for="StudentGroup" asp-items="Model.Groups">
+        <select asp-for="SelectedGroup" asp-items="Model.GroupsInSelectList">
             <option value="">All</option>
         </select>
 
@@ -27,19 +27,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Students[0].FirstName)
+                @Html.DisplayNameFor(model => model.FilteredStudents[0].FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Students[0].LastName)
+                @Html.DisplayNameFor(model => model.FilteredStudents[0].LastName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Students[0].GroupName)
+                @Html.DisplayNameFor(model => model.FilteredStudents[0].GroupName)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Students) {
+@foreach (var item in Model.FilteredStudents) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
