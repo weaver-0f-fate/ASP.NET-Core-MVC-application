@@ -1,12 +1,12 @@
 USE [Task9DataBase]
 
-INSERT INTO [dbo].[COURSE] 
+INSERT INTO [dbo].[COURSES] 
 			([CourseName],[CourseDescription])
 	  VALUES('Linear Algebra', 'Studying Linear Algebra.'),
 			('C# Programming', 'Studying C#'),
 			('Hardware', 'Studying Hardware')
 
-INSERT INTO [dbo].[GROUP]
+INSERT INTO [dbo].[GROUPS]
 			([CourseId],[GroupName])
 	  VALUES(1, 'Linear Algebra First Group'),
 			(1, 'Linear Algebra Second Group'),
@@ -15,7 +15,7 @@ INSERT INTO [dbo].[GROUP]
 			(3, 'Hardware First Group'),
 			(3, 'SR-01')
 
-INSERT INTO [dbo].[STUDENT]
+INSERT INTO [dbo].[STUDENTS]
 			([GroupId],[FirstName],[LastName])
 	  VALUES(1, 'Isabell', 'Farrington'),
 			(1, 'Habib', 'Easton'),

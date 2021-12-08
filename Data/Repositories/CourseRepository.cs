@@ -12,15 +12,15 @@ namespace Data.Repositories {
         }
 
         public override async Task<IEnumerable<Course>> GetEntityListAsync() {
-            var courses = from c in _context.Course select c;
-            return await courses.AsNoTracking().ToListAsync();
+            return await _context.Courses.Include(x => x.Groups).AsNoTracking().ToListAsync();
         }
 
         public override async Task<Course> GetEntityAsync(int id) {
             if (id < 0) {
                 return null;
             }
-            var course = await _context.Course
+            var course = await _context.Courses
+                .Include(x => x.Groups)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             return course;
@@ -28,12 +28,12 @@ namespace Data.Repositories {
 
         public override async Task DeleteAsync(int id) {
             var course = GetEntityAsync(id);
-            _context.Course.Remove(course.Result);
+            _context.Courses.Remove(course.Result);
             await SaveAsync();
         }
 
         public bool CourseExists(int id) {
-            return _context.Course.Any(e => e.Id == id);
+            return _context.Courses.Any(e => e.Id == id);
         }
     }
 }

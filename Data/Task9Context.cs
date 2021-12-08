@@ -7,10 +7,10 @@ namespace Data
     {
         public Task9Context (DbContextOptions<Task9Context> options) : base(options) { }
 
-        public DbSet<Course> Course { get; set; }
+        public DbSet<Course> Courses { get; set; }
 
-        public DbSet<Group> Group { get; set; }
+        public DbSet<Group> Groups { get; set; }
 
-        public DbSet<Student> Student { get; set; }
+        public DbSet<Student> Students { get; set; }
     }
 }

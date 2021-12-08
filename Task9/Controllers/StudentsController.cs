@@ -10,17 +10,17 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly StudentService _studentPresentation;
+        private readonly StudentService _studentService;
         private readonly GroupService _groupService;
 
         public StudentsController(Task9Context context, IMapper mapper) {
-            _studentPresentation = new StudentService(context, mapper);
+            _studentService = new StudentService(context, mapper);
             _groupService = new GroupService(context, mapper);
         }
 
         // GET: Students
         public async Task<IActionResult> Index(string studentGroup, string searchString) {
-            var studentDTOs = await _studentPresentation.GetAllItemsAsync(searchString, studentGroup);
+            var studentDTOs = await _studentService.GetAllItemsAsync(searchString, studentGroup);
             var groupsNames = await _groupService.GetGroupsNames();
 
 
@@ -33,7 +33,7 @@ namespace Task9.Controllers {
 
         // GET: Students/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var studentDTO = await _studentPresentation.GetAsync(id);
+            var studentDTO = await _studentService.GetAsync(id);
             return View(studentDTO);
         }
 
@@ -53,13 +53,13 @@ namespace Task9.Controllers {
                 await PopulateGroupsDropDownList();
                 return View(studentDTO);
             }
-            await _studentPresentation.CreateAsync(studentDTO);
+            await _studentService.CreateAsync(studentDTO);
             return RedirectToAction("Index");
         }
 
         // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var studentDTO = await _studentPresentation.GetAsync(id);
+            var studentDTO = await _studentService.GetAsync(id);
             await PopulateGroupsDropDownList(studentDTO.GroupId);
             return View(studentDTO);
         }
@@ -73,13 +73,13 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(studentDTO);
             }
-            await _studentPresentation.UpdateAsync(studentDTO);
+            await _studentService.UpdateAsync(studentDTO);
             return RedirectToAction("Index");
         }
 
         // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id) {
-            var studentDTO = await _studentPresentation.GetAsync(id);
+            var studentDTO = await _studentService.GetAsync(id);
             return View(studentDTO);
         }
 
@@ -87,7 +87,7 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            await _studentPresentation.DeleteAsync(id);
+            await _studentService.DeleteAsync(id);
             return RedirectToAction("Index");
         }
 

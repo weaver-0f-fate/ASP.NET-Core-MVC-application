@@ -7,21 +7,21 @@ using Services.Presentations;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly CourseService _coursePresentation;
+        private readonly CourseService _courseService;
 
         public CoursesController(Task9Context context, IMapper mapper) {
-            _coursePresentation = new CourseService(context, mapper);
+            _courseService = new CourseService(context, mapper);
         }
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var courseDTOs = await _coursePresentation.GetAllItemsAsync(searchString);
+            var courseDTOs = await _courseService.GetAllItemsAsync(searchString);
             return View(courseDTOs);
         }
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var courseDTO = await _coursePresentation.GetAsync(id);
+            var courseDTO = await _courseService.GetAsync(id);
             return View(courseDTO);
         }
 
@@ -39,13 +39,13 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(courseDTO);
             }
-            await _coursePresentation.CreateAsync(courseDTO);
+            await _courseService.CreateAsync(courseDTO);
             return RedirectToAction("Index");
         }
 
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var courseDTO = await _coursePresentation.GetAsync(id);
+            var courseDTO = await _courseService.GetAsync(id);
             return View(courseDTO);
         }
 
@@ -58,13 +58,13 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(courseDTO);
             }
-            await _coursePresentation.UpdateAsync(courseDTO);
+            await _courseService.UpdateAsync(courseDTO);
             return RedirectToAction("Index");
         }
 
         // GET: Courses/Delete/5
         public async Task<IActionResult> Delete(int? id) {
-            var courseDTO = await _coursePresentation.GetAsync(id);
+            var courseDTO = await _courseService.GetAsync(id);
             return View(courseDTO);
         }
 
@@ -72,7 +72,7 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            await _coursePresentation.DeleteAsync(id);
+            await _courseService.DeleteAsync(id);
             return RedirectToAction("Index");
         }
 

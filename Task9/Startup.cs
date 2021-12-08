@@ -34,9 +34,9 @@ namespace Task9 {
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Task9Context context) {
 
-            using (app.ApplicationServices.CreateScope()) {
-                context.Database.Migrate();
-            }
+            
+            context.Database.Migrate();
+            
 
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
@@ -46,13 +46,13 @@ namespace Task9 {
                 app.UseHsts();
             }
 
-            app.UseStatusCodePages();
+            //app.UseExceptionHandlerMiddleware();
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirection(); //TODO What is it
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(); //TODO What is it 
 
-            app.UseRouting();
+            app.UseRouting(); //TODO what is it
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(

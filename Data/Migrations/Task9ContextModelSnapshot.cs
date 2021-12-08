@@ -18,7 +18,7 @@ namespace Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Core.Course", b =>
+            modelBuilder.Entity("Core.Models.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -26,21 +26,17 @@ namespace Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CourseDescription")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CourseName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Course");
+                    b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("Core.Group", b =>
+            modelBuilder.Entity("Core.Models.Group", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,18 +47,16 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("GroupName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Group");
+                    b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("Core.Student", b =>
+            modelBuilder.Entity("Core.Models.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,28 +64,24 @@ namespace Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("GroupId")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("Student");
+                    b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("Core.Group", b =>
+            modelBuilder.Entity("Core.Models.Group", b =>
                 {
-                    b.HasOne("Core.Course", "Course")
+                    b.HasOne("Core.Models.Course", "Course")
                         .WithMany("Groups")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -100,9 +90,9 @@ namespace Data.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("Core.Student", b =>
+            modelBuilder.Entity("Core.Models.Student", b =>
                 {
-                    b.HasOne("Core.Group", "Group")
+                    b.HasOne("Core.Models.Group", "Group")
                         .WithMany("Students")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -111,12 +101,12 @@ namespace Data.Migrations
                     b.Navigation("Group");
                 });
 
-            modelBuilder.Entity("Core.Course", b =>
+            modelBuilder.Entity("Core.Models.Course", b =>
                 {
                     b.Navigation("Groups");
                 });
 
-            modelBuilder.Entity("Core.Group", b =>
+            modelBuilder.Entity("Core.Models.Group", b =>
                 {
                     b.Navigation("Students");
                 });

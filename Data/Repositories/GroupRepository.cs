@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Exceptions;
@@ -14,8 +13,7 @@ namespace Data.Repositories {
         }
 
         public override async Task<IEnumerable<Group>> GetEntityListAsync() {
-            var groups = GetGroupsWithCourse();
-            return await _context.Group.Include(x => x.Course)
+            return await _context.Groups.Include(x => x.Course)
                 .Include(x => x.Students).AsNoTracking().ToListAsync();
         }
 
@@ -24,43 +22,28 @@ namespace Data.Repositories {
                 return null;
             }
 
-            var group = await _context.Group
+            var group = await _context.Groups
                 .Include(x => x.Course)
                 .Include(x => x.Students)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (group is null) {
-                return null;
+                throw new NoEntityException();
             }
-
-            group.Course = _context.Course.FirstOrDefault(x => x.Id == group.CourseId);
             return group;
         }
 
         public override async Task DeleteAsync(int id) {
             var group = GetEntityAsync(id).Result;
-            if (_context.Student.Any(x => x.GroupId == group.Id)) {
+            if (group.Students.Any(x => x.GroupId == group.Id)) {
                 throw new NoEntityException();
             }
-            _context.Group.Remove(group);
+            _context.Groups.Remove(group);
             await SaveAsync();
         }
 
         public bool GroupExists(int id) {
-            return _context.Group.Any(e => e.Id == id);
-        }
-
-        private IQueryable<Group> GetGroupsWithCourse() {
-            var groups = from g in _context.Group
-                         from c in _context.Course
-                         where g.CourseId == c.Id
-                         select new Group {
-                             Id = g.Id,
-                             GroupName = g.GroupName,
-                             CourseId = g.CourseId,
-                             Course = c
-                         };
-            return groups;
+            return _context.Groups.Any(e => e.Id == id);
         }
     }
 }
