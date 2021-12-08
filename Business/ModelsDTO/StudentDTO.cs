@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ServicesInterfaces;
 
 namespace Services.ModelsDTO {
-    public class StudentDTO {
+    public class StudentDTO : IDTO {
 
         public int Id { get; set; }
 

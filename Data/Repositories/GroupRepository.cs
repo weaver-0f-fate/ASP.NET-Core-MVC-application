@@ -34,7 +34,7 @@ namespace Data.Repositories {
         }
 
         public override async Task DeleteAsync(int id) {
-            var group = GetEntityAsync(id).Result;
+            var group = await GetEntityAsync(id);
             if (group.Students.Any(x => x.GroupId == group.Id)) {
                 throw new NoEntityException();
             }

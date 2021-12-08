@@ -20,7 +20,7 @@ namespace Services.Presentations {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CourseDTO>> GetAllItemsAsync(string searchString) {
+        public async Task<IEnumerable<CourseDTO>> GetAllItemsAsync(string searchString, string filter = null) {
             var courses = await _courseRepository.GetEntityListAsync();
 
             if (!string.IsNullOrEmpty(searchString)) {
@@ -70,7 +70,7 @@ namespace Services.Presentations {
             return _courseRepository.CourseExists(id);
         }
 
-        public async Task<IEnumerable<string>> GetCoursesNames() {
+        public async Task<IEnumerable<string>> GetNames() {
             var courses = await GetCourses();
             return courses.Select(x => x.CourseName);
         }

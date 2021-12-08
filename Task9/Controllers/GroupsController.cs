@@ -1,30 +1,29 @@
-﻿using System.Threading.Tasks;
-using AutoMapper;
-using Data;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Services.ModelsDTO;
-using Services.Presentations;
+using ServicesInterfaces;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class GroupsController : Controller {
-        private readonly GroupService _groupService;
-        private readonly CourseService _courseService;
+        private readonly IService<GroupDTO> _groupService;
+        private readonly IService<CourseDTO> _courseService;
 
-        public GroupsController(Task9Context context, IMapper mapper) {
-            _groupService = new GroupService(context, mapper);
-            _courseService = new CourseService(context, mapper);
+        public GroupsController(IService<GroupDTO> groupService, IService<CourseDTO> curseService) {
+            _groupService = groupService;
+            _courseService = curseService;
         }
 
         // GET: Groups
-        public async Task<IActionResult> Index(string groupCourse, string searchString) {
-            var groups = await _groupService.GetAllItemsAsync(searchString, groupCourse);
-            var coursesNames = await _courseService.GetCoursesNames();
+        public async Task<IActionResult> Index(string selectedCourse, string searchString) {
+            var groups = await _groupService.GetAllItemsAsync(searchString, selectedCourse);
+            var coursesNames = await _courseService.GetNames();
 
             var groupViewModel = new GroupViewModel {
                 CoursesInSelectList = new SelectList(coursesNames),
-                FilteredGroups = groups
+                FilteredGroups = groups.ToList()
             };
             return View(groupViewModel);
         }
@@ -101,7 +100,7 @@ namespace Task9.Controllers {
         }
 
         private async Task PopulateCoursesDropDownList(object selecetedCourse = null) {
-            var coursesDTO = await _courseService.GetCourses();
+            var coursesDTO = await _courseService.GetAllItemsAsync();
             ViewBag.CourseId = new SelectList(coursesDTO, "Id", "CourseName", selecetedCourse);
         }
     }

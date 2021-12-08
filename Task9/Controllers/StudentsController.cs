@@ -1,27 +1,25 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Services.ModelsDTO;
-using Services.Presentations;
+using ServicesInterfaces;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly StudentService _studentService;
-        private readonly GroupService _groupService;
+        private readonly IService<StudentDTO> _studentService;
+        private readonly IService<GroupDTO> _groupService;
 
-        public StudentsController(Task9Context context, IMapper mapper) {
-            _studentService = new StudentService(context, mapper);
-            _groupService = new GroupService(context, mapper);
+        public StudentsController(IService<StudentDTO> studentService, IService<GroupDTO> groupService) {
+            _studentService = studentService;
+            _groupService = groupService;
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(string studentGroup, string searchString) {
-            var studentDTOs = await _studentService.GetAllItemsAsync(searchString, studentGroup);
-            var groupsNames = await _groupService.GetGroupsNames();
+        public async Task<IActionResult> Index(string selectedGroup, string searchString) {
+            var studentDTOs = await _studentService.GetAllItemsAsync(searchString, selectedGroup);
+            var groupsNames = await _groupService.GetNames();
 
 
             var studentViewModel = new StudentsViewModel {
@@ -96,7 +94,7 @@ namespace Task9.Controllers {
         }
 
         private async Task PopulateGroupsDropDownList(object selectedGroup = null) {
-            var groups = await _groupService.GetGroups();
+            var groups = await _groupService.GetAllItemsAsync();
             ViewBag.GroupId = new SelectList(groups, "Id", "GroupName", selectedGroup);
         }
     }

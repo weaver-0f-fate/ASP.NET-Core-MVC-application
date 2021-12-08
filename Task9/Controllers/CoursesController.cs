@@ -1,16 +1,14 @@
 ﻿using System.Threading.Tasks;
-using AutoMapper;
-using Data;
 using Microsoft.AspNetCore.Mvc;
 using Services.ModelsDTO;
-using Services.Presentations;
+using ServicesInterfaces;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly CourseService _courseService;
+        private readonly IService<CourseDTO> _courseService;
 
-        public CoursesController(Task9Context context, IMapper mapper) {
-            _courseService = new CourseService(context, mapper);
+        public CoursesController(IService<CourseDTO> service) {
+            _courseService = service;
         }
 
         // GET: Courses

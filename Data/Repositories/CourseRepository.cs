@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Exceptions;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,12 +24,15 @@ namespace Data.Repositories {
                 .Include(x => x.Groups)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
+            if (course is null) {
+                throw new NoEntityException();
+            }
             return course;
         }
 
         public override async Task DeleteAsync(int id) {
-            var course = GetEntityAsync(id);
-            _context.Courses.Remove(course.Result);
+            var course = await GetEntityAsync(id);
+            _context.Courses.Remove(course);
             await SaveAsync();
         }
 

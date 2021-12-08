@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using ServicesInterfaces;
 
 namespace Services.ModelsDTO {
-    public class GroupDTO {
+    public class GroupDTO : IDTO {
         public int Id { get; set; }
         [StringLength(30)]
         [DisplayName("Group Name")]

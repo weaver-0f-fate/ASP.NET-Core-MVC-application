@@ -20,11 +20,11 @@ namespace Services.Presentations {
             _mapper = mapper;
         }
 
-        public async Task<List<GroupDTO>> GetAllItemsAsync(string searchString = null, string groupCourse = null) {
+        public async Task<IEnumerable<GroupDTO>> GetAllItemsAsync(string searchString = null, string courseFilter = null) {
             var groups = await _groupRepository.GetEntityListAsync();
 
-            if (!string.IsNullOrEmpty(groupCourse)) {
-                groups = groups.Where(x => x.Course.CourseName.Contains(groupCourse));
+            if (!string.IsNullOrEmpty(courseFilter)) {
+                groups = groups.Where(x => x.Course.CourseName.Contains(courseFilter));
             }
 
             if (!string.IsNullOrEmpty(searchString)) {
@@ -76,7 +76,7 @@ namespace Services.Presentations {
             return _groupRepository.GroupExists(id);
         }
 
-        public async Task<IEnumerable<string>> GetGroupsNames() {
+        public async Task<IEnumerable<string>> GetNames() {
             var groups = await GetGroups();
             return groups.Select(x => x.GroupName);
         }

@@ -33,7 +33,7 @@ namespace Data.Repositories {
         }
 
         public override async Task DeleteAsync(int id) {
-            var student = GetEntityAsync(id).Result;
+            var student = await GetEntityAsync(id);
             _context.Students.Remove(student);
             await SaveAsync();
         }

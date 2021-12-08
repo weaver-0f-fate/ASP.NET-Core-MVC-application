@@ -20,12 +20,12 @@ namespace Services.Presentations {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<StudentDTO>> GetAllItemsAsync(string searchString = null, string studentGroup = null) {
+        public async Task<IEnumerable<StudentDTO>> GetAllItemsAsync(string searchString = null, string groupFilter = null) {
             var students = await _studentRepository.GetEntityListAsync();
 
-            if (!string.IsNullOrEmpty(studentGroup)) {
+            if (!string.IsNullOrEmpty(groupFilter)) {
                 students = students.Where(
-                    x => x.Group.GroupName == studentGroup);
+                    x => x.Group.GroupName == groupFilter);
             }
 
             if (!string.IsNullOrEmpty(searchString)) {
@@ -41,6 +41,11 @@ namespace Services.Presentations {
                 studentDTO.GroupName = students.FirstOrDefault(x => x.Id == studentDTO.Id).Group.GroupName;
             }
             return studentDTOs;
+        }
+
+        public async Task<IEnumerable<string>> GetNames() {
+            var students = await _studentRepository.GetEntityListAsync();
+            return students.Select(x => $"{x.FirstName} {x.LastName}");
         }
 
         public async Task<StudentDTO> GetAsync(int? id) {
