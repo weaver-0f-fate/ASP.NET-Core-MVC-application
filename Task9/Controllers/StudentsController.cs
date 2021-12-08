@@ -21,11 +21,11 @@ namespace Task9.Controllers {
         // GET: Students
         public async Task<IActionResult> Index(string studentGroup, string searchString) {
             var studentDTOs = await _studentPresentation.GetAllItemsAsync(searchString, studentGroup);
-            var groups = await _studentPresentation.GetGroups();
+            var groupsNames = await _studentPresentation.GetGroupsNames();
 
 
             var studentViewModel = new StudentsViewModel {
-                Groups = new SelectList(groups.Select(x => x.GroupName)),
+                Groups = new SelectList(groupsNames),
                 Students = studentDTOs.ToList()
             };
             return View(studentViewModel);
@@ -70,24 +70,11 @@ namespace Task9.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, StudentDTO studentDTO) {
-            if (id != studentDTO.Id) {
-                return NotFound();
-            }
             if (!ModelState.IsValid) {
                 return View(studentDTO);
             }
-
-            try {
-                await _studentPresentation.UpdateItemAsync(studentDTO);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ) {
-                if (!_studentPresentation.ItemExists(id)) {
-                    await PopulateGroupsDropDownList(studentDTO.GroupId);
-                    return NotFound();
-                }
-                throw;
-            }
+            await _studentPresentation.UpdateItemAsync(studentDTO);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Students/Delete/5
@@ -100,14 +87,8 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-
-            try {
-                await _studentPresentation.DeleteItemAsync(id);
-                return RedirectToAction("Index");
-            }
-            catch (Exception) {
-                return RedirectToAction("Delete", new { id });
-            }
+            await _studentPresentation.DeleteItemAsync(id);
+            return RedirectToAction("Index");
         }
 
         public IActionResult ClearFilter() {

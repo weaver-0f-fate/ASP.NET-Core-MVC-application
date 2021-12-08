@@ -86,6 +86,11 @@ namespace Services.Presentations {
             return _groupRepository.GroupExists(id);
         }
 
+        public async Task<IEnumerable<string>> GetCoursesNames() {
+            var courses = await GetCourses();
+            return courses.Select(x => x.CourseName);
+        }
+
         public async Task<IEnumerable<Course>> GetCourses() {
             return await _courseRepository.GetEntityListAsync();
         }

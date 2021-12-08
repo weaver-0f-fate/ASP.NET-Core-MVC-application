@@ -20,10 +20,12 @@ namespace Task9.Controllers {
 
         // GET: Groups
         public async Task<IActionResult> Index(string groupCourse, string searchString) {
-            var courses = await _groupPresentation.GetCourses();
+            var groups = await _groupPresentation.GetAllItemsAsync(searchString, groupCourse);
+            var coursesNames = await _groupPresentation.GetCoursesNames();
+
             var groupViewModel = new GroupViewModel {
-                Courses = new SelectList(courses.Select(x => x.CourseName)),
-                Groups = await _groupPresentation.GetAllItemsAsync(searchString, groupCourse)
+                Courses = new SelectList(coursesNames),
+                Groups = groups
             };
             return View(groupViewModel);
         }
@@ -57,9 +59,6 @@ namespace Task9.Controllers {
 
         // GET: Groups/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            if (id == null) {
-                return NotFound();
-            }
             var groupDTO = await _groupPresentation.GetItemAsync(id);
             await PopulateCoursesDropDownList(groupDTO.CourseId);
             return View(groupDTO);
@@ -71,36 +70,17 @@ namespace Task9.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, GroupDTO groupDTO) {
-            if (id != groupDTO.Id) {
-                return NotFound();
-            }
             if (!ModelState.IsValid) {
                 return View(groupDTO);
             }
-            try {
-                await _groupPresentation.UpdateItemAsync(groupDTO);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception) {
-                if (!_groupPresentation.ItemExists(id)) {
-                    await PopulateCoursesDropDownList(groupDTO.CourseId);
-                    return NotFound();
-                }
-                throw;
-            }
+            await _groupPresentation.UpdateItemAsync(groupDTO);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Groups/Delete/5
         public async Task<IActionResult> Delete(int? id, string message = null) {
-            if (id == null) {
-                return NotFound();
-            }
             var groupDTO = await _groupPresentation.GetItemAsync(id);
             ViewBag.ErrorMessage = message;
-
-            if (groupDTO is null) {
-                return NotFound();
-            }
             return View(groupDTO);
         }
 

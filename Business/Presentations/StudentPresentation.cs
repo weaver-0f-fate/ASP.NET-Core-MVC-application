@@ -84,6 +84,11 @@ namespace Services.Presentations {
             return _studentRepository.StudentExists(id);
         }
 
+        public async Task<IEnumerable<string>> GetGroupsNames() {
+            var groups = await GetGroups();
+            return groups.Select(x => x.GroupName);
+        }
+
         public async Task<IEnumerable<Group>> GetGroups() {
             return await _groupRepository.GetEntityListAsync();
         }

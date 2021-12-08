@@ -49,13 +49,7 @@ namespace Task9.Controllers {
 
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            if (id == null) {
-                return NotFound();
-            }
             var courseDTO = await _coursePresentation.GetItemAsync(id);
-            if (courseDTO == null) {
-                return NotFound();
-            }
             return View(courseDTO);
         }
 
@@ -65,35 +59,17 @@ namespace Task9.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CourseDTO courseDTO) {
-            if (id != courseDTO.Id) {
-                return NotFound();
-            }
             if (!ModelState.IsValid) {
                 return View(courseDTO);
             }
-
-            try {
-                await _coursePresentation.UpdateItemAsync(courseDTO);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateConcurrencyException) {
-                if (!_coursePresentation.ItemExists(id)) {
-                    return NotFound();
-                }
-                throw;
-            }
+            await _coursePresentation.UpdateItemAsync(courseDTO);
+            return RedirectToAction(nameof(Index));
         }
         
         // GET: Courses/Delete/5
         public async Task<IActionResult> Delete(int? id, string message = null) {
-            if (id == null) {
-                return NotFound();
-            }
             var courseDTO = await _coursePresentation.GetItemAsync(id);
             ViewBag.ErrorMessage = message;
-            if (courseDTO is null) {
-                return NotFound();
-            }
             return View(courseDTO);
         }
 
