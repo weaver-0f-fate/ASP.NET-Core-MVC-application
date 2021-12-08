@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.Exceptions;
 using Core.Models;
 using Data;
 using Data.Repositories;
@@ -46,11 +47,11 @@ namespace Services.Presentations {
 
         public async Task<StudentDTO> GetItemAsync(int? id) {
             if (id is null) {
-                throw new Exception();
+                throw new NoEntityException();
             }
             var student = await _studentRepository.GetEntityAsync((int)id);
             if (student is null) {
-                throw new Exception();
+                throw new NoEntityException();
             }
             var studentDTO = _mapper.Map<StudentDTO>(student);
             return studentDTO;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Exceptions;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +31,7 @@ namespace Data.Repositories {
 
             student.Group = _context.Group.FirstOrDefault(x => x.Id == student.GroupId);
             if (student.Group is null) {
-                throw new NullReferenceException();
+                throw new NoEntityException();
             }
             student.Group.Course = _context.Course.FirstOrDefault(x => x.Id == student.Group.CourseId);
             return student;

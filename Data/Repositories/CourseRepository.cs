@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Exceptions;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +31,7 @@ namespace Data.Repositories {
         public override async Task DeleteAsync(int id) {
             var course = GetEntityAsync(id);
             if (_context.Group.Any(x => x.CourseId == course.Id)) {
-                throw new Exception();
+                throw new NoEntityException();
             }
             _context.Course.Remove(course.Result);
             await SaveAsync();

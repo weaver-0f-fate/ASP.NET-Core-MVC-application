@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Net.Mime;
-using Data;
+﻿using Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Task9.Exceptions;
 
 
 namespace Task9 {
@@ -50,7 +49,7 @@ namespace Task9 {
                 app.UseDeveloperExceptionPage();
             }
             else {
-                app.UseExceptionHandler("/Courses/Error");
+                app.UseExceptionHandlerMiddleware();
                 app.UseHsts();
             }
 

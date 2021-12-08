@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.Exceptions;
 using Core.Models;
 using Data;
 using Data.Repositories;
@@ -36,11 +37,11 @@ namespace Services.Presentations {
 
         public async Task<CourseDTO> GetItemAsync(int? id) {
             if (id is null) {
-                throw new Exception();
+                throw new NoEntityException();
             }
             var course = await _courseRepository.GetEntityAsync((int)id);
             if (course == null) {
-                throw new Exception();
+                throw new NoEntityException();
             }
 
             return _mapper.Map<CourseDTO>(course);
@@ -66,7 +67,7 @@ namespace Services.Presentations {
         public async Task DeleteItemAsync(int id) {
             var groups = await _groupRepository.GetEntityListAsync();
             if (groups.Any(x => x.CourseId == id)) {
-                throw new Exception();
+                throw new ForeignEntitiesException();
             }
             await _courseRepository.DeleteAsync(id);
         }

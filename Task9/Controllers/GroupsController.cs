@@ -88,15 +88,8 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            try {
-                await _groupPresentation.DeleteItemAsync(id);
-                return RedirectToAction("Index");
-            }
-            catch (Exception) {
-                var message =
-                    "Group cannot be deleted since it contains students.";
-                return RedirectToAction("Delete", new { id, message });
-            }
+            await _groupPresentation.DeleteItemAsync(id);
+            return RedirectToAction("Index");
         }
 
         public IActionResult ClearFilter() {
@@ -104,11 +97,6 @@ namespace Task9.Controllers {
         }
         public IActionResult ViewStudents(string groupName) {
             return RedirectToAction("Index", "Students", new { studentGroup = groupName });
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         private async Task PopulateCoursesDropDownList(object selecetedCourse = null) {
