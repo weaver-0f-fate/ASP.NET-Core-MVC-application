@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
     public abstract class AbstractRepository<T> :IRepository<T> {
         protected readonly Task9Context _context;
         private bool _disposed;
 
-        protected AbstractRepository(Task9Context context) {
+        public AbstractRepository(Task9Context context) {
             _context = context;
         }
 
@@ -35,6 +36,8 @@ namespace Data.Repositories {
         public async Task SaveAsync() {
             await _context.SaveChangesAsync();
         }
+
+        public abstract Task<bool> Exists(int id);
 
         public async void Dispose() {
             await Dispose(true);

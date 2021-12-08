@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Exceptions;
 using Core.Models;
-using Data;
 using Data.Repositories;
 using Services.ModelsDTO;
-using ServicesInterfaces;
 
-namespace Services.Presentations {
-    public class StudentService : IService<StudentDTO> {
+namespace Services.Services {
+    public class StudentService : AbstractService<Student, StudentDTO> {
         private readonly StudentRepository _studentRepository;
         private readonly IMapper _mapper;
 
-        public StudentService(Task9Context context, IMapper mapper) {
-            _studentRepository = StudentRepository.GetStudentData(context);
+        public StudentService(StudentRepository repository, IMapper mapper) : base(repository, mapper) {
+            _studentRepository = repository;
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<StudentDTO>> GetAllItemsAsync(string searchString = null, string groupFilter = null) {
+        public override async Task<IEnumerable<StudentDTO>> GetAllItemsAsync(string searchString = null, string groupFilter = null) {
             var students = await _studentRepository.GetEntityListAsync();
 
             if (!string.IsNullOrEmpty(groupFilter)) {
@@ -43,12 +40,12 @@ namespace Services.Presentations {
             return studentDTOs;
         }
 
-        public async Task<IEnumerable<string>> GetNames() {
+        public override async Task<IEnumerable<string>> GetNames() {
             var students = await _studentRepository.GetEntityListAsync();
             return students.Select(x => $"{x.FirstName} {x.LastName}");
         }
 
-        public async Task<StudentDTO> GetAsync(int? id) {
+        public override async Task<StudentDTO> GetAsync(int? id) {
             if (id is null) {
                 throw new NoEntityException();
             }
@@ -60,7 +57,7 @@ namespace Services.Presentations {
             return studentDTO;
         }
 
-        public async Task CreateAsync(StudentDTO item) {
+        public override async Task CreateAsync(StudentDTO item) {
             var student = new Student {
                 Id = item.Id,
                 FirstName = item.FirstName,
@@ -70,7 +67,7 @@ namespace Services.Presentations {
             await _studentRepository.CreateAsync(student);
         }
 
-        public async Task UpdateAsync(StudentDTO item) {
+        public override async Task UpdateAsync(StudentDTO item) {
             var student = new Student {
                 Id = item.Id,
                 FirstName = item.FirstName,
@@ -80,12 +77,8 @@ namespace Services.Presentations {
             await _studentRepository.UpdateAsync(student);
         }
 
-        public async Task DeleteAsync(int id) {
+        public override async Task DeleteAsync(int id) {
             await _studentRepository.DeleteAsync(id);
-        }
-
-        public bool ItemExists(int id) {
-            return _studentRepository.StudentExists(id);
         }
     }
 }

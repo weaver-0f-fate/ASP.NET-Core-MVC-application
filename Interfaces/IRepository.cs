@@ -10,6 +10,7 @@ namespace Interfaces {
         Task UpdateAsync(T item);
         Task DeleteAsync(int id);
         Task SaveAsync();
+        Task<bool> Exists(int id);
 
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Core.Exceptions;
 using Core.Models;
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
     public sealed class CourseRepository : AbstractRepository<Course> {
-        private CourseRepository(Task9Context context) : base(context) { }
+        public CourseRepository(Task9Context context) : base(context) { }
         public static CourseRepository GetCourseRepository(Task9Context context) {
             return context is null ? null : new CourseRepository(context);
         }
@@ -36,8 +35,8 @@ namespace Data.Repositories {
             await SaveAsync();
         }
 
-        public bool CourseExists(int id) {
-            return _context.Courses.Any(e => e.Id == id);
+        public override async Task<bool> Exists(int id) {
+            return await _context.Courses.AnyAsync(e => e.Id == id);
         }
     }
 }

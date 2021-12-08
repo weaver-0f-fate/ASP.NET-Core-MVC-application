@@ -1,26 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Exceptions;
 using Core.Models;
-using Data;
 using Data.Repositories;
+using Interfaces;
 using Services.ModelsDTO;
-using ServicesInterfaces;
 
-namespace Services.Presentations {
-    public class GroupService : IService<GroupDTO> {
+namespace Services.Services {
+    public class GroupService : AbstractService<Group, GroupDTO> {
         private readonly GroupRepository _groupRepository;
         private readonly IMapper _mapper;
 
-        public GroupService(Task9Context context, IMapper mapper) {
-            _groupRepository = GroupRepository.GetGroupRepository(context);
+        public GroupService(GroupRepository repository, IMapper mapper) : base(repository, mapper) {
+            _groupRepository = repository;
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GroupDTO>> GetAllItemsAsync(string searchString = null, string courseFilter = null) {
+        public override async Task<IEnumerable<GroupDTO>> GetAllItemsAsync(string searchString = null, string courseFilter = null) {
             var groups = await _groupRepository.GetEntityListAsync();
 
             if (!string.IsNullOrEmpty(courseFilter)) {
@@ -36,7 +34,7 @@ namespace Services.Presentations {
             return groups.Select(x => _mapper.Map<GroupDTO>(x)).ToList();
         }
 
-        public async Task<GroupDTO> GetAsync(int? id) {
+        public override async Task<GroupDTO> GetAsync(int? id) {
             if (id is null) {
                 throw new NoEntityException();
             }
@@ -48,7 +46,7 @@ namespace Services.Presentations {
             return _mapper.Map<GroupDTO>(group);
         }
 
-        public async Task CreateAsync(GroupDTO item) {
+        public override async Task CreateAsync(GroupDTO item) {
             var group = new Group {
                 Id = item.Id,
                 GroupName = item.GroupName,
@@ -57,7 +55,7 @@ namespace Services.Presentations {
             await _groupRepository.CreateAsync(group);
         }
 
-        public async Task UpdateAsync(GroupDTO item) {
+        public override async Task UpdateAsync(GroupDTO item) {
             var group = new Group {
                 Id = item.Id,
                 CourseId = item.CourseId,
@@ -66,7 +64,7 @@ namespace Services.Presentations {
             await _groupRepository.UpdateAsync(group);
         }
 
-        public async Task DeleteAsync(int id) {
+        public override async Task DeleteAsync(int id) {
             var group = await _groupRepository.GetEntityAsync(id);
             if (group.Students.Any(x => x.GroupId == id)) {
                 throw new ForeignEntitiesException();
@@ -74,16 +72,12 @@ namespace Services.Presentations {
             await _groupRepository.DeleteAsync(id);
         }
 
-        public bool ItemExists(int id) {
-            return _groupRepository.GroupExists(id);
-        }
-
-        public async Task<IEnumerable<string>> GetNames() {
+        public override async Task<IEnumerable<string>> GetNames() {
             var groups = await GetGroups();
             return groups.Select(x => x.GroupName);
         }
 
-        public async Task<IEnumerable<Group>> GetGroups() {
+        private async Task<IEnumerable<Group>> GetGroups() {
             return await _groupRepository.GetEntityListAsync();
         }
     }

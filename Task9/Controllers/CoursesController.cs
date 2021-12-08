@@ -13,14 +13,14 @@ namespace Task9.Controllers {
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var courseDTOs = await _courseService.GetAllItemsAsync(searchString);
-            return View(courseDTOs);
+            var courseDtos = await _courseService.GetAllItemsAsync(searchString);
+            return View(courseDtos);
         }
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var courseDTO = await _courseService.GetAsync(id);
-            return View(courseDTO);
+            var courseDtos = await _courseService.GetAsync(id);
+            return View(courseDtos);
         }
 
         // GET: Courses/Create
@@ -33,18 +33,18 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CourseDTO courseDTO) {
+        public async Task<IActionResult> Create(CourseDTO courseDtos) {
             if (!ModelState.IsValid) {
-                return View(courseDTO);
+                return View(courseDtos);
             }
-            await _courseService.CreateAsync(courseDTO);
+            await _courseService.CreateAsync(courseDtos);
             return RedirectToAction("Index");
         }
 
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var courseDTO = await _courseService.GetAsync(id);
-            return View(courseDTO);
+            var courseDtos = await _courseService.GetAsync(id);
+            return View(courseDtos);
         }
 
         // POST: Courses/Edit/5
@@ -52,18 +52,18 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CourseDTO courseDTO) {
+        public async Task<IActionResult> Edit(int id, CourseDTO courseDtos) {
             if (!ModelState.IsValid) {
-                return View(courseDTO);
+                return View(courseDtos);
             }
-            await _courseService.UpdateAsync(courseDTO);
+            await _courseService.UpdateAsync(courseDtos);
             return RedirectToAction("Index");
         }
 
         // GET: Courses/Delete/5
         public async Task<IActionResult> Delete(int? id) {
-            var courseDTO = await _courseService.GetAsync(id);
-            return View(courseDTO);
+            var courseDtos = await _courseService.GetAsync(id);
+            return View(courseDtos);
         }
 
         // POST: Courses/Delete/5

@@ -10,6 +10,6 @@ namespace ServicesInterfaces {
         Task CreateAsync(T item);
         Task UpdateAsync(T item);
         Task DeleteAsync(int id);
-        bool ItemExists(int id);
+        Task<bool> ItemExists(int id);
     }
 }

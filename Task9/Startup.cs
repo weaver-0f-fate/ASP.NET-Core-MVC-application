@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Data;
+using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Services.ModelsDTO;
-using Services.Presentations;
+using Services.Services;
 using ServicesInterfaces;
 using Task9.Exceptions;
 
@@ -37,17 +38,17 @@ namespace Task9 {
 
             services.AddScoped<IService<CourseDTO>, CourseService>(
                 x => new CourseService(
-                    x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(), 
+                    new CourseRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>()),
                     x.GetRequiredService<IMapper>()));
 
             services.AddScoped<IService<GroupDTO>, GroupService>(
                 x => new GroupService(
-                    x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(), 
+                    new GroupRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>()),
                     x.GetRequiredService<IMapper>()));
 
             services.AddScoped<IService<StudentDTO>, StudentService>(
                 x => new StudentService(
-                    x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(), 
+                    new StudentRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>()),
                     x.GetRequiredService<IMapper>()));
         }
 
@@ -65,8 +66,6 @@ namespace Task9 {
                 app.UseExceptionHandlerMiddleware();
                 app.UseHsts();
             }
-
-            //app.UseExceptionHandlerMiddleware();
 
             app.UseHttpsRedirection(); //TODO What is it
 
