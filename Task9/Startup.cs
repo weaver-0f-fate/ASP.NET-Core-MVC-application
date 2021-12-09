@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
+using Core.Models;
 using Data;
 using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -36,23 +38,7 @@ namespace Task9 {
                      Configuration.GetConnectionString("Task9Context"),
                      x => x.MigrationsAssembly("Data")));
 
-            services.AddScoped<IService<CourseDTO>, CourseService>(
-                x => new CourseService(
-                    new CourseRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Courses),
-                    x.GetRequiredService<IMapper>()));
-
-            services.AddScoped<IService<GroupDTO>, GroupService>(
-                x => new GroupService(
-                    new GroupRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Groups),
-                    x.GetRequiredService<IMapper>()));
-
-            services.AddScoped<IService<StudentDTO>, StudentService>(
-                x => new StudentService(
-                    new StudentRepository(x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Students),
-                    x.GetRequiredService<IMapper>()));
+            AddCustomServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,25 +48,50 @@ namespace Task9 {
             context.Database.Migrate();
             
 
-            if (env.IsDevelopment()) {
-                app.UseDeveloperExceptionPage();
-            }
-            else {
-                app.UseExceptionHandlerMiddleware();
-                app.UseHsts();
-            }
+            //if (env.IsDevelopment()) {
+            //    app.UseDeveloperExceptionPage();
+            //}
+            //else {
+            //    app.UseExceptionHandlerMiddleware();
+            //    app.UseHsts();
+            //}
+            app.UseExceptionHandlerMiddleware();
+            app.UseHsts();
 
-            app.UseHttpsRedirection(); //TODO What is it
+            app.UseHttpsRedirection();
 
-            app.UseStaticFiles(); //TODO What is it 
+            app.UseStaticFiles();
 
-            app.UseRouting(); //TODO what is it
+            app.UseRouting();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Courses}/{action=Index}/{id?}");
             });
+        }
+
+        private static void AddCustomServices(IServiceCollection services) {
+            services.AddScoped<IService<CourseDTO>, CourseService>(
+                x => new CourseService(
+                    new CourseRepository(
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Courses),
+                    x.GetRequiredService<IMapper>()));
+
+            services.AddScoped<IService<GroupDTO>, GroupService>(
+                x => new GroupService(
+                    new GroupRepository(
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Groups),
+                    x.GetRequiredService<IMapper>()));
+
+            services.AddScoped<IService<StudentDTO>, StudentService>(
+                x => new StudentService(
+                    new StudentRepository(
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
+                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Students),
+                    x.GetRequiredService<IMapper>()));
         }
     }
 }

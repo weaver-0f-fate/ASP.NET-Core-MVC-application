@@ -51,8 +51,9 @@ namespace Task9.Controllers {
                 await PopulateGroupsDropDownList();
                 return View(studentDTO);
             }
+            var group = await _groupService.GetAsync(studentDTO.GroupId);
             await _studentService.CreateAsync(studentDTO);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { selectedGroup = group.GroupName});
         }
 
         // GET: Students/Edit/5
@@ -67,12 +68,14 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, StudentDTO studentDTO) {
+        public async Task<IActionResult> Edit(StudentDTO studentDTO) {
             if (!ModelState.IsValid) {
                 return View(studentDTO);
             }
+
+            var group = await _groupService.GetAsync(studentDTO.GroupId);
             await _studentService.UpdateAsync(studentDTO);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { selectedGroup = group.GroupName });
         }
 
         // GET: Students/Delete/5

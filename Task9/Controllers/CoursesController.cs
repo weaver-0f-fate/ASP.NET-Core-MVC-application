@@ -52,7 +52,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CourseDTO courseDtos) {
+        public async Task<IActionResult> Edit(CourseDTO courseDtos) {
             if (!ModelState.IsValid) {
                 return View(courseDtos);
             }
