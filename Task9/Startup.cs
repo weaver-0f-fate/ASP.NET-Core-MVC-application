@@ -46,7 +46,7 @@ namespace Task9 {
 
             
             context.Database.Migrate();
-            
+
 
             //if (env.IsDevelopment()) {
             //    app.UseDeveloperExceptionPage();
@@ -55,6 +55,7 @@ namespace Task9 {
             //    app.UseExceptionHandlerMiddleware();
             //    app.UseHsts();
             //}
+
             app.UseExceptionHandlerMiddleware();
             app.UseHsts();
 

@@ -10,24 +10,11 @@ namespace Data.Repositories {
         public GroupRepository(Task9Context context, DbSet<Group> repo) : base(context, repo) { }
 
         public override async Task<IEnumerable<Group>> GetEntityListAsync() {
-            return await Context.Groups.Include(x => x.Course)
-                .Include(x => x.Students).AsNoTracking().ToListAsync();
-        }
-
-        public override async Task<Group> GetEntityAsync(int id) {
-            if (id < 0) {
-                return null;
-            }
-
-            var group = await Context.Groups
+            return await Context.Groups
                 .Include(x => x.Course)
                 .Include(x => x.Students)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-            if (group is null) {
-                throw new NoEntityException();
-            }
-            return group;
+                .ToListAsync();
         }
 
         public override async Task DeleteAsync(int id) {
@@ -37,6 +24,14 @@ namespace Data.Repositories {
             }
             Context.Groups.Remove(group);
             await SaveAsync();
+        }
+
+        protected override async Task<Group> GetItem(int id) {
+            return await Context.Groups
+                .Include(x => x.Course)
+                .Include(x => x.Students)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core.Exceptions;
 using Core.Models;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,17 @@ namespace Data.Repositories {
         }
 
         public abstract Task<IEnumerable<T>> GetEntityListAsync();
-        public abstract Task<T> GetEntityAsync(int id);
+
+        public async Task<T> GetEntityAsync(int id) {
+            if (id < 0) {
+                return null;
+            }
+            var item = await GetItem(id);
+            if (item is null) {
+                throw new NoEntityException();
+            }
+            return item;
+        }
 
         public async Task CreateAsync(T item) {
             if (item is null) {
@@ -34,7 +45,12 @@ namespace Data.Repositories {
             Context.Update(item);
             await SaveAsync();
         }
-        public abstract Task DeleteAsync(int id);
+
+        public virtual async Task DeleteAsync(int id) {
+            var item = await GetEntityAsync(id);
+            _repository.Remove(item);
+            await SaveAsync();
+        }
 
         public async Task SaveAsync() {
             await Context.SaveChangesAsync();
@@ -58,5 +74,6 @@ namespace Data.Repositories {
             _disposed = true;
         }
 
+        protected abstract Task<T> GetItem(int id);
     }
 }
