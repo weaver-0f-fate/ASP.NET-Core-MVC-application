@@ -5,7 +5,6 @@ namespace ServicesInterfaces {
     public interface IService<T> {
         // T - DTO
         Task<IEnumerable<T>> GetAllItemsAsync(string searchString = null, string filter = null);
-        Task<IEnumerable<string>> GetNames();
         Task<T> GetAsync(int? id);
         Task CreateAsync(T item);
         Task UpdateAsync(T item);

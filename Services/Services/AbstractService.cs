@@ -23,8 +23,6 @@ namespace Services.Services {
             return items.Select(x => Mapper.Map<TT>(x));
         }
 
-        public abstract Task<IEnumerable<string>> GetNames();
-
         public async Task<TT> GetAsync(int? id) {
             if (id is null) {
                 throw new NoEntityException();

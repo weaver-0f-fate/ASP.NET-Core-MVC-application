@@ -29,8 +29,7 @@ namespace Task9.Controllers {
 
             var groupViewModel = new GroupViewModel {
                 FilteredGroups = groups.ToList(),
-                SelectedCourseId = course?.Id,
-                SelectedCourseName = course?.CourseName
+                SelectedCourseId = course?.Id
             };
 
             return View(groupViewModel);
@@ -44,8 +43,12 @@ namespace Task9.Controllers {
 
         // GET: Groups/Create
         public async Task<IActionResult> Create(string selectedCourse) {
+            var group = new GroupDTO();
+            if (int.TryParse(selectedCourse, out int id)) {
+                group.CourseId = id;
+            }
             await PopulateCoursesDropDownList(selectedCourse);
-            return View();
+            return View(group);
         }
 
         // POST: Groups/Create
@@ -61,13 +64,13 @@ namespace Task9.Controllers {
 
             var course = await _courseService.GetAsync(groupDto.CourseId);
             await _groupService.CreateAsync(groupDto);
-            return RedirectToAction("Index", new{ selectedCourse = course.CourseName});
+            return RedirectToAction("Index", new{ selectedCourse = course.Id});
         }
 
         // GET: Groups/Edit/5
         public async Task<IActionResult> Edit(int? id) {
             var groupDto = await _groupService.GetAsync(id);
-            await PopulateCoursesDropDownList(groupDto.CourseDTO);
+            await PopulateCoursesDropDownList();
             return View(groupDto);
         }
 
@@ -98,13 +101,18 @@ namespace Task9.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
+            var groupDto = await _groupService.GetAsync(id);
             await _groupService.DeleteAsync(id);
+            return RedirectToAction("Index", new { selectedCourse = groupDto.CourseId});
+        }
+
+        public IActionResult ClearFilter() {
             return RedirectToAction("Index");
         }
 
-        private async Task PopulateCoursesDropDownList(object selecetedCourse = null) {
+        private async Task PopulateCoursesDropDownList(object selectedCourse = null) {
             var coursesDto = await _courseService.GetAllItemsAsync();
-            ViewBag.Courses = new SelectList(coursesDto, "Id", "CourseName", selecetedCourse);
+            ViewBag.Courses = new SelectList(coursesDto, "Id", "CourseName", selectedCourse);
         }
     }
 }

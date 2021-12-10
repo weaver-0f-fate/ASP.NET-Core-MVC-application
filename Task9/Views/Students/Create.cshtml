@@ -15,7 +15,7 @@
 
             <div class="form-group">
                 <label asp-for="GroupId" class="control-label"></label>
-                <select asp-for="GroupId" class="form-control" asp-items="ViewBag.GroupId">
+                <select asp-for="GroupId" class="form-control" asp-items="ViewBag.Groups">
                     <option value="">-- Select Group --</option>
                 </select>
                 <span asp-validation-for="GroupId" class="text-danger" />
@@ -38,7 +38,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-route-selectedGroup="@Model.GroupId">Back to List</a>
 </div>
 
 @section Scripts {

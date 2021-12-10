@@ -10,12 +10,6 @@ namespace Services.Services {
     public class StudentService : AbstractService<Student, StudentDTO> {
 
         public StudentService(StudentRepository repository, IMapper mapper) : base(repository, mapper) { }
-
-        public override async Task<IEnumerable<string>> GetNames() {
-            var students = await Repository.GetEntityListAsync();
-            return students.Select(x => $"{x.FirstName} {x.LastName}");
-        }
-
         protected override async Task<List<Student>> GetFilteredItems(string searchString = null, string filter = null) {
             var students = await Repository.GetEntityListAsync();
 

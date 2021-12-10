@@ -73,5 +73,9 @@ namespace Task9.Controllers {
             await _courseService.DeleteAsync(id);
             return RedirectToAction("Index");
         }
+
+        public IActionResult ClearFilter() {
+            return RedirectToAction("Index");
+        }
     }
 }

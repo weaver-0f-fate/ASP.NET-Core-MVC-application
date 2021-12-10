@@ -19,7 +19,7 @@
         Search:
         <input type="text" name="SearchString" />
         <input type="submit" value="Filter" />
-        <input asp-action="Index" type="submit" value="Clear" />
+        <input asp-action="ClearFilter" type="submit" value="Clear" />
     </p>
 </form>
 
@@ -49,7 +49,7 @@
             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-            <a asp-controller="Students" asp-action="Index" asp-route-selectedGroup="@item.GroupName">View Students</a>
+            <a asp-controller="Students" asp-action="Index" asp-route-selectedGroup="@item.Id">View Students</a>
         </td>
     </tr>
 }

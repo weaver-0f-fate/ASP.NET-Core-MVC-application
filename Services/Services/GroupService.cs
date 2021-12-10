@@ -33,10 +33,5 @@ namespace Services.Services {
             }
             return groups.ToList();
         }
-
-        public override async Task<IEnumerable<string>> GetNames() {
-            var groups = await Repository.GetEntityListAsync();
-            return groups.Select(x => x.GroupName);
-        }
     }
 }
