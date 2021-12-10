@@ -98,7 +98,7 @@ namespace Task9.Controllers {
             return RedirectToAction("Index");
         }
         public IActionResult ViewStudents(string groupName) {
-            return RedirectToAction("Index", "Students", new { studentGroup = groupName });
+            return RedirectToAction("Index", "Students", new { selectedGroup = groupName });
         }
 
         private async Task PopulateCoursesDropDownList(object selecetedCourse = null) {

@@ -75,7 +75,7 @@ namespace Task9.Controllers {
         }
 
         public IActionResult ViewGroups(string courseName) {
-            return RedirectToAction("Index", "Groups", new { groupCourse = courseName });
+            return RedirectToAction("Index", "Groups", new { selectedCourse = courseName });
         }
         public IActionResult ClearFilter() {
             return RedirectToAction("Index");
