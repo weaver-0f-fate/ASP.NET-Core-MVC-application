@@ -73,12 +73,5 @@ namespace Task9.Controllers {
             await _courseService.DeleteAsync(id);
             return RedirectToAction("Index");
         }
-
-        public IActionResult ViewGroups(string courseName) {
-            return RedirectToAction("Index", "Groups", new { selectedCourse = courseName });
-        }
-        public IActionResult ClearFilter() {
-            return RedirectToAction("Index");
-        }
     }
 }

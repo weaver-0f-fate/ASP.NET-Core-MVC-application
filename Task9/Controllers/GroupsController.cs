@@ -17,14 +17,22 @@ namespace Task9.Controllers {
         }
 
         // GET: Groups
-        public async Task<IActionResult> Index(string selectedCourse, string searchString) {
-            var groups = await _groupService.GetAllItemsAsync(searchString, selectedCourse);
-            var coursesNames = await _courseService.GetNames();
+        public async Task<IActionResult> Index(int? selectedCourse, string searchString) {
+            CourseDTO course = null;
+            if (selectedCourse is not null) {
+                course = await _courseService.GetAsync(selectedCourse);
+            }
+
+            var groups = await _groupService.GetAllItemsAsync(searchString, course?.CourseName);
+
+            await PopulateCoursesDropDownList(course?.Id);
 
             var groupViewModel = new GroupViewModel {
-                CoursesInSelectList = new SelectList(coursesNames),
-                FilteredGroups = groups.ToList()
+                FilteredGroups = groups.ToList(),
+                SelectedCourseId = course?.Id,
+                SelectedCourseName = course?.CourseName
             };
+
             return View(groupViewModel);
         }
         
@@ -35,8 +43,8 @@ namespace Task9.Controllers {
         }
 
         // GET: Groups/Create
-        public async Task<IActionResult> Create() {
-            await PopulateCoursesDropDownList();
+        public async Task<IActionResult> Create(string selectedCourse) {
+            await PopulateCoursesDropDownList(selectedCourse);
             return View();
         }
 
@@ -74,7 +82,7 @@ namespace Task9.Controllers {
             }
             var course = await _courseService.GetAsync(groupDto.CourseId);
             await _groupService.UpdateAsync(groupDto);
-            return RedirectToAction("Index", new{ selectedCourse = course.CourseName});
+            return RedirectToAction("Index", new{ selectedCourse = course.Id});
         }
 
         // GET: Groups/Delete/5
@@ -94,16 +102,9 @@ namespace Task9.Controllers {
             return RedirectToAction("Index");
         }
 
-        public IActionResult ClearFilter() {
-            return RedirectToAction("Index");
-        }
-        public IActionResult ViewStudents(string groupName) {
-            return RedirectToAction("Index", "Students", new { selectedGroup = groupName });
-        }
-
         private async Task PopulateCoursesDropDownList(object selecetedCourse = null) {
             var coursesDto = await _courseService.GetAllItemsAsync();
-            ViewBag.CourseId = new SelectList(coursesDto, "Id", "CourseName", selecetedCourse);
+            ViewBag.Courses = new SelectList(coursesDto, "Id", "CourseName", selecetedCourse);
         }
     }
 }
