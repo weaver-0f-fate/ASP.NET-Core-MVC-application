@@ -38,7 +38,9 @@ namespace Task9 {
                      Configuration.GetConnectionString("Task9Context"),
                      x => x.MigrationsAssembly("Data")));
 
-            AddCustomServices(services);
+            services.AddScoped<IService<CourseDTO>, CourseService>(GetCoursesService);
+            services.AddScoped<IService<GroupDTO>, GroupService>(GetGroupsService);
+            services.AddScoped<IService<StudentDTO>, StudentService>(GetStudentsService);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,27 +74,21 @@ namespace Task9 {
             });
         }
 
-        private static void AddCustomServices(IServiceCollection services) {
-            services.AddScoped<IService<CourseDTO>, CourseService>(
-                x => new CourseService(
-                    new CourseRepository(
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Courses),
-                    x.GetRequiredService<IMapper>()));
+        private static CourseService GetCoursesService(IServiceProvider serviceProvider) {
+            var context = serviceProvider.GetRequiredService<Task9Context>();
+            var repo = new CourseRepository(context, context.Courses);
+            return new CourseService(repo, serviceProvider.GetRequiredService<IMapper>());
+        }
 
-            services.AddScoped<IService<GroupDTO>, GroupService>(
-                x => new GroupService(
-                    new GroupRepository(
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Groups),
-                    x.GetRequiredService<IMapper>()));
-
-            services.AddScoped<IService<StudentDTO>, StudentService>(
-                x => new StudentService(
-                    new StudentRepository(
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>(),
-                        x.CreateScope().ServiceProvider.GetRequiredService<Task9Context>().Students),
-                    x.GetRequiredService<IMapper>()));
+        private static GroupService GetGroupsService(IServiceProvider serviceProvider) {
+            var context = serviceProvider.GetRequiredService<Task9Context>();
+            var repo = new GroupRepository(context, context.Groups);
+            return new GroupService(repo, serviceProvider.GetRequiredService<IMapper>());
+        }
+        private static StudentService GetStudentsService(IServiceProvider serviceProvider) {
+            var context = serviceProvider.GetRequiredService<Task9Context>();
+            var repo = new StudentRepository(context, context.Students);
+            return new StudentService(repo, serviceProvider.GetRequiredService<IMapper>());
         }
     }
 }
