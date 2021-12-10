@@ -1,6 +1,5 @@
 ﻿using System;
 using AutoMapper;
-using Core.Models;
 using Data;
 using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Services.ModelsDTO;
 using Services.Services;
 using ServicesInterfaces;
