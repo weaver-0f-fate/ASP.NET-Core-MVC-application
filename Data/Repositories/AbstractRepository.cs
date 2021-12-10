@@ -56,7 +56,7 @@ namespace Data.Repositories {
             await Context.SaveChangesAsync();
         }
 
-        public async Task<bool> Exists(int id) {
+        public async Task<bool> ExistsAsync(int id) {
             return await _repository.AnyAsync(e => e.Id == id);
         }
 

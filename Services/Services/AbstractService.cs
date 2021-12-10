@@ -3,11 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Exceptions;
+using Core.Models;
 using Interfaces;
 using ServicesInterfaces;
 
 namespace Services.Services {
-    public abstract class AbstractService<T, TT> : IService<TT> {
+    public abstract class AbstractService<T, TT> : IService<TT> where T : AbstractModel where TT : IDTO{
         //T - Domain object, TT - DTO
         protected readonly IRepository<T> Repository;
         protected readonly IMapper Mapper;
@@ -47,7 +48,7 @@ namespace Services.Services {
             await Repository.DeleteAsync(id);
         }
         public async Task<bool> ItemExists(int id) {
-            return await Repository.Exists(id);
+            return await Repository.ExistsAsync(id);
         }
 
         protected abstract Task<List<T>> GetFilteredItems(string searchString = null, string filter = null);
