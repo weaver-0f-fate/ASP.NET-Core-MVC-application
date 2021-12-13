@@ -19,7 +19,7 @@ namespace Task9.Controllers {
         // GET: Groups
         public async Task<IActionResult> Index(int? selectedCourse, string searchString) {
             CourseDTO course = null;
-            if (selectedCourse is not null) {
+            if (selectedCourse > 0) {
                 course = await _courseService.GetAsync(selectedCourse);
             }
 
@@ -44,7 +44,7 @@ namespace Task9.Controllers {
         // GET: Groups/Create
         public async Task<IActionResult> Create(string selectedCourse) {
             var group = new GroupDTO();
-            if (int.TryParse(selectedCourse, out int id)) {
+            if (int.TryParse(selectedCourse, out var id)) {
                 group.CourseId = id;
             }
             await PopulateCoursesDropDownList(selectedCourse);

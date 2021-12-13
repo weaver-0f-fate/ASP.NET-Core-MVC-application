@@ -19,7 +19,7 @@ namespace Task9.Controllers {
         // GET: Students
         public async Task<IActionResult> Index(int? selectedGroup, string searchString) {
             GroupDTO group = null;
-            if (selectedGroup is not null) {
+            if (selectedGroup > 0) {
                 group = await _groupService.GetAsync(selectedGroup);
             }
 
