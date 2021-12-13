@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 
 namespace ServicesInterfaces {
-    public interface IService<T> {
-        // T - DTO
-        Task<IEnumerable<T>> GetAllItemsAsync(string searchString = null, string filter = null);
-        Task<T> GetAsync(int? id);
-        Task CreateAsync(T item);
-        Task UpdateAsync(T item);
+    public interface IService<Tdto> {
+        Task<IEnumerable<Tdto>> GetAllItemsAsync(string searchString = null, string filter = null);
+        Task<Tdto> GetAsync(int? id);
+        Task<Tdto> CreateAsync(Tdto item);
+        Task<Tdto> UpdateAsync(Tdto item);
         Task DeleteAsync(int id);
         Task<bool> ItemExists(int id);
     }

@@ -60,9 +60,8 @@ namespace Task9.Controllers {
                 await PopulateGroupsDropDownList();
                 return View(studentDto);
             }
-            var group = await _groupService.GetAsync(studentDto.GroupId);
-            await _studentService.CreateAsync(studentDto);
-            return RedirectToAction("Index", new { selectedGroup = group.Id});
+            var student = await _studentService.CreateAsync(studentDto);
+            return RedirectToAction("Index", new { selectedGroup = student.GroupId});
         }
 
         // GET: Students/Edit/5
@@ -81,10 +80,8 @@ namespace Task9.Controllers {
             if (!ModelState.IsValid) {
                 return View(studentDto);
             }
-
-            var group = await _groupService.GetAsync(studentDto.GroupId);
             await _studentService.UpdateAsync(studentDto);
-            return RedirectToAction("Index", new { selectedGroup = group.Id });
+            return RedirectToAction("Index", new { selectedGroup = studentDto.GroupId });
         }
 
         // GET: Students/Delete/5

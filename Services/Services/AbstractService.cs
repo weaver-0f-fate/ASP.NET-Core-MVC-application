@@ -8,22 +8,21 @@ using Interfaces;
 using ServicesInterfaces;
 
 namespace Services.Services {
-    public abstract class AbstractService<T, TT> : IService<TT> where T : AbstractModel where TT : IDTO{
-        //T - Domain object, TT - DTO
-        protected readonly IRepository<T> Repository;
+    public abstract class AbstractService<TModel, TDto> : IService<TDto> where TModel : AbstractModel where TDto : IDTO{
+        protected readonly IRepository<TModel> Repository;
         protected readonly IMapper Mapper;
 
-        protected AbstractService(IRepository<T> repository, IMapper mapper) {
+        protected AbstractService(IRepository<TModel> repository, IMapper mapper) {
             Repository = repository;
             Mapper = mapper;
         }
 
-        public async Task<IEnumerable<TT>> GetAllItemsAsync(string searchString = null, string filter = null) {
+        public async Task<IEnumerable<TDto>> GetAllItemsAsync(string searchString = null, string filter = null) {
             var items = await GetFilteredItems(searchString, filter);
-            return items.Select(x => Mapper.Map<TT>(x));
+            return items.Select(x => Mapper.Map<TDto>(x));
         }
 
-        public async Task<TT> GetAsync(int? id) {
+        public async Task<TDto> GetAsync(int? id) {
             if (id is null) {
                 throw new NoEntityException();
             }
@@ -32,15 +31,17 @@ namespace Services.Services {
             if (item is null) {
                 throw new NoEntityException();
             }
-            return Mapper.Map<TT>(item);
+            return Mapper.Map<TDto>(item);
         }
-        public async Task CreateAsync(TT itemDto) {
-            var item = Mapper.Map<T>(itemDto);
+        public async Task<TDto> CreateAsync(TDto itemDto) {
+            var item = Mapper.Map<TModel>(itemDto);
             await Repository.UpdateAsync(item);
+            return itemDto;
         }
-        public async Task UpdateAsync(TT itemDto) {
-            var item = Mapper.Map<T>(itemDto);
+        public async Task<TDto> UpdateAsync(TDto itemDto) {
+            var item = Mapper.Map<TModel>(itemDto);
             await Repository.UpdateAsync(item);
+            return itemDto;
         }
         public virtual async Task DeleteAsync(int id) {
             await Repository.DeleteAsync(id);
@@ -49,6 +50,6 @@ namespace Services.Services {
             return await Repository.ExistsAsync(id);
         }
 
-        protected abstract Task<List<T>> GetFilteredItems(string searchString = null, string filter = null);
+        protected abstract Task<List<TModel>> GetFilteredItems(string searchString = null, string filter = null);
     }
 }
