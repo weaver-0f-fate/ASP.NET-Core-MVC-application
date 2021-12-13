@@ -1,12 +1,8 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using ServicesInterfaces;
 
 namespace Services.ModelsDTO {
-    public class CourseDTO : IDTO {
-        [Key]
-        public int Id { get; set; }
-
+    public class CourseDto : AbstractDto {
         [StringLength(30)]
         [DisplayName("Course Name")]
         [Required]

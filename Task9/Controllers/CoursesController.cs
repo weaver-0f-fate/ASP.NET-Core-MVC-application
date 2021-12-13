@@ -5,9 +5,9 @@ using ServicesInterfaces;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly IService<CourseDTO> _courseService;
+        private readonly IService<CourseDto> _courseService;
 
-        public CoursesController(IService<CourseDTO> service) {
+        public CoursesController(IService<CourseDto> service) {
             _courseService = service;
         }
 
@@ -33,7 +33,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CourseDTO courseDtos) {
+        public async Task<IActionResult> Create(CourseDto courseDtos) {
             if (!ModelState.IsValid) {
                 return View(courseDtos);
             }
@@ -52,7 +52,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CourseDTO courseDtos) {
+        public async Task<IActionResult> Edit(CourseDto courseDtos) {
             if (!ModelState.IsValid) {
                 return View(courseDtos);
             }

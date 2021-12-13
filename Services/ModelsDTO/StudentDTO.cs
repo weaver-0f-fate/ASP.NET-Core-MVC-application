@@ -1,11 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ServicesInterfaces;
 
 namespace Services.ModelsDTO {
-    public class StudentDTO : IDTO {
-
-        public int Id { get; set; }
-
+    public class StudentDto : AbstractDto {
         [StringLength(50)]
         [Required]
         [Display(Name = "First Name")]

@@ -5,10 +5,11 @@ using AutoMapper;
 using Core.Exceptions;
 using Core.Models;
 using Interfaces;
+using Services.ModelsDTO;
 using ServicesInterfaces;
 
 namespace Services.Services {
-    public abstract class AbstractService<TModel, TDto> : IService<TDto> where TModel : AbstractModel where TDto : IDTO{
+    public abstract class AbstractService<TModel, TDto> : IService<TDto> where TModel : AbstractModel where TDto : AbstractDto{
         protected readonly IRepository<TModel> Repository;
         protected readonly IMapper Mapper;
 
@@ -46,7 +47,7 @@ namespace Services.Services {
         public virtual async Task DeleteAsync(int id) {
             await Repository.DeleteAsync(id);
         }
-        public async Task<bool> ItemExists(int id) {
+        public async Task<bool> ItemExistsAsync(int id) {
             return await Repository.ExistsAsync(id);
         }
 

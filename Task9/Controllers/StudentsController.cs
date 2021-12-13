@@ -8,17 +8,17 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly IService<StudentDTO> _studentService;
-        private readonly IService<GroupDTO> _groupService;
+        private readonly IService<StudentDto> _studentService;
+        private readonly IService<GroupDto> _groupService;
 
-        public StudentsController(IService<StudentDTO> studentService, IService<GroupDTO> groupService) {
+        public StudentsController(IService<StudentDto> studentService, IService<GroupDto> groupService) {
             _studentService = studentService;
             _groupService = groupService;
         }
 
         // GET: Students
         public async Task<IActionResult> Index(int? selectedGroup, string searchString) {
-            GroupDTO group = null;
+            GroupDto group = null;
             if (selectedGroup > 0) {
                 group = await _groupService.GetAsync(selectedGroup);
             }
@@ -42,7 +42,7 @@ namespace Task9.Controllers {
 
         // GET: Students/Create
         public async Task<IActionResult> Create(string selectedGroup) {
-            var student = new StudentDTO();
+            var student = new StudentDto();
             if (int.TryParse(selectedGroup, out int id)) {
                 student.GroupId = id;
             }
@@ -55,7 +55,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(StudentDTO studentDto) {
+        public async Task<IActionResult> Create(StudentDto studentDto) {
             if (!ModelState.IsValid) {
                 await PopulateGroupsDropDownList();
                 return View(studentDto);
@@ -76,7 +76,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(StudentDTO studentDto) {
+        public async Task<IActionResult> Edit(StudentDto studentDto) {
             if (!ModelState.IsValid) {
                 return View(studentDto);
             }

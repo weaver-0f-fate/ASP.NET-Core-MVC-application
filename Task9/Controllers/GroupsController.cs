@@ -8,17 +8,17 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class GroupsController : Controller {
-        private readonly IService<GroupDTO> _groupService;
-        private readonly IService<CourseDTO> _courseService;
+        private readonly IService<GroupDto> _groupService;
+        private readonly IService<CourseDto> _courseService;
 
-        public GroupsController(IService<GroupDTO> groupService, IService<CourseDTO> curseService) {
+        public GroupsController(IService<GroupDto> groupService, IService<CourseDto> curseService) {
             _groupService = groupService;
             _courseService = curseService;
         }
 
         // GET: Groups
         public async Task<IActionResult> Index(int? selectedCourse, string searchString) {
-            CourseDTO course = null;
+            CourseDto course = null;
             if (selectedCourse > 0) {
                 course = await _courseService.GetAsync(selectedCourse);
             }
@@ -43,7 +43,7 @@ namespace Task9.Controllers {
 
         // GET: Groups/Create
         public async Task<IActionResult> Create(string selectedCourse) {
-            var group = new GroupDTO();
+            var group = new GroupDto();
             if (int.TryParse(selectedCourse, out var id)) {
                 group.CourseId = id;
             }
@@ -56,7 +56,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(GroupDTO groupDto) {
+        public async Task<IActionResult> Create(GroupDto groupDto) {
             if (!ModelState.IsValid) {
                 await PopulateCoursesDropDownList();
                 return View(groupDto);
@@ -77,7 +77,7 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(GroupDTO groupDto) {
+        public async Task<IActionResult> Edit(GroupDto groupDto) {
             if (!ModelState.IsValid) {
                 return View(groupDto);
             }

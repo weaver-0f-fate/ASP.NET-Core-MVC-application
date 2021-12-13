@@ -8,7 +8,7 @@ using Data.Repositories;
 using Services.ModelsDTO;
 
 namespace Services.Services {
-    public class GroupService : AbstractService<Group, GroupDTO> {
+    public class GroupService : AbstractService<Group, GroupDto> {
 
         public GroupService(GroupRepository repository, IMapper mapper) : base(repository, mapper) { }
 

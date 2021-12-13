@@ -7,7 +7,7 @@ using Data.Repositories;
 using Services.ModelsDTO;
 
 namespace Services.Services {
-    public class StudentService : AbstractService<Student, StudentDTO> {
+    public class StudentService : AbstractService<Student, StudentDto> {
 
         public StudentService(StudentRepository repository, IMapper mapper) : base(repository, mapper) { }
         protected override async Task<List<Student>> GetFilteredItems(string searchString = null, string filter = null) {

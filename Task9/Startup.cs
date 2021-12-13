@@ -36,9 +36,9 @@ namespace Task9 {
                      Configuration.GetConnectionString("Task9Context"),
                      x => x.MigrationsAssembly("Data")));
 
-            services.AddScoped<IService<CourseDTO>, CourseService>(GetCoursesService);
-            services.AddScoped<IService<GroupDTO>, GroupService>(GetGroupsService);
-            services.AddScoped<IService<StudentDTO>, StudentService>(GetStudentsService);
+            services.AddScoped<IService<CourseDto>, CourseService>(GetCoursesService);
+            services.AddScoped<IService<GroupDto>, GroupService>(GetGroupsService);
+            services.AddScoped<IService<StudentDto>, StudentService>(GetStudentsService);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
