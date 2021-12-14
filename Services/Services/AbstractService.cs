@@ -6,7 +6,6 @@ using Core.Exceptions;
 using Core.Models;
 using Interfaces;
 using Services.ModelsDTO;
-using ServicesInterfaces;
 
 namespace Services.Services {
     public abstract class AbstractService<TModel, TDto> : IService<TDto> where TModel : AbstractModel where TDto : AbstractDto{
@@ -18,8 +17,8 @@ namespace Services.Services {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TDto>> GetAllItemsAsync(string searchString = null, int? filter = null) {
-            var items = await GetFilteredItemsAsync(searchString, filter);
+        public async Task<IEnumerable<TDto>> GetAllItemsAsync(FilteringParameters parameters = null) {
+            var items = await GetFilteredItemsAsync(parameters);
             return items.Select(x => _mapper.Map<TDto>(x));
         }
 
@@ -48,6 +47,6 @@ namespace Services.Services {
             await Repository.DeleteAsync(id);
         }
 
-        protected abstract Task<List<TModel>> GetFilteredItemsAsync(string searchString = null, int? filter = null);
+        protected abstract Task<List<TModel>> GetFilteredItemsAsync(FilteringParameters parameters);
     }
 }

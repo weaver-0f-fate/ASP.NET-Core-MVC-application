@@ -7,6 +7,7 @@
 <h1>Groups</h1>
 
 <p>
+    <a asp-controller="Courses" asp-action="Index">Back to Courses</a> |
     <a asp-action="Create" asp-route-selectedCourse="@Model.SelectedCourseId">Create New</a>
 </p>
 
@@ -19,7 +20,7 @@
         Search:
         <input type="text" name="SearchString" />
         <input type="submit" value="Filter" />
-        <input asp-action="ClearFilter" type="submit" value="Clear" />
+        <input type="submit" value="Clear" />
     </p>
 </form>
 

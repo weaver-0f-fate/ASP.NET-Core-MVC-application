@@ -10,25 +10,26 @@ namespace Services.Services {
     public class StudentService : AbstractService<Student, StudentDto> {
 
         public StudentService(IRepository<Student> repository, IMapper mapper) : base(repository, mapper) { }
-        protected override async Task<List<Student>> GetFilteredItemsAsync(string searchString = null, int? groupsFilter = null, int? coursesFilter = null) {
+        protected override async Task<List<Student>> GetFilteredItemsAsync(FilteringParameters parameters = null) {
             var students = await Repository.GetEntityListAsync();
 
-             
-
-
-            if (coursesFilter > 0) {
-                students = students.Where(x => x.Group.Course.Id == coursesFilter);
+            if (parameters is null) {
+                return students.ToList();
             }
 
-            if (groupsFilter > 0) {
-                students = students.Where(x => x.Group.Id == groupsFilter);
+            if (parameters.CourseFilter > 0) {
+                students = students.Where(x => x.Group.CourseId == parameters.CourseFilter);
             }
 
-            if (!string.IsNullOrEmpty(searchString)) {
-                students = students.Where(
-                    x => x.FirstName.Contains(searchString)
-                         || x.LastName.Contains(searchString)
-                         || x.Group.GroupName.Contains(searchString));
+            if (parameters.GroupFilter > 0) {
+                students = students.Where(x => x.Group.Id == parameters.GroupFilter);
+            }
+
+            if (!string.IsNullOrEmpty(parameters.SearchString)) {
+                students = students.Where( 
+                    x => x.FirstName.Contains(parameters.SearchString)
+                         || x.LastName.Contains(parameters.SearchString)
+                         || x.Group.GroupName.Contains(parameters.SearchString));
             }
             return students.ToList();
         }

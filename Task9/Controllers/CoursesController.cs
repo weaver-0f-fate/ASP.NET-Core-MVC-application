@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 using Services.ModelsDTO;
-using ServicesInterfaces;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
@@ -13,7 +13,10 @@ namespace Task9.Controllers {
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var courseDtos = await _courseService.GetAllItemsAsync(searchString);
+            var parameters = new FilteringParameters {
+                SearchString = searchString
+            };
+            var courseDtos = await _courseService.GetAllItemsAsync(parameters);
             return View(courseDtos);
         }
 
@@ -71,10 +74,6 @@ namespace Task9.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
             await _courseService.DeleteAsync(id);
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult ClearFilter() {
             return RedirectToAction("Index");
         }
     }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Services;
 using Services.ModelsDTO;
-using ServicesInterfaces;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
@@ -21,8 +20,8 @@ namespace Task9.Controllers {
 
         // GET: Students
         public async Task<IActionResult> Index(int? selectedCourseId, int? selectedGroupId, string searchString) {
-            var c = await _courseService.GetAllItemsAsync();
-            var g = await _groupService.GetAllItemsAsync(filter: selectedCourseId);
+            var c = await _courseService.GetAllItemsAsync(null);
+            var g = await _groupService.GetAllItemsAsync(new FilteringParameters{CourseFilter = selectedCourseId});
 
             var courses = new SelectList(c, "Id", "CourseName", selectedCourseId);
             var groups = new SelectList(g, "Id", "GroupName", selectedGroupId);
@@ -38,7 +37,17 @@ namespace Task9.Controllers {
                 studentViewModel.SelectedGroupDto = await _groupService.GetAsync(selectedGroupId);
             }
 
-            var students = await _studentService.GetAllItemsAsync(searchString, selectedGroupId, selectedCourseId);
+            if (!string.IsNullOrEmpty(searchString)) {
+                studentViewModel.SearchString = searchString;
+            }
+
+            var filterParameters = new FilteringParameters {
+                SearchString = searchString,
+                CourseFilter = selectedCourseId,
+                GroupFilter = selectedGroupId
+            };
+
+            var students = await _studentService.GetAllItemsAsync(filterParameters);
 
             studentViewModel.FilteredStudents = students.ToList();
 
@@ -69,12 +78,12 @@ namespace Task9.Controllers {
         }
 
         // GET: Students/Create
-        public async Task<IActionResult> Create(StudentsViewModel viewModel) {
+        public async Task<IActionResult> Create(int? selectedGroupId) {
             var student = new StudentDto();
-            if (viewModel.SelectedGroupDto?.Id > 0) {
-                student.GroupId = (int)viewModel.SelectedGroupDto?.Id;
+            if (selectedGroupId > 0) {
+                student.GroupId = (int)selectedGroupId;
             }
-            await PopulateGroupsDropDownList(viewModel.SelectedGroupDto?.Id);
+            await PopulateGroupsDropDownList(selectedGroupId);
             return View(student);
         }
 
@@ -127,24 +136,9 @@ namespace Task9.Controllers {
             return RedirectToAction("Index", new {selectedGroup = studentDto.GroupId});
         }
 
-        public IActionResult ClearFilter() {
-            return RedirectToAction("Index");
-        }
-
         private async Task PopulateGroupsDropDownList(object selectedGroup = null) {
-            var groups = await _groupService.GetAllItemsAsync();
+            var groups = await _groupService.GetAllItemsAsync(null);
             ViewBag.Groups = new SelectList(groups, "Id", "GroupName", selectedGroup);
-        }
-
-
-        protected async Task<IActionResult> SelectCourse(object sender, EventArgs e) {
-            return RedirectToAction("Index", new{ selectedCourseId = 1 } );
-        }
-
-        public JsonResult GetGroups() {
-            
-
-            return null;
         }
     }
 }

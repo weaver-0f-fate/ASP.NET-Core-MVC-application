@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ namespace Data.Repositories {
                 .Include(x => x.Groups)
                 .AsNoTracking()
                 .ToListAsync();
+
         }
 
         protected override async Task<Course> GetItemAsync(int id) {

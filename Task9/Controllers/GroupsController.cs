@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Services;
 using Services.ModelsDTO;
-using ServicesInterfaces;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
@@ -23,7 +23,12 @@ namespace Task9.Controllers {
                 course = await _courseService.GetAsync(selectedCourse);
             }
 
-            var groups = await _groupService.GetAllItemsAsync(searchString, course?.Id);
+            var parameters = new FilteringParameters {
+                SearchString = searchString,
+                CourseFilter = course?.Id
+            };
+
+            var groups = await _groupService.GetAllItemsAsync(parameters);
 
             await PopulateCoursesDropDownList(course?.Id);
 
@@ -103,12 +108,8 @@ namespace Task9.Controllers {
             return RedirectToAction("Index", new { selectedCourse = groupDto.CourseId});
         }
 
-        public IActionResult ClearFilter() {
-            return RedirectToAction("Index");
-        }
-
         private async Task PopulateCoursesDropDownList(object selectedCourse = null) {
-            var coursesDto = await _courseService.GetAllItemsAsync();
+            var coursesDto = await _courseService.GetAllItemsAsync(null);
             ViewBag.Courses = new SelectList(coursesDto, "Id", "CourseName", selectedCourse);
         }
     }

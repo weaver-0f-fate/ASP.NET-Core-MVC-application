@@ -20,16 +20,20 @@ namespace Services.Services {
             await Repository.DeleteAsync(id);
         }
 
-        protected override async Task<List<Group>> GetFilteredItemsAsync(string searchString = null, int? filter = null) {
+        protected override async Task<List<Group>> GetFilteredItemsAsync(FilteringParameters parameters = null) {
             var groups = await Repository.GetEntityListAsync();
 
-            if (filter > 0) {
-                groups = groups.Where(x => x.Course.Id == filter);
+            if (parameters is null) {
+                return groups.ToList();
             }
 
-            if (!string.IsNullOrEmpty(searchString)) {
-                groups = groups.Where(x => x.GroupName.Contains(searchString)
-                                             || x.Course.CourseName.Contains(searchString));
+            if (parameters.CourseFilter > 0) {
+                groups = groups.Where(x => x.Course.Id == parameters.CourseFilter);
+            }
+
+            if (!string.IsNullOrEmpty(parameters.SearchString)) {
+                groups = groups.Where(x => x.GroupName.Contains(parameters.SearchString)
+                                             || x.Course.CourseName.Contains(parameters.SearchString));
             }
             return groups.ToList();
         }
