@@ -23,7 +23,7 @@ namespace Data.Repositories {
             if (id < 0) {
                 return null;
             }
-            var item = await GetItem(id);
+            var item = await GetItemAsync(id);
             if (item is null) {
                 throw new NoEntityException();
             }
@@ -61,11 +61,11 @@ namespace Data.Repositories {
         }
 
         public async void Dispose() {
-            await Dispose(true);
+            await DisposeAsync(true);
             GC.SuppressFinalize(this);
         }
 
-        private async Task Dispose(bool disposing) {
+        private async Task DisposeAsync(bool disposing) {
             if (!_disposed) {
                 if (disposing) {
                     await Context.DisposeAsync();
@@ -74,6 +74,6 @@ namespace Data.Repositories {
             _disposed = true;
         }
 
-        protected abstract Task<T> GetItem(int id);
+        protected abstract Task<T> GetItemAsync(int id);
     }
 }

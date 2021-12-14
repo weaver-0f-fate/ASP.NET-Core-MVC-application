@@ -10,11 +10,18 @@ namespace Services.Services {
     public class StudentService : AbstractService<Student, StudentDto> {
 
         public StudentService(IRepository<Student> repository, IMapper mapper) : base(repository, mapper) { }
-        protected override async Task<List<Student>> GetFilteredItemsAsync(string searchString = null, int? filter = null) {
+        protected override async Task<List<Student>> GetFilteredItemsAsync(string searchString = null, int? groupsFilter = null, int? coursesFilter = null) {
             var students = await Repository.GetEntityListAsync();
 
-            if (filter > 0) {
-                students = students.Where(x => x.Group.Id == filter);
+             
+
+
+            if (coursesFilter > 0) {
+                students = students.Where(x => x.Group.Course.Id == coursesFilter);
+            }
+
+            if (groupsFilter > 0) {
+                students = students.Where(x => x.Group.Id == groupsFilter);
             }
 
             if (!string.IsNullOrEmpty(searchString)) {

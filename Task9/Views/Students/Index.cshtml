@@ -12,18 +12,16 @@
 
 <form asp-controller="Students" asp-action="Index" method="get">
     <p>
-        <select name="selectedCourseId" asp-for="SelectedCourseDto" asp-items="@Model.Courses">
+        <select name="selectedCourseId" asp-items="@Model.Courses">
             <option value="">-- Select Course --</option>
         </select>
-    </p>
-    <p>
         <select name="selectedGroupId" asp-items="@Model.Groups">
             <option value="">-- Select Group --</option>
         </select>
         Search:
-        <input type="text" name="SearchString" />
-        <input type="submit" value="Filter" />
-        <input asp-action="ClearFilter" type="submit" value="Clear" />
+        <input type="text" name="SearchString"/>
+        <input type="submit" value="Filter"/>
+        <input asp-action="ClearFilter" type="submit" value="Clear"/>
     </p>
 </form>
 

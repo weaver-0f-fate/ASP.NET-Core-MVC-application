@@ -38,7 +38,7 @@ namespace Task9.Controllers {
                 studentViewModel.SelectedGroupDto = await _groupService.GetAsync(selectedGroupId);
             }
 
-            var students = await _studentService.GetAllItemsAsync(searchString, selectedGroupId);
+            var students = await _studentService.GetAllItemsAsync(searchString, selectedGroupId, selectedCourseId);
 
             studentViewModel.FilteredStudents = students.ToList();
 

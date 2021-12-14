@@ -14,7 +14,7 @@ namespace Data.Repositories {
                 .ToListAsync();
         }
 
-        protected override async Task<Student> GetItem(int id) {
+        protected override async Task<Student> GetItemAsync(int id) {
             return await Context.Students
                 .Include(x => x.Group)
                 .Include(x => x.Group.Course)

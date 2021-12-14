@@ -17,6 +17,14 @@ namespace Data.Repositories {
                 .ToListAsync();
         }
 
+        protected override async Task<Group> GetItemAsync(int id) {
+            return await Context.Groups
+                .Include(x => x.Course)
+                .Include(x => x.Students)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public override async Task DeleteAsync(int id) {
             var group = await GetEntityAsync(id);
             if (group.Students.Any(x => x.GroupId == group.Id)) {
@@ -24,14 +32,6 @@ namespace Data.Repositories {
             }
             Context.Groups.Remove(group);
             await SaveAsync();
-        }
-
-        protected override async Task<Group> GetItem(int id) {
-            return await Context.Groups
-                .Include(x => x.Course)
-                .Include(x => x.Students)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
