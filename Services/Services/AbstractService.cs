@@ -17,9 +17,12 @@ namespace Services.Services {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TDto>> GetAllItemsAsync(FilteringParameters parameters = null) {
-            var items = await GetFilteredItemsAsync(parameters);
-            return items.Select(x => _mapper.Map<TDto>(x));
+        public async Task<IEnumerable<TDto>> GetAllItemsAsync(FilteringService service = null) {
+            var items = await Repository.GetEntityListAsync();
+            if (service is not null) {
+                items = service.GetFilteredCollection(items) as IEnumerable<TModel>;
+            }
+            return items?.Select(x => _mapper.Map<TDto>(x));
         }
 
         public async Task<TDto> GetAsync(int? id) {
@@ -46,7 +49,5 @@ namespace Services.Services {
         public virtual async Task DeleteAsync(int id) {
             await Repository.DeleteAsync(id);
         }
-
-        protected abstract Task<List<TModel>> GetFilteredItemsAsync(FilteringParameters parameters);
     }
 }

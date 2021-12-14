@@ -21,7 +21,7 @@ namespace Task9.Controllers {
         // GET: Students
         public async Task<IActionResult> Index(int? selectedCourseId, int? selectedGroupId, string searchString) {
             var c = await _courseService.GetAllItemsAsync(null);
-            var g = await _groupService.GetAllItemsAsync(new FilteringParameters{CourseFilter = selectedCourseId});
+            var g = await _groupService.GetAllItemsAsync(new FilteringService(courseFilter: selectedCourseId));
 
             var courses = new SelectList(c, "Id", "CourseName", selectedCourseId);
             var groups = new SelectList(g, "Id", "GroupName", selectedGroupId);
@@ -41,33 +41,12 @@ namespace Task9.Controllers {
                 studentViewModel.SearchString = searchString;
             }
 
-            var filterParameters = new FilteringParameters {
-                SearchString = searchString,
-                CourseFilter = selectedCourseId,
-                GroupFilter = selectedGroupId
-            };
+            var filterParameters = new FilteringService(searchString, selectedGroupId, selectedCourseId);
 
             var students = await _studentService.GetAllItemsAsync(filterParameters);
 
             studentViewModel.FilteredStudents = students.ToList();
 
-
-            //GroupDto group = null;
-            //if (selectedGroupId > 0) {
-            //    group = await _groupService.GetAsync(selectedGroupId);
-            //}
-
-            //var students = await _studentService.GetAllItemsAsync(searchString, group?.GroupName);
-            //var filteredGroups = await _groupService.GetAllItemsAsync(filter: group?.CourseId.ToString());
-            //var courses = await _courseService.GetAllItemsAsync();
-            //await PopulateGroupsDropDownList(group?.Id);
-
-
-            //var studentViewModel = new StudentsViewModel {
-            //    FilteredStudents = students.ToList(),
-            //    Groups = filteredGroups,
-            //    Courses = courses
-            //};
             return View(studentViewModel);
         }
 

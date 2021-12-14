@@ -13,9 +13,7 @@ namespace Task9.Controllers {
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var parameters = new FilteringParameters {
-                SearchString = searchString
-            };
+            var parameters = new FilteringService(searchString: searchString);
             var courseDtos = await _courseService.GetAllItemsAsync(parameters);
             return View(courseDtos);
         }

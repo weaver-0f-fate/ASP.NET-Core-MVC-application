@@ -23,10 +23,7 @@ namespace Task9.Controllers {
                 course = await _courseService.GetAsync(selectedCourse);
             }
 
-            var parameters = new FilteringParameters {
-                SearchString = searchString,
-                CourseFilter = course?.Id
-            };
+            var parameters = new FilteringService(searchString, courseFilter: course?.Id);
 
             var groups = await _groupService.GetAllItemsAsync(parameters);
 
