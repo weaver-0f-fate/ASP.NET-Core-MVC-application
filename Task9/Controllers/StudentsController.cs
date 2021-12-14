@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,27 +11,54 @@ namespace Task9.Controllers {
     public class StudentsController : Controller {
         private readonly IService<StudentDto> _studentService;
         private readonly IService<GroupDto> _groupService;
+        private readonly IService<CourseDto> _courseService;
 
-        public StudentsController(IService<StudentDto> studentService, IService<GroupDto> groupService) {
+        public StudentsController(IService<StudentDto> studentService, IService<GroupDto> groupService, IService<CourseDto> courseService) {
             _studentService = studentService;
             _groupService = groupService;
+            _courseService = courseService;
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(int? selectedGroup, string searchString) {
-            GroupDto group = null;
-            if (selectedGroup > 0) {
-                group = await _groupService.GetAsync(selectedGroup);
+        public async Task<IActionResult> Index(int? selectedCourseId, int? selectedGroupId, string searchString) {
+            var c = await _courseService.GetAllItemsAsync();
+            var g = await _groupService.GetAllItemsAsync(filter: selectedCourseId);
+
+            var courses = new SelectList(c, "Id", "CourseName", selectedCourseId);
+            var groups = new SelectList(g, "Id", "GroupName", selectedGroupId);
+
+            var studentViewModel = new StudentsViewModel(courses, groups);
+
+
+            if (selectedCourseId > 0) {
+                studentViewModel.SelectedCourseDto = await _courseService.GetAsync(selectedCourseId);
             }
 
-            var students = await _studentService.GetAllItemsAsync(searchString, group?.GroupName);
-            await PopulateGroupsDropDownList(group?.Id);
+            if (selectedGroupId > 0) {
+                studentViewModel.SelectedGroupDto = await _groupService.GetAsync(selectedGroupId);
+            }
+
+            var students = await _studentService.GetAllItemsAsync(searchString, selectedGroupId);
+
+            studentViewModel.FilteredStudents = students.ToList();
 
 
-            var studentViewModel = new StudentsViewModel {
-                FilteredStudents = students.ToList(),
-                SelectedGroupId = group?.Id
-            };
+            //GroupDto group = null;
+            //if (selectedGroupId > 0) {
+            //    group = await _groupService.GetAsync(selectedGroupId);
+            //}
+
+            //var students = await _studentService.GetAllItemsAsync(searchString, group?.GroupName);
+            //var filteredGroups = await _groupService.GetAllItemsAsync(filter: group?.CourseId.ToString());
+            //var courses = await _courseService.GetAllItemsAsync();
+            //await PopulateGroupsDropDownList(group?.Id);
+
+
+            //var studentViewModel = new StudentsViewModel {
+            //    FilteredStudents = students.ToList(),
+            //    Groups = filteredGroups,
+            //    Courses = courses
+            //};
             return View(studentViewModel);
         }
 
@@ -41,12 +69,12 @@ namespace Task9.Controllers {
         }
 
         // GET: Students/Create
-        public async Task<IActionResult> Create(string selectedGroup) {
+        public async Task<IActionResult> Create(StudentsViewModel viewModel) {
             var student = new StudentDto();
-            if (int.TryParse(selectedGroup, out int id)) {
-                student.GroupId = id;
+            if (viewModel.SelectedGroupDto?.Id > 0) {
+                student.GroupId = (int)viewModel.SelectedGroupDto?.Id;
             }
-            await PopulateGroupsDropDownList(selectedGroup);
+            await PopulateGroupsDropDownList(viewModel.SelectedGroupDto?.Id);
             return View(student);
         }
 
@@ -106,6 +134,17 @@ namespace Task9.Controllers {
         private async Task PopulateGroupsDropDownList(object selectedGroup = null) {
             var groups = await _groupService.GetAllItemsAsync();
             ViewBag.Groups = new SelectList(groups, "Id", "GroupName", selectedGroup);
+        }
+
+
+        protected async Task<IActionResult> SelectCourse(object sender, EventArgs e) {
+            return RedirectToAction("Index", new{ selectedCourseId = 1 } );
+        }
+
+        public JsonResult GetGroups() {
+            
+
+            return null;
         }
     }
 }

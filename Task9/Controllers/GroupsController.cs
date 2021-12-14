@@ -23,7 +23,7 @@ namespace Task9.Controllers {
                 course = await _courseService.GetAsync(selectedCourse);
             }
 
-            var groups = await _groupService.GetAllItemsAsync(searchString, course?.CourseName);
+            var groups = await _groupService.GetAllItemsAsync(searchString, course?.Id);
 
             await PopulateCoursesDropDownList(course?.Id);
 

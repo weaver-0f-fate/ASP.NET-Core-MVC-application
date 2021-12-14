@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
     public sealed class CourseRepository : AbstractRepository<Course> {
-        public CourseRepository(Task9Context context, DbSet<Course> repo) : base(context, repo) { }
+        public CourseRepository(Task9Context context) : base(context, context.Courses) { }
 
         public override async Task<IEnumerable<Course>> GetEntityListAsync() {
             return await Context.Courses

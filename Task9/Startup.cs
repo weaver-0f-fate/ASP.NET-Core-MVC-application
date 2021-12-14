@@ -1,12 +1,14 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
+using Core.Models;
 using Data;
 using Data.Repositories;
+using Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Services.ModelsDTO;
 using Services.Services;
 using ServicesInterfaces;
@@ -36,9 +38,33 @@ namespace Task9 {
                      Configuration.GetConnectionString("Task9Context"),
                      x => x.MigrationsAssembly("Data")));
 
-            services.AddScoped<IService<CourseDto>, CourseService>(GetCoursesService);
-            services.AddScoped<IService<GroupDto>, GroupService>(GetGroupsService);
-            services.AddScoped<IService<StudentDto>, StudentService>(GetStudentsService);
+            services.AddScoped<IRepository<Course>, CourseRepository>(
+                x => new CourseRepository(
+                    x.GetRequiredService<Task9Context>()));
+
+            services.AddScoped<IRepository<Group>, GroupRepository>(
+                x => new GroupRepository(
+                    x.GetRequiredService<Task9Context>()));
+
+            services.AddScoped<IRepository<Student>, StudentRepository>(
+                x => new StudentRepository(
+                    x.GetRequiredService<Task9Context>()));
+
+
+            services.AddScoped<IService<CourseDto>, CourseService>(
+                x => new CourseService(
+                x.GetRequiredService<IRepository<Course>>(), 
+                   x.GetRequiredService<IMapper>()));
+
+            services.AddScoped<IService<GroupDto>, GroupService>(
+                x => new GroupService(
+                    x.GetRequiredService<IRepository<Group>>(),
+                    x.GetRequiredService<IMapper>()));
+
+            services.AddScoped<IService<StudentDto>, StudentService>(
+                x => new StudentService(
+                    x.GetRequiredService<IRepository<Student>>(),
+                    x.GetRequiredService<IMapper>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,17 +73,15 @@ namespace Task9 {
             
             context.Database.Migrate();
 
+            //env.EnvironmentName = "Production";
 
-            //if (env.IsDevelopment()) {
-            //    app.UseDeveloperExceptionPage();
-            //}
-            //else {
-            //    app.UseExceptionHandlerMiddleware();
-            //    app.UseHsts();
-            //}
-
-            app.UseExceptionHandlerMiddleware();
-            app.UseHsts();
+            if (env.IsDevelopment()) {
+                app.UseDeveloperExceptionPage();
+            }
+            else {
+                app.UseExceptionHandlerMiddleware();
+                app.UseHsts();
+            }
 
             app.UseHttpsRedirection();
 
@@ -70,23 +94,6 @@ namespace Task9 {
                     name: "default",
                     pattern: "{controller=Courses}/{action=Index}/{id?}");
             });
-        }
-
-        private static CourseService GetCoursesService(IServiceProvider serviceProvider) {
-            var context = serviceProvider.GetRequiredService<Task9Context>();
-            var repo = new CourseRepository(context, context.Courses);
-            return new CourseService(repo, serviceProvider.GetRequiredService<IMapper>());
-        }
-
-        private static GroupService GetGroupsService(IServiceProvider serviceProvider) {
-            var context = serviceProvider.GetRequiredService<Task9Context>();
-            var repo = new GroupRepository(context, context.Groups);
-            return new GroupService(repo, serviceProvider.GetRequiredService<IMapper>());
-        }
-        private static StudentService GetStudentsService(IServiceProvider serviceProvider) {
-            var context = serviceProvider.GetRequiredService<Task9Context>();
-            var repo = new StudentRepository(context, context.Students);
-            return new StudentService(repo, serviceProvider.GetRequiredService<IMapper>());
         }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
     public sealed class GroupRepository : AbstractRepository<Group> {
-        public GroupRepository(Task9Context context, DbSet<Group> repo) : base(context, repo) { }
+        public GroupRepository(Task9Context context) : base(context, context.Groups) { }
 
         public override async Task<IEnumerable<Group>> GetEntityListAsync() {
             return await Context.Groups
