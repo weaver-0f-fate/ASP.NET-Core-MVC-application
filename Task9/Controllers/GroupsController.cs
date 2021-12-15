@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Services;
 using Services.ModelsDTO;
+using Services.Services;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class GroupsController : Controller {
-        private readonly IService<Group, GroupDto> _groupService;
-        private readonly IService<Course, CourseDto> _courseService;
+        private readonly GroupService _groupService;
+        private readonly CourseService _courseService;
 
         public GroupsController(IService<Group, GroupDto> groupService, IService<Course, CourseDto> curseService) {
-            _groupService = groupService;
-            _courseService = curseService;
+            _groupService = groupService as GroupService;
+            _courseService = curseService as CourseService;
         }
 
         // GET: Groups

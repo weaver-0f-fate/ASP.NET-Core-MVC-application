@@ -15,7 +15,9 @@ namespace Task9.Controllers {
         private readonly GroupService _groupService;
         private readonly CourseService _courseService;
 
-        public StudentsController(IService<Student, StudentDto> studentService, IService<Group, GroupDto> groupService, IService<Course, CourseDto> courseService) {
+        public StudentsController(IService<Student, StudentDto> studentService, 
+            IService<Group, GroupDto> groupService,
+            IService<Course, CourseDto> courseService) {
             _studentService = studentService as StudentService;
             _groupService = groupService as GroupService;
             _courseService = courseService as CourseService;

@@ -5,14 +5,15 @@ using Data.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.ModelsDTO;
+using Services.Services;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly IService<Course, CourseDto> _courseService;
+        private readonly CourseService _courseService;
 
         public CoursesController(IService<Course, CourseDto> service) {
-            _courseService = service;
+            _courseService = service as CourseService;
         }
 
         // GET: Courses
