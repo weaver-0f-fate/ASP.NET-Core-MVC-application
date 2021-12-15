@@ -31,7 +31,8 @@ namespace Task9.Controllers {
 
             var groupViewModel = new GroupViewModel {
                 FilteredGroups = groups.ToList(),
-                SelectedCourseId = course?.Id
+                SelectedCourseId = course?.Id,
+                SearchString = searchString
             };
 
             return View(groupViewModel);

@@ -14,7 +14,7 @@ namespace Services.ModelsDTO {
 
         public int GroupId { get; set; }
         public string GroupName { get; set; }
-
+        public int CourseId { get; set; }
         public string CourseName { get; set; }
     }
 }

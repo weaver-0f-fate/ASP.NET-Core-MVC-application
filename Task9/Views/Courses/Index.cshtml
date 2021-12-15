@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Services.ModelsDTO.CourseDto>
+﻿@model Task9.TaskViewModels.CoursesViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -12,9 +12,8 @@
 
 <form asp-controller="Courses" asp-action="Index" method="get">
     <p>
-        Search: <input type="text" name="SearchString" />
+        Search: <input type="text" name="SearchString" value="@Model.SearchString"/>
         <input type="submit" value="Filter" />
-        <input type="submit" value="Clear"/>
     </p>
 </form>
 
@@ -22,16 +21,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.CourseName)
+                @Html.DisplayNameFor(model => model.FilteredCourses[0].CourseName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CourseDescription)
+                @Html.DisplayNameFor(model => model.FilteredCourses[0].CourseDescription)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.FilteredCourses) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.CourseName)

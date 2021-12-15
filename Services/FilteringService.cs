@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.Models;
 
@@ -23,41 +24,75 @@ namespace Services {
             };
         }
 
-        private IEnumerable<Student> GetFilteredStudents(IEnumerable<Student> students) {
-            if (_courseFilter > 0) {
-                students = students.Where(x => x.Group.CourseId == _courseFilter);
-            }
-            if (_groupFilter > 0) {
-                students = students.Where(x => x.GroupId == _groupFilter);
-            }
-            if (!string.IsNullOrEmpty(_searchString)) {
-                students = students.Where(x =>
-                    x.FirstName.Contains(_searchString)
-                    || x.LastName.Contains(_searchString)
-                    || x.Group.GroupName.Contains(_searchString));
-            }
-            return students;
-        }
-
         private IEnumerable<Course> GetFilteredCourses(IEnumerable<Course> courses) {
+            var predicates = new List<Func<Course, bool>>();
+
             if (!string.IsNullOrEmpty(_searchString)) {
-                courses = courses.Where(x => 
-                    x.CourseName.Contains(_searchString) 
-                 || x.CourseDescription.Contains(_searchString));
+                predicates.Add(CourseSearchStringPredicate);
             }
-            return courses;
+            return courses.Where(And(predicates.ToArray()));
         }
 
         private IEnumerable<Group> GetFilteredGroups(IEnumerable<Group> groups) {
+            var predicates = new List<Func<Group, bool>>();
+
+
             if (_courseFilter > 0) {
-                groups = groups.Where(x => x.Course.Id == _courseFilter);
+                predicates.Add(GroupCourseFilterPredicate);
             }
-            if (!string.IsNullOrEmpty(_searchString)) {
-                groups = groups.Where(x 
-                    => x.GroupName.Contains(_searchString) 
-                    || x.Course.CourseName.Contains(_searchString));
+            if (!string.IsNullOrEmpty(_searchString)) { 
+                predicates.Add(GroupSearchStringPredicate);
             }
-            return groups;
+            return groups.Where(And(predicates.ToArray()));
         }
+
+        private IEnumerable<Student> GetFilteredStudents(IEnumerable<Student> students) {
+            var predicates = new List<Func<Student, bool>>();
+
+            if (!string.IsNullOrEmpty(_searchString)) {
+                predicates.Add(StudentSearchFilterPredicate);
+            }
+
+            if (_groupFilter > 0) {
+                predicates.Add(StudentGroupFilterPredicate);
+            }
+            else {
+                if (_courseFilter > 0) {
+                    predicates.Add(StudentCourseFilterPredicate);
+                }
+            }
+            return students.Where(And(predicates.ToArray()));
+        }
+
+        private static Func<T, bool> And<T>(params Func<T, bool>[] predicates) {
+            return delegate (T item)
+            {
+                foreach (var predicate in predicates) {
+                    if (!predicate(item)) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        }
+
+        #region Predicates
+        private bool StudentCourseFilterPredicate(Student student) => 
+            student.Group.CourseId == _courseFilter;
+        private bool StudentGroupFilterPredicate(Student student) => 
+            student.GroupId == _groupFilter;
+        private bool StudentSearchFilterPredicate(Student student) => 
+            student.FirstName.Contains(_searchString)
+            || student.LastName.Contains(_searchString)
+            || student.Group.GroupName.Contains(_searchString);
+        private bool GroupCourseFilterPredicate(Group group) => 
+            group.CourseId == _courseFilter;
+        private bool GroupSearchStringPredicate(Group group) => 
+            group.GroupName.Contains(_searchString)
+            || group.Course.CourseName.Contains(_searchString);
+        private bool CourseSearchStringPredicate(Course course) => 
+            course.CourseName.Contains(_searchString)
+            || course.CourseDescription.Contains(_searchString);
+        #endregion
     }
 }

@@ -13,7 +13,7 @@ namespace Task9.TaskViewModels {
         public SelectList Groups { get; set; }
         public GroupDto? SelectedGroupDto { get; set; }
         
-        public string SearchString { get; set; }
+        public string? SearchString { get; set; }
 
         public StudentsViewModel(SelectList courses, SelectList groups) {
             Courses = courses;
