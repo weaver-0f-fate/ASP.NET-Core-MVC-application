@@ -18,30 +18,22 @@ namespace Task9.Controllers {
 
         // GET: Groups
         public async Task<IActionResult> Index(int? selectedCourse, string searchString) {
-            CourseDto course = null;
-            if (selectedCourse > 0) {
-                course = await _courseService.GetAsync(selectedCourse);
-            }
-
-            var parameters = new FilteringService(searchString, courseFilter: course?.Id);
-
-            var groups = await _groupService.GetAllItemsAsync(parameters);
-
-            await PopulateCoursesDropDownList(course?.Id);
+            var filter = new Filter(searchString, courseFilter: selectedCourse);
+            var groups = await _groupService.GetAllItemsAsync(filter);
+            await PopulateCoursesDropDownList(selectedCourse);
 
             var groupViewModel = new GroupViewModel {
                 FilteredGroups = groups.ToList(),
-                SelectedCourseId = course?.Id,
+                SelectedCourseId = selectedCourse,
                 SearchString = searchString
             };
-
             return View(groupViewModel);
         }
         
         // GET: Groups/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var groupDto = await _groupService.GetAsync(id);
-            return View(groupDto);
+            var groupDTO = await _groupService.GetAsync(id);
+            return View(groupDTO);
         }
 
         // GET: Groups/Create
@@ -59,20 +51,20 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(GroupDto groupDto) {
+        public async Task<IActionResult> Create(GroupDto groupDTO) {
             if (!ModelState.IsValid) {
                 await PopulateCoursesDropDownList();
-                return View(groupDto);
+                return View(groupDTO);
             }
-            await _groupService.CreateAsync(groupDto);
-            return RedirectToAction("Index", new{ selectedCourse = groupDto.CourseId});
+            await _groupService.CreateAsync(groupDTO);
+            return RedirectToAction("Index", new{ selectedCourse = groupDTO.CourseId});
         }
 
         // GET: Groups/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var groupDto = await _groupService.GetAsync(id);
+            var groupDTO = await _groupService.GetAsync(id);
             await PopulateCoursesDropDownList();
-            return View(groupDto);
+            return View(groupDTO);
         }
 
         // POST: Groups/Edit/5
@@ -80,30 +72,30 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(GroupDto groupDto) {
+        public async Task<IActionResult> Edit(GroupDto groupDTO) {
             if (!ModelState.IsValid) {
-                return View(groupDto);
+                return View(groupDTO);
             }
-            await _groupService.UpdateAsync(groupDto);
-            return RedirectToAction("Index", new{ selectedCourse = groupDto.CourseId});
+            await _groupService.UpdateAsync(groupDTO);
+            return RedirectToAction("Index", new{ selectedCourse = groupDTO.CourseId});
         }
 
         // GET: Groups/Delete/5
         public async Task<IActionResult> Delete(int? id, bool showMessage = false) {
-            var groupDto = await _groupService.GetAsync(id);
+            var groupDTO = await _groupService.GetAsync(id);
             if (showMessage) {
                 ViewBag.ErrorMessage = "Group cannot be deleted since it contains students.";
             }
-            return View(groupDto);
+            return View(groupDTO);
         }
 
         // POST: Groups/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            var groupDto = await _groupService.GetAsync(id);
+            var groupDTO = await _groupService.GetAsync(id);
             await _groupService.DeleteAsync(id);
-            return RedirectToAction("Index", new { selectedCourse = groupDto.CourseId});
+            return RedirectToAction("Index", new { selectedCourse = groupDTO.CourseId});
         }
 
         private async Task PopulateCoursesDropDownList(object selectedCourse = null) {

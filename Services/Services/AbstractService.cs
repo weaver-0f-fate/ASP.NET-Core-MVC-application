@@ -17,10 +17,10 @@ namespace Services.Services {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TDto>> GetAllItemsAsync(FilteringService service = null) {
+        public async Task<IEnumerable<TDto>> GetAllItemsAsync(Filter filter = null) {
             var items = await Repository.GetEntityListAsync();
-            if (service is not null) {
-                items = service.GetFilteredCollection(items) as IEnumerable<TModel>;
+            if (filter is not null) {
+                items = filter.GetFilteredCollection(items) as IEnumerable<TModel>;
             }
             return items?.Select(x => _mapper.Map<TDto>(x));
         }

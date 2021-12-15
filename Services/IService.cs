@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Services {
     public interface IService<TDto> {
-        Task<IEnumerable<TDto>> GetAllItemsAsync(FilteringService service);
+        Task<IEnumerable<TDto>> GetAllItemsAsync(Filter filter);
         Task<TDto> GetAsync(int? id);
         Task<TDto> CreateAsync(TDto item);
         Task<TDto> UpdateAsync(TDto item);

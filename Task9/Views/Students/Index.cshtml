@@ -7,16 +7,17 @@
 <h1>Students</h1>
 
 <p>
-    <a asp-controller="Groups" asp-action="Index" asp-route-selectedCourse="@Model.SelectedCourseDto.Id">Back to Groups</a> |
-    <a asp-action="Create" asp-route-selectedGroupId="@Model.SelectedGroupDto.Id">Create New</a>
+    <a asp-controller="Groups" asp-action="Index" asp-route-selectedCourse="@Model.SelectedCourseId">Back to Groups</a> |
+    <a asp-action="Create" asp-route-selectedGroupId="@Model.SelectedGroupId"
+       asp-route-selectedCourseId="@Model.SelectedCourseId">Create New</a>
 </p>
 
 <form asp-controller="Students" asp-action="Index" method="get">
     <p>
-        <select name="selectedCourseId" asp-items="@Model.Courses">
+        <select name="selectedCourseId" asp-items="@ViewBag.Courses">
             <option value="">-- Select Course --</option>
         </select>
-        <select name="selectedGroupId" asp-items="@Model.Groups">
+        <select name="selectedGroupId" asp-items="@ViewBag.Groups">
             <option value="">-- Select Group --</option>
         </select>
         Search:

@@ -15,10 +15,10 @@ namespace Task9.Controllers {
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var parameters = new FilteringService(searchString: searchString);
-            var courseDtos = await _courseService.GetAllItemsAsync(parameters);
+            var filter = new Filter(searchString);
+            var courseDTOs = await _courseService.GetAllItemsAsync(filter);
             var coursesViewModel = new CoursesViewModel {
-                FilteredCourses = courseDtos.ToList(),
+                FilteredCourses = courseDTOs.ToList(),
                 SearchString = searchString
             };
             return View(coursesViewModel);
@@ -26,8 +26,8 @@ namespace Task9.Controllers {
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id) {
-            var courseDtos = await _courseService.GetAsync(id);
-            return View(courseDtos);
+            var courseDTO = await _courseService.GetAsync(id);
+            return View(courseDTO);
         }
 
         // GET: Courses/Create
@@ -40,18 +40,18 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CourseDto courseDtos) {
+        public async Task<IActionResult> Create(CourseDto courseDTO) {
             if (!ModelState.IsValid) {
-                return View(courseDtos);
+                return View(courseDTO);
             }
-            await _courseService.CreateAsync(courseDtos);
+            await _courseService.CreateAsync(courseDTO);
             return RedirectToAction("Index");
         }
 
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id) {
-            var courseDtos = await _courseService.GetAsync(id);
-            return View(courseDtos);
+            var courseDTO = await _courseService.GetAsync(id);
+            return View(courseDTO);
         }
 
         // POST: Courses/Edit/5
@@ -59,11 +59,11 @@ namespace Task9.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CourseDto courseDtos) {
+        public async Task<IActionResult> Edit(CourseDto courseDTO) {
             if (!ModelState.IsValid) {
-                return View(courseDtos);
+                return View(courseDTO);
             }
-            await _courseService.UpdateAsync(courseDtos);
+            await _courseService.UpdateAsync(courseDTO);
             return RedirectToAction("Index");
         }
 

@@ -4,19 +4,19 @@ using System.Linq;
 using Core.Models;
 
 namespace Services {
-    public class FilteringService {
+    public class Filter {
         private readonly string _searchString;
         private readonly int? _groupFilter;
         private readonly int? _courseFilter;
 
-        public FilteringService(string searchString = null, int? groupFilter = null, int? courseFilter = null) {
+        public Filter(string searchString = null, int? groupFilter = null, int? courseFilter = null) {
             _searchString = searchString;
             _groupFilter = groupFilter;
             _courseFilter = courseFilter;
         }
 
-        public IEnumerable<AbstractModel> GetFilteredCollection(IEnumerable<AbstractModel> models) {
-            return models switch {
+        public IEnumerable<AbstractModel> GetFilteredCollection(IEnumerable<AbstractModel> itemsCollection) {
+            return itemsCollection switch {
                 IEnumerable<Student> students => GetFilteredStudents(students),
                 IEnumerable<Course> courses => GetFilteredCourses(courses),
                 IEnumerable<Group> groups => GetFilteredGroups(groups),
@@ -65,18 +65,22 @@ namespace Services {
         }
 
         private static Func<T, bool> And<T>(params Func<T, bool>[] predicates) {
-            return delegate (T item)
-            {
-                foreach (var predicate in predicates) {
-                    if (!predicate(item)) {
-                        return false;
-                    }
-                }
-                return true;
+            return delegate (T item) {
+                return predicates.All(predicate => predicate(item));
             };
         }
 
         #region Predicates
+        private bool CourseSearchStringPredicate(Course course) =>
+            course.CourseName.Contains(_searchString)
+            || course.CourseDescription.Contains(_searchString);
+
+        private bool GroupCourseFilterPredicate(Group group) =>
+            group.CourseId == _courseFilter;
+        private bool GroupSearchStringPredicate(Group group) =>
+            group.GroupName.Contains(_searchString)
+            || group.Course.CourseName.Contains(_searchString);
+
         private bool StudentCourseFilterPredicate(Student student) => 
             student.Group.CourseId == _courseFilter;
         private bool StudentGroupFilterPredicate(Student student) => 
@@ -85,14 +89,6 @@ namespace Services {
             student.FirstName.Contains(_searchString)
             || student.LastName.Contains(_searchString)
             || student.Group.GroupName.Contains(_searchString);
-        private bool GroupCourseFilterPredicate(Group group) => 
-            group.CourseId == _courseFilter;
-        private bool GroupSearchStringPredicate(Group group) => 
-            group.GroupName.Contains(_searchString)
-            || group.Course.CourseName.Contains(_searchString);
-        private bool CourseSearchStringPredicate(Course course) => 
-            course.CourseName.Contains(_searchString)
-            || course.CourseDescription.Contains(_searchString);
         #endregion
     }
 }
