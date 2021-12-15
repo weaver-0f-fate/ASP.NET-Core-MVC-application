@@ -28,6 +28,11 @@ namespace Data.Repositories {
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<int> GetCourseIdByGroupId(int id) {
+            var group = await Context.Groups.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            return group.CourseId;
+        }
+
         public override async Task DeleteAsync(int id) {
             var group = await GetEntityAsync(id);
             if (group.Students.Any(x => x.GroupId == group.Id)) {

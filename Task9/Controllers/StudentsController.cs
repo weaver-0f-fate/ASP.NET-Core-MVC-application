@@ -6,18 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Services;
 using Services.ModelsDTO;
+using Services.Services;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly IService<Student, StudentDto> _studentService;
-        private readonly IService<Group, GroupDto> _groupService;
-        private readonly IService<Course, CourseDto> _courseService;
+        private readonly StudentService _studentService;
+        private readonly GroupService _groupService;
+        private readonly CourseService _courseService;
 
         public StudentsController(IService<Student, StudentDto> studentService, IService<Group, GroupDto> groupService, IService<Course, CourseDto> courseService) {
-            _studentService = studentService;
-            _groupService = groupService;
-            _courseService = courseService;
+            _studentService = studentService as StudentService;
+            _groupService = groupService as GroupService;
+            _courseService = courseService as CourseService;
         }
 
         // GET: Students
@@ -64,8 +65,9 @@ namespace Task9.Controllers {
                 await PopulateGroupsDropDownList();
                 return View(studentDto);
             }
-            var student = await _studentService.CreateAsync(studentDto);
-            return RedirectToAction("Index", new { selectedGroup = student.GroupId});
+            await _studentService.CreateAsync(studentDto);
+            var courseId = await _groupService.GetCourseIdByGroupId(studentDto.GroupId);
+            return RedirectToAction("Index", new {selectedCourseId = courseId, selectedGroupId = studentDto.GroupId});
         }
 
         // GET: Students/Edit/5
@@ -85,7 +87,8 @@ namespace Task9.Controllers {
                 return View(studentDto);
             }
             await _studentService.UpdateAsync(studentDto);
-            return RedirectToAction("Index", new { selectedGroup = studentDto.GroupId });
+            var courseId = await _groupService.GetCourseIdByGroupId(studentDto.GroupId);
+            return RedirectToAction("Index", new { selectedCourseId = courseId, selectedGroupId = studentDto.GroupId });
         }
 
         // GET: Students/Delete/5
@@ -100,7 +103,7 @@ namespace Task9.Controllers {
         public async Task<IActionResult> DeleteConfirmed(int id) {
             var studentDto = await _studentService.GetAsync(id);
             await _studentService.DeleteAsync(id);
-            return RedirectToAction("Index", new {selectedGroup = studentDto.GroupId});
+            return RedirectToAction("Index", new { selectedCourseId = studentDto.CourseId, selectedGroupId = studentDto.GroupId });
         }
 
         private async Task PopulateGroupsDropDownList(object selectedGroup = null, int? selectedCourse = null) {
