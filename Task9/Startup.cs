@@ -51,17 +51,17 @@ namespace Task9 {
                     x.GetRequiredService<Task9Context>()));
 
 
-            services.AddScoped<IService<CourseDto>, CourseService>(
+            services.AddScoped<IService<Course, CourseDto>, CourseService>(
                 x => new CourseService(
                 x.GetRequiredService<IRepository<Course>>(), 
                    x.GetRequiredService<IMapper>()));
 
-            services.AddScoped<IService<GroupDto>, GroupService>(
+            services.AddScoped<IService<Group, GroupDto>, GroupService>(
                 x => new GroupService(
                     x.GetRequiredService<IRepository<Group>>(),
                     x.GetRequiredService<IMapper>()));
 
-            services.AddScoped<IService<StudentDto>, StudentService>(
+            services.AddScoped<IService<Student, StudentDto>, StudentService>(
                 x => new StudentService(
                     x.GetRequiredService<IRepository<Student>>(),
                     x.GetRequiredService<IMapper>()));

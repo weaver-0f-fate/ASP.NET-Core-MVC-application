@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Core.Models;
+using Data.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Services;
@@ -8,11 +10,11 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class StudentsController : Controller {
-        private readonly IService<StudentDto> _studentService;
-        private readonly IService<GroupDto> _groupService;
-        private readonly IService<CourseDto> _courseService;
+        private readonly IService<Student, StudentDto> _studentService;
+        private readonly IService<Group, GroupDto> _groupService;
+        private readonly IService<Course, CourseDto> _courseService;
 
-        public StudentsController(IService<StudentDto> studentService, IService<GroupDto> groupService, IService<CourseDto> courseService) {
+        public StudentsController(IService<Student, StudentDto> studentService, IService<Group, GroupDto> groupService, IService<Course, CourseDto> courseService) {
             _studentService = studentService;
             _groupService = groupService;
             _courseService = courseService;
@@ -23,7 +25,7 @@ namespace Task9.Controllers {
             await PopulateCoursesDropDownList(selectedCourseId);
             await PopulateGroupsDropDownList(selectedGroupId, selectedCourseId);
 
-            var filter = new Filter(searchString, selectedGroupId, selectedCourseId);
+            var filter = new StudentFilter(searchString, selectedGroupId, selectedCourseId);
             var students = await _studentService.GetAllItemsAsync(filter);
 
             var studentViewModel = new StudentsViewModel {
@@ -102,12 +104,12 @@ namespace Task9.Controllers {
         }
 
         private async Task PopulateGroupsDropDownList(object selectedGroup = null, int? selectedCourse = null) {
-            var filter = new Filter(courseFilter:selectedCourse);
+            var filter = new GroupFilter(courseFilter:selectedCourse);
             var groups = await _groupService.GetAllItemsAsync(filter);
             ViewBag.Groups = new SelectList(groups, "Id", "GroupName", selectedGroup);
         }
         private async Task PopulateCoursesDropDownList(object selectedCourse = null) {
-            var coursesDto = await _courseService.GetAllItemsAsync(null);
+            var coursesDto = await _courseService.GetAllItemsAsync(new CourseFilter());
             ViewBag.Courses = new SelectList(coursesDto, "Id", "CourseName", selectedCourse);
         }
     }

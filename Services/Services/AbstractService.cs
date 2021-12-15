@@ -8,7 +8,9 @@ using Interfaces;
 using Services.ModelsDTO;
 
 namespace Services.Services {
-    public abstract class AbstractService<TModel, TDto> : IService<TDto> where TModel : AbstractModel where TDto : AbstractDto{
+    public abstract class AbstractService<TModel, TDto> : IService<TModel, TDto> 
+        where TModel : AbstractModel where TDto : AbstractDto {
+
         protected readonly IRepository<TModel> Repository;
         private readonly IMapper _mapper;
 
@@ -17,11 +19,8 @@ namespace Services.Services {
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TDto>> GetAllItemsAsync(Filter filter = null) {
-            var items = await Repository.GetEntityListAsync();
-            if (filter is not null) {
-                items = filter.GetFilteredCollection(items) as IEnumerable<TModel>;
-            }
+        public async Task<IEnumerable<TDto>> GetAllItemsAsync(IFilter<TModel> filter = null) {
+            var items = await Repository.GetEntityListAsync(filter);
             return items?.Select(x => _mapper.Map<TDto>(x));
         }
 

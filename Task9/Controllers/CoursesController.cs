@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Core.Models;
+using Data.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.ModelsDTO;
@@ -7,15 +9,15 @@ using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly IService<CourseDto> _courseService;
+        private readonly IService<Course, CourseDto> _courseService;
 
-        public CoursesController(IService<CourseDto> service) {
+        public CoursesController(IService<Course, CourseDto> service) {
             _courseService = service;
         }
 
         // GET: Courses
         public async Task<IActionResult> Index(string searchString) {
-            var filter = new Filter(searchString);
+            var filter = new CourseFilter(searchString);
             var courseDTOs = await _courseService.GetAllItemsAsync(filter);
             var coursesViewModel = new CoursesViewModel {
                 FilteredCourses = courseDTOs.ToList(),

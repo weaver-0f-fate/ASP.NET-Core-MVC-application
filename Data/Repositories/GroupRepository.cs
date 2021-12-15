@@ -3,16 +3,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Exceptions;
 using Core.Models;
+using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
     public sealed class GroupRepository : AbstractRepository<Group> {
         public GroupRepository(Task9Context context) : base(context, context.Groups) { }
 
-        public override async Task<IEnumerable<Group>> GetEntityListAsync() {
+        public override async Task<IEnumerable<Group>> GetEntityListAsync(IFilter<Group> filter) {
+            var filteringExpression = filter.GetFilteringExpression();
             return await Context.Groups
                 .Include(x => x.Course)
                 .Include(x => x.Students)
+                .Where(filteringExpression)
                 .AsNoTracking()
                 .ToListAsync();
         }

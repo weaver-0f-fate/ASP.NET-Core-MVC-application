@@ -7,7 +7,7 @@ using Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories {
-    public abstract class AbstractRepository<T> :IRepository<T> where T : AbstractModel {
+    public abstract class AbstractRepository<T> : IRepository<T> where T : AbstractModel {
         protected readonly Task9Context Context;
         private readonly DbSet<T> _repository;
         private bool _disposed;
@@ -17,7 +17,7 @@ namespace Data.Repositories {
             _repository = repo;
         }
 
-        public abstract Task<IEnumerable<T>> GetEntityListAsync();
+        public abstract Task<IEnumerable<T>> GetEntityListAsync(IFilter<T> filter);
 
         public async Task<T> GetEntityAsync(int id) {
             if (id < 0) {
