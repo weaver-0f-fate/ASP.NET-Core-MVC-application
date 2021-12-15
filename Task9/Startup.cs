@@ -73,7 +73,7 @@ namespace Task9 {
             
             context.Database.Migrate();
 
-            //env.EnvironmentName = "Production";
+            env.EnvironmentName = "Production";
 
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
