@@ -12,11 +12,11 @@ namespace Data.Filters {
 
 
         public override Expression<Func<Course, bool>> GetFilteringExpression() {
-            Expression<Func<Course, bool>>? filteringExpression = PredicateBuilder.New<Course>(false);
+            Expression<Func<Course, bool>>? filteringExpression = PredicateBuilder.New<Course>(true);
             var original = filteringExpression;
 
             if (!string.IsNullOrEmpty(SearchString)) {
-                filteringExpression = filteringExpression.Or(x => x.CourseName.Contains(SearchString)
+                filteringExpression = filteringExpression.And(x => x.CourseName.Contains(SearchString)
                                   || x.CourseDescription.Contains(SearchString));
             }
             if (filteringExpression == original) {

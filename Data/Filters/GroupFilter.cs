@@ -10,15 +10,15 @@ namespace Data.Filters {
             : base(searchString, groupFilter, courseFilter) { }
 
         public override Expression<Func<Group, bool>> GetFilteringExpression() {
-            Expression<Func<Group, bool>>? filteringExpression = PredicateBuilder.New<Group>(false);
+            Expression<Func<Group, bool>>? filteringExpression = PredicateBuilder.New<Group>(true);
             var original = filteringExpression;
 
             if (CourseFilter > 0) {
-                filteringExpression = filteringExpression.Or(x => x.CourseId == CourseFilter);
+                filteringExpression = filteringExpression.And(x => x.CourseId == CourseFilter);
             }
 
             if (!string.IsNullOrEmpty(SearchString)) {
-                filteringExpression = filteringExpression.Or(x => x.GroupName.Contains(SearchString)
+                filteringExpression = filteringExpression.And(x => x.GroupName.Contains(SearchString)
                                   || x.Course.CourseName.Contains(SearchString));
             }
             if (filteringExpression == original) {
