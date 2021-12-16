@@ -49,10 +49,7 @@ namespace Task9.Controllers {
 
         // GET: Students/Create
         public async Task<IActionResult> Create(int? selectedGroupId, int? selectedCourseId = null) {
-            var student = new StudentDto();
-            if (selectedGroupId > 0) {
-                student.GroupId = (int)selectedGroupId;
-            }
+            var student = new StudentDto(selectedCourseId, selectedGroupId);
             await PopulateGroupsDropDownList(selectedGroupId, selectedCourseId);
             return View(student);
         }
@@ -68,8 +65,7 @@ namespace Task9.Controllers {
                 return View(studentDto);
             }
             await _studentService.CreateAsync(studentDto);
-            var courseId = await _groupService.GetCourseIdByGroupId(studentDto.GroupId);
-            return RedirectToAction("Index", new {selectedCourseId = courseId, selectedGroupId = studentDto.GroupId});
+            return RedirectToAction("Index", new {selectedCourseId = studentDto.CourseId, selectedGroupId = studentDto.GroupId});
         }
 
         // GET: Students/Edit/5
