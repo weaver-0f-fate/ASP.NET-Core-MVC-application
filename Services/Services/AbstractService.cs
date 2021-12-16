@@ -21,7 +21,7 @@ namespace Services.Services {
 
         public async Task<IEnumerable<TDto>> GetAllItemsAsync(IFilter<TModel> filter = null) {
             var items = await Repository.GetEntityListAsync(filter);
-            return items?.Select(x => _mapper.Map<TDto>(x));
+            return _mapper.Map<IEnumerable<TDto>>(items);
         }
 
         public async Task<TDto> GetAsync(int? id) {

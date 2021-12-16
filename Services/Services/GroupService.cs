@@ -22,9 +22,5 @@ namespace Services.Services {
             }
             await Repository.DeleteAsync(id);
         }
-
-        public async Task<int> GetCourseIdByGroupId(int id) {
-            return await _groupRepository.GetCourseIdByGroupId(id);
-        }
     }
 }

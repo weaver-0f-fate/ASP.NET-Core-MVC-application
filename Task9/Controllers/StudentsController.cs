@@ -85,8 +85,7 @@ namespace Task9.Controllers {
                 return View(studentDto);
             }
             await _studentService.UpdateAsync(studentDto);
-            var courseId = await _groupService.GetCourseIdByGroupId(studentDto.GroupId);
-            return RedirectToAction("Index", new { selectedCourseId = courseId, selectedGroupId = studentDto.GroupId });
+            return RedirectToAction("Index", new { selectedCourseId = studentDto.CourseId, selectedGroupId = studentDto.GroupId });
         }
 
         // GET: Students/Delete/5
