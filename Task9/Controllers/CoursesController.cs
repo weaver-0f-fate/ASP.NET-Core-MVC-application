@@ -1,16 +1,17 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Core.Models;
 using Data.Filters;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 using Services.ModelsDTO;
-using Services.Services;
 using Task9.TaskViewModels;
 
 namespace Task9.Controllers {
     public class CoursesController : Controller {
-        private readonly CourseService _courseService;
+        private readonly IService<Course, CourseDto> _courseService;
 
-        public CoursesController(CourseService service) {
+        public CoursesController(IService<Course, CourseDto> service) {
             _courseService = service;
         }
 

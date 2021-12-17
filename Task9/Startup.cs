@@ -8,7 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Services.Services;
 using Task9.Exceptions;
-
+using Interfaces;
+using Core.Models;
+using Services;
+using Services.ModelsDTO;
 
 namespace Task9 {
     public class Startup {
@@ -33,13 +36,13 @@ namespace Task9 {
                      Configuration.GetConnectionString("Task9Context"),
                      x => x.MigrationsAssembly("Data")));
 
-            services.AddScoped<CourseRepository>();
-            services.AddScoped<GroupRepository>();
-            services.AddScoped<StudentRepository>();
+            services.AddTransient <IRepository<Course>, CourseRepository>();
+            services.AddTransient<IRepository<Group>, GroupRepository>();
+            services.AddTransient<IRepository<Student>, StudentRepository>();
 
-            services.AddScoped<CourseService>();
-            services.AddScoped<GroupService>();
-            services.AddScoped<StudentService>();
+            services.AddTransient<IService<Course, CourseDto>, CourseService>();
+            services.AddTransient<IService<Group, GroupDto>, GroupService>();
+            services.AddTransient<IService<Student, StudentDto>, StudentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
