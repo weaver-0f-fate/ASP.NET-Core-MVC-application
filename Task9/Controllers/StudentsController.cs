@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Core.Models;
 using Data.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Services;
 using Services.ModelsDTO;
 using Services.Services;
 using Task9.TaskViewModels;
@@ -15,12 +13,10 @@ namespace Task9.Controllers {
         private readonly GroupService _groupService;
         private readonly CourseService _courseService;
 
-        public StudentsController(IService<Student, StudentDto> studentService, 
-            IService<Group, GroupDto> groupService,
-            IService<Course, CourseDto> courseService) {
-            _studentService = studentService as StudentService;
-            _groupService = groupService as GroupService;
-            _courseService = courseService as CourseService;
+        public StudentsController(StudentService studentService, GroupService groupService, CourseService courseService) {
+            _studentService = studentService;
+            _groupService = groupService;
+            _courseService = courseService;
         }
 
         // GET: Students

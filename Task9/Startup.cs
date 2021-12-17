@@ -1,16 +1,11 @@
-﻿using AutoMapper;
-using Core.Models;
-using Data;
+﻿using Data;
 using Data.Repositories;
-using Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-using Services;
-using Services.ModelsDTO;
 using Services.Services;
 using Task9.Exceptions;
 
@@ -38,43 +33,19 @@ namespace Task9 {
                      Configuration.GetConnectionString("Task9Context"),
                      x => x.MigrationsAssembly("Data")));
 
-            services.AddScoped<IRepository<Course>, CourseRepository>(
-                x => new CourseRepository(
-                    x.GetRequiredService<Task9Context>()));
+            services.AddScoped<CourseRepository>();
+            services.AddScoped<GroupRepository>();
+            services.AddScoped<StudentRepository>();
 
-            services.AddScoped<IRepository<Group>, GroupRepository>(
-                x => new GroupRepository(
-                    x.GetRequiredService<Task9Context>()));
-
-            services.AddScoped<IRepository<Student>, StudentRepository>(
-                x => new StudentRepository(
-                    x.GetRequiredService<Task9Context>()));
-
-
-            services.AddScoped<IService<Course, CourseDto>, CourseService>(
-                x => new CourseService(
-                x.GetRequiredService<IRepository<Course>>(), 
-                   x.GetRequiredService<IMapper>()));
-
-            services.AddScoped<IService<Group, GroupDto>, GroupService>(
-                x => new GroupService(
-                    x.GetRequiredService<IRepository<Group>>(),
-                    x.GetRequiredService<IMapper>()));
-
-            services.AddScoped<IService<Student, StudentDto>, StudentService>(
-                x => new StudentService(
-                    x.GetRequiredService<IRepository<Student>>(),
-                    x.GetRequiredService<IMapper>()));
+            services.AddScoped<CourseService>();
+            services.AddScoped<GroupService>();
+            services.AddScoped<StudentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Task9Context context) {
-
             
-            context.Database.Migrate();
-
             env.EnvironmentName = "Production";
-
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
@@ -82,6 +53,10 @@ namespace Task9 {
                 app.UseExceptionHandlerMiddleware();
                 app.UseHsts();
             }
+
+            context.Database.Migrate();
+
+            
 
             app.UseHttpsRedirection();
 

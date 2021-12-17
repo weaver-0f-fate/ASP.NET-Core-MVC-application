@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Core.Models;
-using Interfaces;
+using Data.Repositories;
 using Services.ModelsDTO;
 
 namespace Services.Services {
     public class StudentService : AbstractService<Student, StudentDto> {
 
-        public StudentService(IRepository<Student> repository, IMapper mapper) : base(repository, mapper) { }
+        public StudentService(StudentRepository repository, IMapper mapper) : base(repository, mapper) { }
     }
 }

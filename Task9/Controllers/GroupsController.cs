@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Core.Models;
 using Data.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Services;
 using Services.ModelsDTO;
 using Services.Services;
 using Task9.TaskViewModels;
@@ -14,9 +12,9 @@ namespace Task9.Controllers {
         private readonly GroupService _groupService;
         private readonly CourseService _courseService;
 
-        public GroupsController(IService<Group, GroupDto> groupService, IService<Course, CourseDto> curseService) {
-            _groupService = groupService as GroupService;
-            _courseService = curseService as CourseService;
+        public GroupsController(GroupService groupService, CourseService curseService) {
+            _groupService = groupService;
+            _courseService = curseService;
         }
 
         // GET: Groups
