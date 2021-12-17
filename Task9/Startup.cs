@@ -48,18 +48,10 @@ namespace Task9 {
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Task9Context context) {
             
-            env.EnvironmentName = "Production";
-            if (env.IsDevelopment()) {
-                app.UseDeveloperExceptionPage();
-            }
-            else {
-                app.UseExceptionHandlerMiddleware();
-                app.UseHsts();
-            }
-
-            context.Database.Migrate();
-
+            app.UseExceptionHandlerMiddleware();
+            app.UseHsts();
             
+            context.Database.Migrate();
 
             app.UseHttpsRedirection();
 
