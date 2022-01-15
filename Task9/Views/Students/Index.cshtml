@@ -1,0 +1,65 @@
+﻿@model Task9.TaskViewModels.StudentsViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Students</h1>
+
+<p>
+    <a asp-controller="Groups" asp-action="Index" asp-route-selectedCourse="@Model.SelectedCourseId">Back to Groups</a> |
+    <a asp-action="Create" asp-route-selectedGroupId="@Model.SelectedGroupId"
+       asp-route-selectedCourseId="@Model.SelectedCourseId">Create New</a>
+</p>
+
+<form asp-controller="Students" asp-action="Index" method="get">
+    <p>
+        <select name="selectedCourseId" asp-items="@ViewBag.Courses">
+            <option value="">-- Select Course --</option>
+        </select>
+        <select name="selectedGroupId" asp-items="@ViewBag.Groups">
+            <option value="">-- Select Group --</option>
+        </select>
+        Search:
+        <input type="text" name="searchString" value="@Model.SearchString" />
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FilteredStudents[0].FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FilteredStudents[0].LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FilteredStudents[0].GroupName)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var item in Model.FilteredStudents) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GroupName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

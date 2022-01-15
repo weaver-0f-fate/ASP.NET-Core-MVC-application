@@ -1,0 +1,60 @@
+﻿@model Task9.TaskViewModels.GroupViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Groups</h1>
+
+<p>
+    <a asp-controller="Courses" asp-action="Index">Back to Courses</a> |
+    <a asp-action="Create" asp-route-selectedCourse="@Model.SelectedCourseId">Create New</a>
+</p>
+
+<form asp-controller="Groups" asp-action="Index" method="get">
+    <p>
+        <select name="selectedCourse" asp-items="@ViewBag.Courses">
+            <option value="">-- Select Course --</option>
+        </select>
+
+        Search:
+        <input type="text" name="SearchString" value="@Model.SearchString"/>
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FilteredGroups[0].GroupName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilteredGroups[0].CourseName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.FilteredGroups) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.GroupName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CourseName)
+        </td>
+
+        <td>
+            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+            <a asp-controller="Students" asp-action="Index"
+               asp-route-selectedGroupId="@item.Id" asp-route-selectedCourseId="@item.CourseId">
+                View Students
+            </a>
+        </td>
+    </tr>
+}
+    </tbody>
+</table>
